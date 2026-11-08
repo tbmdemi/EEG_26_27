@@ -1,0 +1,82 @@
+# Single source of truth for all shared parameters.
+# Changing anything here requires an Issue + team agreement + an entry in
+# docs/03_analysis_protocol.md -> Changelog.
+
+seed: 42
+
+paths:
+  raw: data/raw/ds004621
+  derivatives: data/derivatives/preproc
+  metrics: results/metrics
+  checkpoints: results/checkpoints
+  figures: figures
+
+dataset:
+  task: oddball
+  events:            # verify exact strings with mne.events_from_annotations
+    standard: "Stimulus/S  5"
+    target: "Stimulus/S  6"
+    distractor: "Stimulus/S  7"
+    response: "Stimulus/S  1"
+    break: "Stimulus/S 10"
+
+preprocessing:
+  l_freq: 0.1
+  h_freq: 40.0
+  notch: 50.0
+  resample_sfreq: 250
+  reference: average
+  ica:
+    fit_l_freq: 1.0
+    method: infomax          # ICLabel expects extended infomax
+    n_components: 0.99       # explained variance
+    iclabel_reject: [eye blink, muscle artifact]
+    iclabel_threshold: 0.8
+  epoch:
+    tmin: -0.2
+    tmax: 0.8
+    baseline: [-0.2, 0.0]
+    reject_ptp_uv: 150
+  min_target_retained: 0.5   # drop subject if < 50% target epochs survive
+
+classification:
+  tasks:
+    tgt_std: {positive: target, negative: standard}
+    dis_std: {positive: distractor, negative: standard}
+    tgt_dis: {positive: target, negative: distractor}
+  windows:
+    full: [0.0, 0.8]
+    early: [0.0, 0.45]
+  class_balance: class_weight
+
+evaluation:
+  within:
+    scheme: blocked_kfold
+    n_splits: 5
+  cross:
+    scheme: group_kfold
+    n_splits: 6
+  metrics: [bal_acc, auc, f1_target]
+  stats:
+    test: wilcoxon
+    correction: holm
+
+models:
+  classical:
+    lda_tw:
+      bin_ms: 50
+      shrinkage: auto
+    xdawn_rg:
+      nfilter: 4
+      estimator: lwf
+      C: 1.0
+  dl:
+    sfreq: 128
+    batch_size: 64
+    max_epochs: 200
+    lr: 0.001
+    weight_decay: 0.0
+    early_stopping_patience: 20
+    val_fraction: 0.2
+    eegnet: {F1: 8, D: 2, drop_prob: 0.25}
+    shallow: {drop_prob: 0.5}
