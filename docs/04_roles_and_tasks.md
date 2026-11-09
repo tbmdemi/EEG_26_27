@@ -8,7 +8,7 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 ---
 
 ## R1 — Project Manager + Explainability
-**Owner:** ______
+**Owner:** Minh
 
 - [ ] Tạo Issues/Project board từ file này; bật branch protection cho `main`
 - [ ] Hỏi TA các mục "chưa rõ" trong `01_project_brief.md`

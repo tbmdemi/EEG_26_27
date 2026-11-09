@@ -1,0 +1,30 @@
+# Data (raw + derivatives) — share via Google Drive/OneDrive, never Git
+data/
+
+# Model checkpoints / large artifacts
+results/checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.fif
+*.npy
+*.npz
+*.h5
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.conda/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Env / secrets
+.env
