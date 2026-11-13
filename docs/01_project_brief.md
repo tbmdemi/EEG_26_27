@@ -45,9 +45,3 @@ Tóm tắt từ slide "More information about the mini project" (bài giảng *N
 - Ai **không chứng minh được đóng góp thực chất** có thể trượt phần này, bất kể bài nhóm tốt đến đâu.
 
 👉 Hệ quả cho nhóm: mỗi người phải (1) có commit/PR mang tên mình, (2) ghi `reports/contribution_log.md` đều đặn, (3) hiểu và trả lời được câu hỏi về **toàn bộ** pipeline, không chỉ phần của mình.
-
-## Chưa rõ — cần hỏi TA
-
-- [ ] Ngày thuyết trình chính xác (→ hạn report = ngày đó − 7 ngày)
-- [ ] Định dạng report (PDF? giới hạn trang?)
-- [ ] Có cần nộp kèm code không
