@@ -12,6 +12,7 @@ paths:
   figures: figures
 
 dataset:
+  subjects: ['01', '02', '03', '04', '05']
   task: oddball
   events:            # verify exact strings with mne.events_from_annotations
     standard: "Stimulus/S  5"
@@ -21,12 +22,26 @@ dataset:
     break: "Stimulus/S 10"
 
 preprocessing:
+  channel_aliases: {TP9 LEFT EAR: TP9, TP10 RIGHT EAR: TP10}
+  bad_channels:
+    robust_z: 5.0
+    flat_std_uv: 0.01
+    sample_step: 10
+    manual: {}
+  qc:
+    duration_s: 60
+    trace_duration_s: 10
+    dpi: 150
   l_freq: 0.1
   h_freq: 40.0
   notch: 50.0
   resample_sfreq: 250
   reference: average
   ica:
+    decim: 4
+    max_iter: 512
+    w_change: 0.0000001
+    extended: true
     fit_l_freq: 1.0
     method: infomax          # ICLabel expects extended infomax
     n_components: 0.99       # explained variance

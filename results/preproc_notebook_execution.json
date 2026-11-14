@@ -1,0 +1,8 @@
+{
+  "notebook": "notebooks\\01_preproc_five_subjects.ipynb",
+  "code_cells_executed": 11,
+  "seconds": 13.0,
+  "kernel": "eeg-oddball-py311",
+  "errors": [],
+  "mode": "Resume completed subjects, verify saved epochs and generate QC"
+}
