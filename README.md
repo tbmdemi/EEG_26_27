@@ -56,7 +56,7 @@ Tải dữ liệu: xem [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao 
 
 | Họ tên | MSSV | Vai trò chính | GitHub |
 |---|---|---|---|
-| | | Project Manager + Explainability | |
+| Trịnh Bình Minh | 24022413 | Project Manager + Explainability | [@tbmdemi](https://github.com/tbmdemi)|
 | | | Signal Preprocessing | |
 | | | ERP & Visualization | |
 | | | Classical ML | |

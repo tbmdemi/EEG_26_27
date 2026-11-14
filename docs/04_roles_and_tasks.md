@@ -11,7 +11,6 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 **Owner:** Minh
 
 - [ ] Tạo Issues/Project board từ file này; bật branch protection cho `main`
-- [ ] Hỏi TA các mục "chưa rõ" trong `01_project_brief.md`
 - [ ] Họp tiến độ hằng tuần (15–20 phút), ghi biên bản vào `reports/meeting_notes.md`
 - [ ] Review PR liên quan đến protocol/config
 - [ ] Explainability: spatial filter EEGNet, Integrated Gradients, LDA patterns (protocol §9)
