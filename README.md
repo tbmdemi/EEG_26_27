@@ -61,7 +61,7 @@ Tải dữ liệu: xem [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao 
 | Trịnh Bình Minh | 24022413 | Project Manager + Explainability | [@tbmdemi](https://github.com/tbmdemi)|
 | | | Signal Preprocessing | |
 | | | ERP & Visualization | |
-| | | Classical ML | |
+| Trần Đức Trung | 24022477 | Classical ML | [@TrungDev2431](https://github.com/TrungDev2431) |
 | | | Deep Learning | |
 
 ## Liên hệ nộp bài
