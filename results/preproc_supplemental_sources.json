@@ -1,0 +1,35 @@
+{
+  "source": "https://s3.amazonaws.com/openneuro.org/ds004621/",
+  "files": [
+    {
+      "path": "task-oddball_eeg.json",
+      "bytes": 1024,
+      "sha256": "532f1ae5ef3ac3e2affb0342b03122158112f0780da09dbbac01c3c0a3d2a674"
+    },
+    {
+      "path": "sourcedata/sub-01/coords/sub-01_captrak.bvct",
+      "bytes": 69019,
+      "sha256": "0a5fe6c11edc03316a4855674bf3ff86462e8f0bb4a5a4d33b9454e163dc99d5"
+    },
+    {
+      "path": "sourcedata/sub-02/coords/sub-02_captrak.bvct",
+      "bytes": 69068,
+      "sha256": "1a224b364c26d725822c654e4fc673e4dc6396387f29424242b4cd437270522a"
+    },
+    {
+      "path": "sourcedata/sub-03/coords/sub-03_captrak.bvct",
+      "bytes": 69058,
+      "sha256": "d9c17659ceb1f8ac20cdb7195f3077ec61edf1e802e455662e0382f20cb0d815"
+    },
+    {
+      "path": "sourcedata/sub-04/coords/sub-04_captrak.bvct",
+      "bytes": 69037,
+      "sha256": "13a560e5611a113c64cdfaf61c7b3a2eb2f055bd0413035bcc957e3496291496"
+    },
+    {
+      "path": "sourcedata/sub-05/coords/sub-05_captrak.bvct",
+      "bytes": 68999,
+      "sha256": "b6c901c35e0dcf636a339251f7ecad64da2b8e34b9e8a08d2e1ce553113ea29d"
+    }
+  ]
+}

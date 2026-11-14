@@ -5,6 +5,7 @@ dependencies:
   - python=3.11
   - pip
   - numpy
+  - pandas
   - scipy
   - pandas
   - matplotlib
@@ -17,6 +18,7 @@ dependencies:
       - mne>=1.7
       - mne-bids>=0.15
       - mne-icalabel>=0.6
+      - onnxruntime
       - openneuro-py>=2024.2
       - pyriemann>=0.6
       - torch>=2.2
