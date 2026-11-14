@@ -1,0 +1,43 @@
+# Python >= 3.10 (team reference: 3.11). Install into your own env (venv, conda, ...):
+#   pip install -r requirements.txt
+# (also installs this repo's `eegproj` package in editable mode, see the last line)
+
+# Core scientific stack
+numpy
+pandas
+scipy
+matplotlib
+seaborn
+scikit-learn>=1.4
+pyyaml
+tqdm
+threadpoolctl
+
+# EEG / BIDS
+mne>=1.7
+mne-bids>=0.15
+mne-icalabel>=0.6
+onnxruntime            # backend for mne-icalabel
+defusedxml             # required by MNE CapTrak reader
+openneuro-py>=2024.2
+
+# Classical ML
+pyriemann>=0.6
+
+# Deep learning + explainability
+torch>=2.2
+braindecode>=0.8
+captum>=0.7
+
+# Statistics
+pingouin>=0.5
+
+# Notebooks & dev tools
+jupyterlab
+ruff
+nbstripout
+
+# Optional (team decision): osl-ephys, osl-dynamics
+
+# This project's own code (src/eegproj), editable — run pip from the repo root
+-e .

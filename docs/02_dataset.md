@@ -38,7 +38,7 @@ Dataset có 4 task (MSIT+, oddball, SRT, rest). **Project chỉ dùng task oddba
 
 ## Tải dữ liệu
 
-Chỉ tải task oddball (tiết kiệm dung lượng). Dùng `openneuro-py` (đã có trong `environment.yml`):
+Chỉ tải task oddball (tiết kiệm dung lượng). Dùng `openneuro-py` (đã có trong `requirements.txt`):
 
 ```bash
 openneuro-py download --dataset ds004621 --target-dir data/raw/ds004621 \
@@ -46,6 +46,11 @@ openneuro-py download --dataset ds004621 --target-dir data/raw/ds004621 \
     --include "participants.tsv" --include "dataset_description.json" \
     --include "task-oddball_events.json"
 ```
+
+**Cách khác — bản sao của nhóm trên Google Drive:**
+https://drive.google.com/drive/folders/1Lkgc9Rn_nBzV1dR6im9uFgZM5fPsNAcw
+
+Thư mục Drive có cấu trúc `data/raw/ds004621/...` giống hệt trong repo. Tải về rồi đặt sao cho đường dẫn là `<repo>/data/raw/ds004621/sub-*/...` (khớp `paths.raw` trong `configs/config.yaml`).
 
 Sau khi tải, **kiểm tra**: đủ 42 thư mục `sub-*`, mỗi thư mục có bộ `.vhdr/.eeg/.vmrk` + `events.tsv` của task oddball. Nếu tên task trong file khác `oddball`, sửa pattern `--include` và cập nhật mục này.
 

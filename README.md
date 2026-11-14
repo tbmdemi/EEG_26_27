@@ -25,8 +25,10 @@ Dữ liệu: **Nencki-Symfonia EEG/ERP dataset** (GigaDB 10.5524/100990, OpenNeu
 ```bash
 git clone <URL-repo>
 cd <tên-repo>
-conda env create -f environment.yml
-conda activate eeg-oddball
+# Dùng môi trường Python >= 3.10 của riêng bạn (venv, conda, ...), ví dụ:
+#   python -m venv .venv && source .venv/bin/activate
+#   hoặc: conda create -n eeg python=3.11 && conda activate eeg
+pip install -r requirements.txt   # gồm cả `pip install -e .` cho package eegproj
 nbstripout --install          # tự xóa output notebook khi commit
 ```
 
