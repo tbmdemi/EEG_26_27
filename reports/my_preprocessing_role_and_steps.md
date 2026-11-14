@@ -30,12 +30,12 @@ Notebook thực hiện: `notebooks/01_preproc_five_subjects.ipynb`.
 
 ## Chạy
 
-Mở `notebooks/01_preproc_five_subjects.ipynb`, chọn kernel Python 3.11 có
-các thư viện trong `environment.yml`, rồi chạy các ô từ trên xuống.
-Trên máy hiện tại, chọn kernel **EEG oddball (Python 3.11)** đã được cài.
+Mở `notebooks/01_preproc_five_subjects.ipynb`, chọn kernel của môi trường
+đã cài `requirements.txt`, rồi chạy các ô từ trên xuống.
 Ô thực hiện dùng `run(ROOT, subjects=CONFIG['dataset']['subjects'], overwrite=False)`.
 Để chạy thử một người, truyền `subjects=['01']`; để chạy lại, đặt `overwrite=True`.
-Toàn bộ hàm và kiểm tra đều nằm trong notebook, không phụ thuộc script `.py` riêng.
+Code xử lý nằm trong `src/eegproj/preprocessing/`; notebook chỉ gọi hàm và hiển thị QC.
+Chạy không cần Jupyter: `python scripts/01_preprocess.py` (thêm `-s 01` để chạy một người, `--overwrite` để chạy lại).
 
 Đầu vào: `data/raw/ds004621`. Bổ sung từ nguồn OpenNeuro của cùng
 dataset: `task-oddball_eeg.json` và 5 tệp

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eegproj"
+version = "0.1.0"
+description = "Single-trial EEG classification: frequent vs target (visual oddball)"
+requires-python = ">=3.10"
+# Dependencies are listed in requirements.txt (installed together via `pip install -r requirements.txt`).
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 120
+src = ["src"]
