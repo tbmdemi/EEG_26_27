@@ -23,7 +23,7 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 ## R2 — Signal Preprocessing
 **Owner:** ______
 
-- [ ] Script tải dữ liệu + kiểm tra đủ 42 subject
+- [ ] Script tải dữ liệu + kiểm tra đủ sub-01, sub-03
 - [ ] Pipeline tiền xử lý theo protocol §1, đọc tham số từ config
 - [ ] Chạy cho toàn bộ subject; xuất `data/derivatives/preproc/sub-XX_task-oddball_epo.fif`
 - [ ] `results/preproc_log.csv`: kênh hỏng, số IC loại, số epoch giữ lại theo lớp, subject bị loại

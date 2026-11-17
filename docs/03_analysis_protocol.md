@@ -46,7 +46,7 @@ Nếu hiệu năng giảm mạnh từ `full` → `early`, hoặc saliency tập 
 | Thiết lập | Cách chia | Ghi chú |
 |---|---|---|
 | **Within-subject** | 5-fold **theo khối thời gian liên tục** (chia recording thành 5 đoạn liên tiếp, ví dụ theo các lần nghỉ `S 10`), không xáo trộn trial | Tránh trial liền kề (tương quan) rơi vào cả train và test |
-| **Cross-subject** | **GroupKFold 6 fold theo subject** (~7 subject/fold) | Không subject nào xuất hiện ở cả train và test |
+| **Cross-subject** | **2 fold theo subject**: train sub-01 → test sub-03 và ngược lại | Không subject nào xuất hiện ở cả train và test; chỉ là kết quả phụ (train trên 1 người) |
 
 Quy tắc chống rò rỉ dữ liệu (data leakage):
 1. Mọi bước **học từ dữ liệu** (scaler, xDAWN, CSP, PCA, chọn đặc trưng, chọn ngưỡng, early stopping, tuning) chỉ fit trên **train**.
@@ -92,7 +92,8 @@ subject, fold, model, family, setting, window, task, bal_acc, auc, f1_target, n_
 
 ## 8. Thống kê cho RQ2
 
-- So sánh **mô hình classical tốt nhất vs DL tốt nhất**, theo cặp trên từng subject: **Wilcoxon signed-rank** (two-sided).
+- So sánh **mô hình classical tốt nhất vs DL tốt nhất**, theo cặp trên từng **(subject, fold)** của within-subject: 2 subject × 5 fold = **10 cặp**, **Wilcoxon signed-rank** (two-sided).
+- Lý do: chỉ có 2 subject nên không thể kiểm định theo subject. Các fold cùng subject không hoàn toàn độc lập → **phải nêu rõ là hạn chế trong report**; kết quả chỉ mang tính thăm dò, không khái quát cho quần thể.
 - Nhiều phép so sánh → hiệu chỉnh **Holm**.
 - Báo kèm: trung vị chênh lệch + effect size (rank-biserial).
 
@@ -111,7 +112,7 @@ subject, fold, model, family, setting, window, task, bal_acc, auc, f1_target, n_
 | F1 | Sơ đồ pipeline | PM |
 | F2 | ERP target/standard/distractor tại Pz + topomap | Visualization |
 | F3 | Bảng/boxplot balanced accuracy theo mô hình × setting × window | Visualization |
-| F4 | Paired plot classical-best vs DL-best theo subject | Classical ML + DL |
+| F4 | Paired plot classical-best vs DL-best theo (subject, fold) | Classical ML + DL |
 | F5 | Topomap spatial filter EEGNet + saliency kênh × thời gian | Explainability |
 
 Quy ước hình: lưu `figures/F<số>_<mô-tả>.png` (300 dpi) + `.pdf`; font ≥ 10 pt; có đơn vị trục.
@@ -123,3 +124,4 @@ Quy ước hình: lưu `figures/F<số>_<mô-tả>.png` (300 dpi) + `.pdf`; font
 | Ngày | Thay đổi | Lý do | Người đề xuất |
 |---|---|---|---|
 | | Phiên bản đầu | | |
+| 2026-11-17 | Chỉ dùng **sub-01, sub-03**; cross-subject 2 fold; Wilcoxon theo (subject, fold) | Thu hẹp phạm vi; Wilcoxon theo subject vô nghĩa với n nhỏ | PM |

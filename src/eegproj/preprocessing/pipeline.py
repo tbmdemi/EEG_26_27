@@ -144,5 +144,5 @@ def run(root, subjects=None, overwrite=False):
         'config': config, 'mne_version': mne.__version__, 'subjects': subjects,
         'notes': ['ICA fitted on full unlabelled recording', 'ICA uses 1-40 Hz per protocol; ICLabel was trained on 1-100 Hz',
                   'ICA fitting decimates filtered data by 4; final recording resampled after ICA',
-                  'Five-subject exploratory subset; visual QC required before final analysis']}
+                  'Two-subject (01, 03) exploratory subset; visual QC required before final analysis']}
     (out / 'provenance.json').write_text(json.dumps(provenance, indent=2), encoding='utf-8')
