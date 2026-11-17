@@ -12,7 +12,7 @@ paths:
   figures: figures
 
 dataset:
-  subjects: ['01', '02', '03', '04', '05']
+  subjects: ['01', '03']
   task: oddball
   events:            # verify exact strings with mne.events_from_annotations
     standard: "Stimulus/S  5"
@@ -69,11 +69,12 @@ evaluation:
     scheme: blocked_kfold
     n_splits: 5
   cross:
-    scheme: group_kfold
-    n_splits: 6
+    scheme: group_kfold    # 2 subjects -> train on one, test on the other
+    n_splits: 2
   metrics: [bal_acc, auc, f1_target]
   stats:
     test: wilcoxon
+    unit: subject_fold   # 2 subjects x 5 within folds = 10 pairs
     correction: holm
 
 models:
