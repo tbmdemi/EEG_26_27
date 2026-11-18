@@ -76,6 +76,8 @@ Reviewer kiểm tra:
 
 Dữ liệu đã tiền xử lý, checkpoint: để trên thư mục chia sẻ chung của nhóm (Drive/OneDrive). Link ghi trong `reports/meeting_notes.md`. Khi cập nhật, ghi ngày + commit hash của code tạo ra file đó.
 
+Dữ liệu tiền xử lý hiện hành: **pipeline v2** (`PIPELINE_VERSION = 2`, trial đúng hành vi, toàn bộ subject dùng được). Nếu `epochs.metadata` của bạn **không có cột `rt`**, đó là file v1 cũ → xóa và tải lại. Không trộn dữ liệu từ nguồn tiền xử lý khác vào kết quả.
+
 ## 8. Ghi nhận đóng góp
 
 Sau mỗi việc hoàn thành, thêm một dòng vào `reports/contribution_log.md` (ngày, người, việc, link PR/Issue). Cuối dự án, nhóm dựa vào log này + lịch sử commit để thống nhất % đóng góp.

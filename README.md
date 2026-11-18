@@ -1,7 +1,7 @@
 # Single-trial EEG Classification: Frequent vs Target (Visual Oddball)
 
 Mini project môn học — Neuroimaging: EEG (Guy Nagels).
-Dữ liệu: **Nencki-Symfonia EEG/ERP dataset** (GigaDB 10.5524/100990, OpenNeuro `ds004621`), task **3-stimulus visual oddball**.
+Dữ liệu: **Nencki-Symfonia EEG/ERP dataset** (GigaDB 10.5524/100990, OpenNeuro `ds004621`), task **3-stimulus visual oddball**, **toàn bộ subject dùng được** (42 người trừ sub-02/14/17), **chỉ các trial có phản hồi hành vi đúng**.
 
 ## Câu hỏi nghiên cứu
 
@@ -32,23 +32,28 @@ pip install -r requirements.txt   # gồm cả `pip install -e .` cho package ee
 nbstripout --install          # tự xóa output notebook khi commit
 ```
 
-Tải dữ liệu: xem [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commit dữ liệu lên repo.**
+### Dữ liệu
+
+- **Thành viên:** không cần dữ liệu thô. Chạy `python scripts/00_get_data.py`: script tải bản v2 đã tiền xử lý (`preproc_v2_20261118.zip`, 2.6 GB) từ Drive, kiểm tra rồi giải nén vào `data/derivatives/preproc/`; chỉ dùng subject có `excluded_subject = False` và `pipeline_version = 2` trong `results/preproc_log.csv` (hoặc `eegproj.preprocessing.usable_subjects`).
+- **PM / R2:** tạo dữ liệu bằng `python scripts/01_preprocess.py --download --delete-raw`.
+
+Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commit dữ liệu lên repo.**
 
 ## Cấu trúc thư mục
 
 ```
 .
 ├── configs/config.yaml        # MỌI tham số dùng chung (filter, epoch, CV...) — nguồn sự thật duy nhất
-├── data/                      # (gitignored) raw/ và derivatives/
+├── data/                      # (gitignored) raw/ds004621/ và derivatives/preproc/*_epo.fif
 ├── docs/                      # tài liệu dự án
 ├── notebooks/                 # khám phá, trực quan hóa (đặt tên NN_<tên>_<mô-tả>.ipynb)
 ├── src/eegproj/
-│   ├── preprocessing/         # lọc, ICA, epoching
+│   ├── preprocessing/         # lọc hành vi, lọc tín hiệu, ICA, epoching, QC
 │   ├── features/              # trích xuất đặc trưng cho ML truyền thống
 │   ├── models/                # ML truyền thống + Deep Learning
 │   ├── evaluation/            # chia CV, metric, thống kê
 │   └── explain/               # giải thích mô hình
-├── results/                   # metrics/*.csv (commit được, nhỏ) ; checkpoints/ (gitignored)
+├── results/                   # preproc_log.csv, metrics/*.csv (commit được, nhỏ) ; checkpoints/ (gitignored)
 ├── figures/                   # hình cho report/slide (PNG/PDF)
 ├── reports/                   # report_template.md, contribution_log.md, slide
 └── scripts/                   # script chạy end-to-end từng bước

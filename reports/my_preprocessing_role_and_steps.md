@@ -1,5 +1,7 @@
 # Vai trò và các bước công việc của tôi — Tiền xử lý EEG
 
+> **Cập nhật 2026-11-17 (PM):** file này mô tả lần chạy **pipeline v1** (sub-01…05, giữ mọi trial). Pipeline hiện hành là **v2**: toàn bộ subject dùng được, chỉ trial đúng hành vi, loại sub-02/14/17 — xem `docs/02_dataset.md`, `docs/03_analysis_protocol.md` (§1, Changelog). Các con số trong bảng dưới là của v1, không dùng cho report. Các file v1 (notebook `01_preproc_five_subjects.ipynb`, `figures/preprocessing/` sub-01…05, log/JSON trong `results/`) đã xoá khỏi repo; xem lại bằng `git show 8ce916f:<đường dẫn>`.
+
 ## Vai trò trong dự án
 
 Phần công việc đang thực hiện tương ứng **R2 — Signal Preprocessing** trong

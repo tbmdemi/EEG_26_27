@@ -23,21 +23,23 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 ## R2 — Signal Preprocessing
 **Owner:** ______
 
-- [ ] Script tải dữ liệu + kiểm tra đủ sub-01, sub-03
-- [ ] Pipeline tiền xử lý theo protocol §1, đọc tham số từ config
-- [ ] Chạy cho toàn bộ subject; xuất `data/derivatives/preproc/sub-XX_task-oddball_epo.fif`
-- [ ] `results/preproc_log.csv`: kênh hỏng, số IC loại, số epoch giữ lại theo lớp, subject bị loại
-- [ ] Chia sẻ dữ liệu đã tiền xử lý cho nhóm (Google Drive/OneDrive, **không** qua Git)
-- [ ] Viết mục *Methods – Preprocessing* trong report
+- [x] Pipeline tiền xử lý theo protocol §1, đọc tham số từ config (v1: sub-01…05, 2026-11-13)
+- [x] Pipeline v2: lọc trial đúng hành vi, loại/gắn cờ subject, đánh dấu chỗ nối recording, chế độ `--download --delete-raw` (2026-11-17)
+- [x] Chạy `python scripts/01_preprocess.py --download --delete-raw` cho **toàn bộ subject** (42 subject, 35 dùng được; phát hành `preproc_v2_20261118.zip`)
+- [ ] Kiểm tra bằng mắt hình QC (`figures/preprocessing/`), ưu tiên subject có cờ trong cột `flags`; cập nhật `visual_review` / `bad_channels.manual` nếu cần rồi chạy lại subject đó
+- [x] Upload `preproc_v2_20261118.zip` lên Drive `EEG_26_27/release/` (**không** qua Git), cập nhật `RELEASE` trong `scripts/00_get_data.py` (2026-11-18)
+- [ ] Commit code v2 + `results/preproc_log.csv`, ghi commit hash vào `reports/meeting_notes.md` → mở Issue **"Data v2 ready"**
+- [ ] Viết mục *Methods – Preprocessing* + bảng subject/epoch bị loại trong report
 
 **Đầu ra:** `src/eegproj/preprocessing/`, `scripts/01_preprocess.py`, epoch `.fif`, log.
-**Là nút thắt của cả nhóm → ưu tiên xong sớm nhất.** Trong lúc chờ, người khác phát triển code trên 2–3 subject.
+**Data v2 đã phát hành (2026-11-18).** Mọi người lấy dữ liệu bằng `python scripts/00_get_data.py` và chỉ làm việc trên v2; dữ liệu v1 đã bỏ.
 
 ## R3 — ERP & Visualization
 **Owner:** ______
 
-- [ ] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz; difference wave; topomap theo thời gian
-- [ ] Đo biên độ và latency đỉnh P300 (target, distractor)
+- [ ] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian
+- [ ] Đo biên độ và latency đỉnh P300 (target, distractor) theo từng subject → bảng + phân bố
+- [ ] Bảng hành vi (hit rate, false alarm, RT) từ `results/preproc_log.csv`, so với bài báo
 - [ ] Hình kiểm tra chất lượng: phổ công suất trước/sau lọc, ví dụ IC bị loại
 - [ ] Script tổng hợp `results/metrics/*.csv` → bảng kết quả + hình F3
 - [ ] Hình F2, F3 theo quy ước hình
@@ -48,11 +50,11 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 ## R4 — Classical ML (+ Feature Extraction)
 **Owner:** ______
 
-- [ ] Module chia CV dùng chung (`within` theo khối, `cross` theo GroupKFold) — **làm trước, DL dùng lại**
+- [ ] Module chia CV dùng chung (`within` theo khối dùng cột `block`, `cross` GroupKFold 5 fold theo subject, lưu `results/cv_cross_subject_folds.csv`) — **làm trước, DL dùng lại**
 - [ ] Module metric dùng chung + ghi CSV đúng định dạng protocol §7
 - [ ] `lda_tw`, `xdawn_rg` (bắt buộc), `bp_svm` (tùy chọn)
 - [ ] Chạy đủ: 2 setting × 2 window × 3 task
-- [ ] Thống kê RQ2 (Wilcoxon + Holm) — phối hợp R5; hình F4
+- [ ] Thống kê RQ2 (Wilcoxon theo subject + Holm, protocol §8) — phối hợp R5; hình F4
 - [ ] Viết mục *Methods – Classical ML* và phần RQ2 trong report
 
 **Đầu ra:** `src/eegproj/features/`, `src/eegproj/models/classical.py`, `src/eegproj/evaluation/`, CSV kết quả.
