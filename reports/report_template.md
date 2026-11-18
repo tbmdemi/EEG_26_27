@@ -16,7 +16,8 @@ Background · Data (Nencki-Symfonia, N = …) · Methods (preprocessing, models,
 
 ## 2. Data
 - Participants, recording setup, task design, event proportions (cite Dzianok et al., 2022; DOI 10.5524/100990).
-- Subjects/epochs excluded and why (table from `results/preproc_log.csv`).
+- Behavioural scoring: only correct trials kept (target answered 100–1400 ms after onset; standard/distractor without response); behavioural summary (hit rate, false alarms, RT) vs the paper.
+- Subjects excluded and why: a priori sub-02/14/17 (misunderstood task, per the paper) + pipeline criteria; flagged subjects; epochs retained per class (table from `results/preproc_log.csv`).
 
 ## 3. Methods
 ### 3.1 Preprocessing
@@ -28,7 +29,7 @@ Main task (target vs standard); control tasks (distractor vs standard, target vs
 ### 3.4 Deep learning models
 Architectures, input normalisation, training (optimizer, early stopping, class weighting).
 ### 3.5 Evaluation
-Within-subject blocked CV; cross-subject GroupKFold; leakage safeguards; metrics; Wilcoxon signed-rank with Holm correction.
+Within-subject blocked CV (5 blocks); cross-subject GroupKFold (5 folds by subject); leakage safeguards; metrics; Wilcoxon signed-rank across subjects (one value per subject) with Holm correction.
 ### 3.6 Explainability
 EEGNet spatial filters, Integrated Gradients, LDA activation patterns (Haufe et al., 2014).
 
@@ -43,7 +44,7 @@ EEGNet spatial filters, Integrated Gradients, LDA activation patterns (Haufe et 
 ## 5. Discussion
 - Interpretation of main findings; comparison with literature.
 - Motor confound: what the `early` window and control tasks show.
-- Limitations (single dataset, hyperparameter budget, ICA fit on full recording, …).
+- Limitations (single dataset, hyperparameter budget, ICA fit on full recording, correct-trial selection makes target ≡ button press, …).
 - Future work.
 
 ## 6. Conclusion

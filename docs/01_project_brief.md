@@ -9,6 +9,12 @@ Tóm tắt từ slide "More information about the mini project" (bài giảng *N
 - Bài toán phân loại: **hai loại kích thích** (frequent vs target)
 - So sánh **ML truyền thống trên phân tích evoked response** với **Deep Learning**
 
+## Phạm vi dữ liệu (chốt cho nhóm)
+
+- Bộ dữ liệu Nencki-Symfonia (OpenNeuro `ds004621`), **chỉ task oddball**, **toàn bộ subject dùng được** (42 trừ các subject bị loại).
+- **Chỉ giữ các trial có phản hồi hành vi đúng** (target có bấm, standard/distractor không bấm).
+- Chi tiết: [`02_dataset.md`](02_dataset.md); quyết định phân tích: [`03_analysis_protocol.md`](03_analysis_protocol.md).
+
 ## Công cụ được gợi ý
 
 - Python

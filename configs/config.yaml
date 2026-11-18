@@ -12,7 +12,21 @@ paths:
   figures: figures
 
 dataset:
+  # Local scope retained for Long; see AGENTS.md.
   subjects: ['01', '02', '03', '04', '05']
+  # Excluded a priori, with reason (Dzianok et al. 2022, "Behavioral data"): these participants
+  # misunderstood the oddball instructions and pressed the button for distractors.
+  exclude:
+    '02': 'paper: false alarms to distractors 98.8% (misunderstood task)'
+    '14': 'paper: false alarms to distractors 97.5% (misunderstood task)'
+    '17': 'paper: false alarms to distractors 76.5% (misunderstood task)'
+  # Kept, but flagged for visual review in the log (Dzianok et al. 2022, "Oddball task" / "Additional notes").
+  flag:
+    '13': 'number of stimuli differs from 660 (acquisition error)'
+    '23': 'number of stimuli differs from 660 (acquisition error)'
+    '24': 'number of stimuli differs from 660 (acquisition error)'
+    '37': 'recording concatenated from several files ("New Segment"); number of stimuli differs from 660'
+    '38': 'recording concatenated from several files ("New Segment"); number of stimuli differs from 660'
   task: oddball
   events:            # verify exact strings with mne.events_from_annotations
     standard: "Stimulus/S  5"
@@ -20,6 +34,18 @@ dataset:
     distractor: "Stimulus/S  7"
     response: "Stimulus/S  1"
     break: "Stimulus/S 10"
+
+behaviour:
+  # Keep only behaviourally correct trials (protocol §1). A response counts for a stimulus when it
+  # falls in [rt_min, rt_max] s after onset = [100 ms, 200 ms stimulus + 1200 ms shortest ISI]
+  # (Dzianok et al. 2022, "Reliability - Methods").
+  #   target     correct = at least one response in the window (RT = first one)
+  #   standard   correct = no response in the window
+  #   distractor correct = no response in the window
+  rt_min: 0.1
+  rt_max: 1.4
+  min_correct_targets: 40  # exclude subject if fewer correct targets (too little data to classify)
+  flag_hit_rate_below: 0.8 # only FLAG (not exclude) for review; the paper excluded no one on hit rate
 
 preprocessing:
   channel_aliases: {TP9 LEFT EAR: TP9, TP10 RIGHT EAR: TP10}
@@ -52,7 +78,8 @@ preprocessing:
     tmax: 0.8
     baseline: [-0.2, 0.0]
     reject_ptp_uv: 150
-  min_target_retained: 0.5   # drop subject if < 50% target epochs survive
+  min_target_retained: 0.5   # drop subject if < 50% of correct target epochs survive rejection
+  discontinuity_pad_s: 0.5   # mark +-0.5 s around each "New Segment" (file joins) as BAD
 
 classification:
   tasks:
@@ -69,11 +96,12 @@ evaluation:
     scheme: blocked_kfold
     n_splits: 5
   cross:
-    scheme: group_kfold
-    n_splits: 6
+    scheme: group_kfold    # folds split by subject: no subject in both train and test
+    n_splits: 5
   metrics: [bal_acc, auc, f1_target]
   stats:
     test: wilcoxon
+    unit: subject        # one value per subject (within: mean over folds; cross: test-subject score)
     correction: holm
 
 models:
