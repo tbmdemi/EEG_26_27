@@ -8,12 +8,28 @@ import pandas as pd
 
 
 def _usable_release_log(root, config):
-    """Read the included pipeline v2 subjects from the downloaded release log."""
+    """Validate the complete v2 release and match the committed handoff cohort."""
+    root = Path(root)
     data_dir = Path(root) / config["paths"]["derivatives"]
     log = pd.read_csv(data_dir / "preproc_log.csv")
-    usable = log.loc[log["pipeline_version"].eq(2) & log["excluded_subject"].eq(False)].copy()
-    if usable.empty or usable["subject"].duplicated().any():
-        raise ValueError("The release log must contain unique, usable pipeline v2 subjects.")
+    handoff = pd.read_csv(root / "results" / "preproc_log.csv")
+    expected = {f"sub-{subject}" for subject in config["dataset"]["subjects"]}
+    excluded = {f"sub-{subject}" for subject in config["dataset"].get("exclude", {})}
+    for label, table in (("release", log), ("handoff", handoff)):
+        if not {"subject", "pipeline_version", "excluded_subject"} <= set(table.columns):
+            raise ValueError(f"{label}: missing subject/version/inclusion columns")
+        if table["subject"].duplicated().any() or set(table["subject"]) != expected:
+            raise ValueError(f"{label}: log must cover all configured subjects exactly once")
+        if not table["pipeline_version"].eq(2).all():
+            raise ValueError(f"{label}: all log rows must use pipeline v2")
+        if not table["excluded_subject"].isin([True, False]).all():
+            raise ValueError(f"{label}: missing or invalid subject inclusion flag")
+        if table.loc[table["subject"].isin(excluded), "excluded_subject"].eq(False).any():
+            raise ValueError(f"{label}: an a-priori excluded subject was marked usable")
+    usable = log.loc[log["excluded_subject"].eq(False)].copy()
+    handoff_subjects = set(handoff.loc[handoff["excluded_subject"].eq(False), "subject"])
+    if usable.empty or set(usable["subject"]) != handoff_subjects:
+        raise ValueError("Release cohort differs from results/preproc_log.csv; check the data release")
     return usable
 
 
@@ -46,6 +62,23 @@ def collect_subject_erps(root, config, channels=("Pz", "CPz", "Cz")):
             raise ValueError(f"{subject}: unexpected event names")
         if epochs.metadata is None or not {"subject", "onset_s", "block", "rt"} <= set(epochs.metadata):
             raise ValueError(f"{subject}: missing pipeline v2 metadata")
+        metadata = epochs.metadata
+        metadata_subjects = metadata["subject"].astype(str).str.removeprefix("sub-").str.zfill(2)
+        if not metadata_subjects.eq(subject.removeprefix("sub-")).all():
+            raise ValueError(f"{subject}: metadata belongs to another subject")
+        if not np.isfinite(metadata["onset_s"]).all() or not metadata["onset_s"].is_monotonic_increasing:
+            raise ValueError(f"{subject}: invalid or unordered stimulus onsets")
+        if not metadata["block"].isin(range(config["evaluation"]["within"]["n_splits"])).all():
+            raise ValueError(f"{subject}: invalid block metadata")
+        is_target = epochs.events[:, 2] == epochs.event_id["target"]
+        if (
+            not metadata.loc[is_target, "rt"]
+            .between(config["behaviour"]["rt_min"], config["behaviour"]["rt_max"])
+            .all()
+        ):
+            raise ValueError(f"{subject}: target RT metadata is missing or outside the behavioral interval")
+        if metadata.loc[~is_target, "rt"].notna().any():
+            raise ValueError(f"{subject}: non-target trials contain a response time")
         if len(epochs.ch_names) != int(row["n_channels"]) or not set(channels) <= set(epochs.ch_names):
             raise ValueError(f"{subject}: unexpected channels")
         if times is None:

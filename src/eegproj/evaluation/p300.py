@@ -26,7 +26,9 @@ def measure_candidate_peaks(subjects, times, subject_erps, epoch_counts, channel
         raise ValueError("The peak interval must contain at least three recorded samples")
     if len(set(subjects)) != len(subjects) or len(set(channels)) != len(channels):
         raise ValueError("Subject and channel names must be unique")
-    counts = epoch_counts.set_index("subject", verify_integrity=True)
+    counts = epoch_counts.set_index("subject")
+    if not counts.index.is_unique:
+        raise ValueError("Epoch-count subjects must be unique")
     if set(counts.index) != set(subjects):
         raise ValueError("Epoch-count subjects differ from ERP subjects")
     resolution_ms = np.diff(times) * 1000

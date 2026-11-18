@@ -52,7 +52,7 @@ Nếu hiệu năng giảm mạnh từ `full` → `early`, hoặc saliency tập 
 | Thiết lập | Cách chia | Ghi chú |
 |---|---|---|
 | **Within-subject** | 5-fold **theo khối thời gian liên tục** (chia recording thành 5 đoạn liên tiếp, ví dụ theo các lần nghỉ `S 10`), không xáo trộn trial | Tránh trial liền kề (tương quan) rơi vào cả train và test |
-| **Cross-subject** | **GroupKFold 5 fold theo subject** trên toàn bộ subject dùng được (~37 người) | Không subject nào xuất hiện ở cả train và test. Phân chia fold cố định (seed trong config) và **lưu ra `results/cv_cross_subject_folds.csv`** để mọi mô hình dùng đúng cùng một phân chia |
+| **Cross-subject** | **GroupKFold 5 fold theo subject** trên toàn bộ subject dùng được (35 người trong bản v2 hiện hành, lấy danh sách từ log) | Không subject nào xuất hiện ở cả train và test. Phân chia fold cố định (seed trong config) và **lưu ra `results/cv_cross_subject_folds.csv`** để mọi mô hình dùng đúng cùng một phân chia |
 
 Quy tắc chống rò rỉ dữ liệu (data leakage):
 1. Mọi bước **học từ dữ liệu** (scaler, xDAWN, CSP, PCA, chọn đặc trưng, chọn ngưỡng, early stopping, tuning) chỉ fit trên **train**.
@@ -85,7 +85,7 @@ Quy tắc chống rò rỉ dữ liệu (data leakage):
 
 Đầu vào DL: epoch đã chuẩn hóa theo kênh (thống kê tính trên train), resample còn **128 Hz** cho DL nếu cần tiết kiệm tính toán (ghi rõ).
 
-Khối lượng tính toán DL: `within` = ~37 subject × 5 fold mỗi mô hình × cửa sổ (mạng nhỏ, ~400–500 trial train/lần); `cross` = 5 lần train trên ~30 người. Ưu tiên chạy đủ task chính `tgt_std` cho cả 2 setting × 2 cửa sổ; task đối chứng cho DL chỉ khi còn thời gian (classical chạy đủ cả 3 task).
+Khối lượng tính toán DL với bản v2 hiện hành: `within` = 35 subject × 5 fold mỗi mô hình × cửa sổ; `cross` = 5 lần train trên khoảng 28 người mỗi lần (số thực tế phụ thuộc phân chia fold). Số trial train phụ thuộc subject và số epoch còn lại. Ưu tiên chạy đủ task chính `tgt_std` cho cả 2 setting × 2 cửa sổ; task đối chứng cho DL chỉ khi còn thời gian (classical chạy đủ cả 3 task).
 
 ## 7. Định dạng kết quả (bắt buộc — để ghép bảng/thống kê tự động)
 
@@ -100,7 +100,7 @@ subject, fold, model, family, setting, window, task, bal_acc, auc, f1_target, n_
 
 ## 8. Thống kê cho RQ2
 
-- Đơn vị thống kê là **subject** (một giá trị mỗi người, ~37 cặp):
+- Đơn vị thống kê là **subject** (một giá trị mỗi người; tối đa 35 cặp với bản v2 hiện hành, kiểm tra đủ kết quả theo subject):
   - `within`: trung bình metric của 5 fold trong từng subject;
   - `cross`: metric trên subject đó khi nó nằm trong test fold.
 - So sánh **mô hình classical tốt nhất vs DL tốt nhất** (chọn theo trung vị balanced accuracy, cửa sổ `full`) bằng **Wilcoxon signed-rank** (two-sided), ghép cặp theo subject, riêng cho từng setting (`within`, `cross`).
@@ -118,7 +118,7 @@ subject, fold, model, family, setting, window, task, bal_acc, auc, f1_target, n_
 
 Triển khai hình ERP của R3: các giá trị hiển thị nằm trong mục `erp` của config. Topomap gồm trung bình thời gian 250–600 ms và các lát cắt minh họa tại 300/400/500/600 ms. Ghép dữ liệu theo **tên điện cực** trước khi trung bình qua subject; dùng vị trí điện cực trung bình trong hệ tọa độ đầu để vẽ hình nhóm và ghi rõ trong caption. Đây là biểu diễn tín hiệu trên da đầu. Khoảng vẽ topomap chưa phải quyết định về cửa sổ đo đỉnh P300 theo subject.
 
-Đo đỉnh P300: R3 đã chuẩn bị **đề xuất thăm dò để nhóm review**, chưa chốt phương pháp cho report, ở [`reports/p300_measurement_notes.md`](../reports/p300_measurement_notes.md). Các thông số đề xuất nằm riêng trong `erp.p300`; output mang tên `candidate` và giữ cờ kiểm tra của từng phép đo. Không tự loại thêm subject hoặc xác nhận mọi cực đại là P300.
+Đo đỉnh P300: R3 đã chuẩn bị **đề xuất thăm dò để nhóm review**, chưa chốt phương pháp cho report, ở [bàn giao R3, mục P300](../reports/r3_review_and_handoff.md#p300). Các thông số đề xuất nằm riêng trong `erp.p300`; output mang tên `candidate` và giữ cờ kiểm tra của từng phép đo. Không tự loại thêm subject hoặc xác nhận mọi cực đại là P300.
 
 ## 10. Hình bắt buộc cho report
 
@@ -127,7 +127,7 @@ Triển khai hình ERP của R3: các giá trị hiển thị nằm trong mục 
 | F1 | Sơ đồ pipeline | PM |
 | F2 | ERP target/standard/distractor tại Pz + topomap | Visualization |
 | F3 | Bảng/boxplot balanced accuracy theo mô hình × setting × window | Visualization |
-| F4 | Paired plot classical-best vs DL-best theo (subject, fold) | Classical ML + DL |
+| F4 | Paired plot classical-best vs DL-best theo subject (within: trung bình fold trong mỗi người; cross: điểm test của người đó), nhất quán với §8 | Classical ML + DL |
 | F5 | Topomap spatial filter EEGNet + saliency kênh × thời gian | Explainability |
 
 Quy ước hình: lưu `figures/F<số>_<mô-tả>.png` (300 dpi) + `.pdf`; font ≥ 10 pt; có đơn vị trục.
@@ -139,8 +139,9 @@ Quy ước hình: lưu `figures/F<số>_<mô-tả>.png` (300 dpi) + `.pdf`; font
 | Ngày | Thay đổi | Lý do | Người đề xuất |
 |---|---|---|---|
 | | Phiên bản đầu | | |
-| 2026-11-18 | Bổ sung số tham chiếu hành vi từ Table 5 vào `erp.behaviour_reference`; bảng R3 tách nhóm trước loại EEG và nhóm ERP, dùng mean ± sample SD qua subject và số đếm hành vi trước loại epoch | Đối chiếu mô tả đúng cỡ mẫu/đơn vị; không đổi quy tắc lọc hành vi, tiền xử lý hay phân loại | R3 — triển khai local để review |
-| 2026-11-18 | Chuẩn bị đề xuất thăm dò `erp.p300`: ứng viên cực đại có dấu trong 300–600 ms, Pz chính/CPz-Cz bổ sung, target/distractor riêng; cờ biên 20 ms và kiểm tra cực đại. Chưa chốt phương pháp report | Bước tiếp theo sau ERP/topomap, tạo bảng để xem xét phương pháp và các trường hợp có cờ | R3 — đề xuất local để nhóm review |
-| 2026-11-18 | Cấu hình hóa phần hiển thị ERP đã yêu cầu ở §9–10 (`erp` trong config): Pz/CPz/Cz, topomap 250–600 ms, lát cắt 300/400/500/600 ms, PNG 300 dpi. Ghi rõ ghép theo tên điện cực và hình nhóm dùng vị trí điện cực trung bình | Triển khai hình F2; không thay đổi tiền xử lý, mô hình hay cửa sổ đo đỉnh P300 | R3 — thay đổi local để review |
+| 2026-11-18 | Review sau `b97a0684`: ghi đúng cohort hiện hành 35/42; làm rõ F4 dùng đơn vị subject theo §8; bổ sung kiểm tra cohort và metadata v2 trong code R3 | Sửa kiểm tra đầu vào và mô tả; giữ nguyên mọi tham số config, CV/metric và trạng thái P300/QC | R3 — đợt review chưa commit |
+| 2026-11-18 | Bổ sung số tham chiếu hành vi từ Table 5 vào `erp.behaviour_reference`; bảng R3 tách nhóm trước loại EEG và nhóm ERP, dùng mean ± sample SD qua subject và số đếm hành vi trước loại epoch | Đối chiếu mô tả đúng cỡ mẫu/đơn vị; không đổi quy tắc lọc hành vi, tiền xử lý hay phân loại | R3 — commit `b97a0684`, chờ nhóm review |
+| 2026-11-18 | Chuẩn bị đề xuất thăm dò `erp.p300`: ứng viên cực đại có dấu trong 300–600 ms, Pz chính/CPz-Cz bổ sung, target/distractor riêng; cờ biên 20 ms và kiểm tra cực đại. Chưa chốt phương pháp report | Bước tiếp theo sau ERP/topomap, tạo bảng để xem xét phương pháp và các trường hợp có cờ | R3 — commit `b97a0684`, đề xuất chờ nhóm review |
+| 2026-11-18 | Cấu hình hóa phần hiển thị ERP đã yêu cầu ở §9–10 (`erp` trong config): Pz/CPz/Cz, topomap 250–600 ms, lát cắt 300/400/500/600 ms, PNG 300 dpi. Ghi rõ ghép theo tên điện cực và hình nhóm dùng vị trí điện cực trung bình | Triển khai hình F2; không thay đổi tiền xử lý, mô hình hay cửa sổ đo đỉnh P300 | R3 — commit `b97a0684`, chờ nhóm review |
 | 2026-11-17 | Chỉ dùng **sub-01, sub-03**; cross-subject 2 fold; Wilcoxon theo (subject, fold) | Thu hẹp phạm vi; Wilcoxon theo subject vô nghĩa với n nhỏ | PM — **đã thay bằng dòng dưới** |
 | 2026-11-17 | **Pipeline v2.** (1) Dùng **toàn bộ 42 subject**, loại trước sub-02/14/17 theo bài báo, gắn cờ sub-13/23/24/37/38. (2) **Chỉ giữ trial đúng hành vi** (cửa sổ phản hồi 100–1400 ms), lưu `rt` vào metadata. (3) Loại subject nếu < 40 target đúng; hit rate < 80% chỉ gắn cờ. (4) Đánh dấu BAD quanh chỗ nối recording. (5) Cross-subject: GroupKFold 5 fold theo subject, lưu phân chia fold. (6) Thống kê RQ2 theo **subject** (~37 cặp) thay vì (subject, fold). Dữ liệu v1 (sub-01…05, mọi trial) không dùng nữa | 2 subject không đủ để trả lời RQ1/RQ2; đề bài yêu cầu chỉ dùng trial phản hồi đúng; 3 subject hiểu sai nhiệm vụ làm nhiễu nhãn | PM |

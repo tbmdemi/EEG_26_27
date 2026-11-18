@@ -1,7 +1,7 @@
 # Single-trial EEG Classification: Frequent vs Target (Visual Oddball)
 
 Mini project môn học — Neuroimaging: EEG (Guy Nagels).
-Dữ liệu: **Nencki-Symfonia EEG/ERP dataset** (GigaDB 10.5524/100990, OpenNeuro `ds004621`), task **3-stimulus visual oddball**, **toàn bộ subject dùng được** (42 người trừ sub-02/14/17), **chỉ các trial có phản hồi hành vi đúng**.
+Dữ liệu: **Nencki-Symfonia EEG/ERP dataset** (GigaDB 10.5524/100990, OpenNeuro `ds004621`), task **3-stimulus visual oddball**, **chỉ các trial có phản hồi hành vi đúng**. Bản v2 hiện hành có **35 subject ERP hợp lệ từ 42 người**: loại trước sub-02/14/17, rồi loại thêm sub-08/23/35/41 theo tiêu chí pipeline; danh sách nằm trong `results/preproc_log.csv`.
 
 ## Câu hỏi nghiên cứu
 
@@ -74,6 +74,16 @@ Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commi
 Theo thông báo cập nhật của nhóm trưởng, dùng code và dữ liệu v2 hiện hành; bước cleaning đã được thực hiện cho cả nhóm. Thành viên R3 tải dữ liệu bằng `python scripts/00_get_data.py`, rồi thực hiện phân tích ERP.
 
 Commit code `.py` và notebook `.ipynb`; chạy `nbstripout --install` một lần trên mỗi máy để tự động loại output nhúng trong notebook khi commit. Các file sinh ra khi chạy lưu trong `figures/`, `results/`, `outputs/`, `notebooks/outputs/` hoặc `scripts/outputs/` và được gitignore. Riêng `results/preproc_log.csv` là log bàn giao dữ liệu được giữ trong Git. Chia sẻ hình và bảng kết quả qua thư mục chung của nhóm.
+
+## R3 — Chạy lại và trạng thái bàn giao
+
+Chạy notebook `02_erp_exploration` → `03_erp_grand_average` → `04_erp_topomaps` → `05_erp_p300_candidates` → `06_erp_behaviour_summary` bằng kernel của môi trường đã cài requirements; Restart Kernel rồi Run All cho từng notebook. Bộ nạp R3 kiểm tra log v2 đủ subject cấu hình và cohort khớp log bàn giao trong Git; bản hiện tại phải có 35 người ERP.
+
+Đã triển khai ERP/SEM qua subject, difference wave ghép cặp, topomap theo tên điện cực, đo ứng viên P300 thăm dò và bảng hành vi tách nhóm 39/35. **F2 và Results – ERP còn là bản nháp**; visual QC của R2 và quy tắc P300 vẫn chờ nhóm duyệt. F3 và `evaluation/aggregate.py` chưa triển khai; cần metrics của R4/R5 cho phần đó.
+
+Kiểm tra code R3: `python -m ruff check src/eegproj/evaluation tests notebooks`, `python -m ruff format --check src/eegproj/evaluation tests notebooks`, `python -m unittest discover -s tests -v`.
+
+Xem [bàn giao R3 và ghi chú phương pháp](reports/r3_review_and_handoff.md), [bản nháp Results – ERP](reports/results_erp_draft.md). Nhật ký đóng góp nằm ở `reports/contribution_log.md`.
 
 ## Liên hệ nộp bài
 

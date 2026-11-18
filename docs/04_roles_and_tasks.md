@@ -42,10 +42,11 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 - [x] Bảng hành vi (hit rate, false alarm, RT) từ log tiền xử lý v2, so với bài báo — notebook 06 đã xuất riêng nhóm 39 trước loại EEG và nhóm ERP 35; mean ± sample SD qua subject, đối chiếu Table 5 và giữ chênh lệch thực tế
 - [ ] Hình kiểm tra chất lượng: phổ công suất trước/sau lọc, ví dụ IC bị loại
 - [ ] Script tổng hợp `results/metrics/*.csv` → bảng kết quả + hình F3
-- [ ] Hình F2, F3 theo quy ước hình
-- [ ] Viết mục *Results – ERP* trong report
+- [x] Hình F2 bản nháp (ERP + topomap, PNG 300 dpi/PDF); chờ R2 duyệt QC trước khi chốt
+- [ ] Hình F3 theo quy ước hình — chờ metrics R4/R5; chưa có kết quả F3
+- [x] Viết bản nháp *Results – ERP* tại `reports/results_erp_draft.md`; chờ duyệt QC và quy tắc P300 trước khi chốt report
 
-**Đầu ra:** `notebooks/`, `src/eegproj/evaluation/aggregate.py`, `figures/F2*`, `figures/F3*`.
+**Đầu ra đã triển khai:** notebook 02–06, `src/eegproj/evaluation/{erp,topography,p300,behaviour_summary}.py`, hình F2 và bảng hành vi local, bản nháp Results – ERP. `evaluation/aggregate.py` và F3 chưa triển khai. Xem `reports/r3_review_and_handoff.md` để biết kiểm tra đã chạy và các phụ thuộc còn lại.
 
 ## R4 — Classical ML (+ Feature Extraction)
 **Owner:** ______
