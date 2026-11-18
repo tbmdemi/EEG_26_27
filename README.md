@@ -53,8 +53,8 @@ Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commi
 │   ├── models/                # ML truyền thống + Deep Learning
 │   ├── evaluation/            # chia CV, metric, thống kê
 │   └── explain/               # giải thích mô hình
-├── results/                   # preproc_log.csv, metrics/*.csv (commit được, nhỏ) ; checkpoints/ (gitignored)
-├── figures/                   # hình cho report/slide (PNG/PDF)
+├── results/                   # preproc_log.csv được giữ trong Git; kết quả chạy được gitignore
+├── figures/                   # hình sinh ra cho report/slide (PNG/PDF, gitignored)
 ├── reports/                   # report_template.md, contribution_log.md, slide
 └── scripts/                   # script chạy end-to-end từng bước
 ```
@@ -65,9 +65,15 @@ Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commi
 |---|---|---|---|
 | Trịnh Bình Minh | 24022413 | Project Manager + Explainability | [@tbmdemi](https://github.com/tbmdemi)|
 | | | Signal Preprocessing | |
-| | | ERP & Visualization | |
+| Bảo | | ERP & Visualization (R3) | |
 | | | Classical ML | |
 | | | Deep Learning | |
+
+## Lưu output khi chạy
+
+Theo thông báo cập nhật của nhóm trưởng, dùng code và dữ liệu v2 hiện hành; bước cleaning đã được thực hiện cho cả nhóm. Thành viên R3 tải dữ liệu bằng `python scripts/00_get_data.py`, rồi thực hiện phân tích ERP.
+
+Commit code `.py` và notebook `.ipynb`; chạy `nbstripout --install` một lần trên mỗi máy để tự động loại output nhúng trong notebook khi commit. Các file sinh ra khi chạy lưu trong `figures/`, `results/`, `outputs/`, `notebooks/outputs/` hoặc `scripts/outputs/` và được gitignore. Riêng `results/preproc_log.csv` là log bàn giao dữ liệu được giữ trong Git. Chia sẻ hình và bảng kết quả qua thư mục chung của nhóm.
 
 ## Liên hệ nộp bài
 

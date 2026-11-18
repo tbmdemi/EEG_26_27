@@ -35,11 +35,11 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 **Data v2 đã phát hành (2026-11-18).** Mọi người lấy dữ liệu bằng `python scripts/00_get_data.py` và chỉ làm việc trên v2; dữ liệu v1 đã bỏ.
 
 ## R3 — ERP & Visualization
-**Owner:** ______
+**Owner:** Bảo
 
-- [ ] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian
-- [ ] Đo biên độ và latency đỉnh P300 (target, distractor) theo từng subject → bảng + phân bố
-- [ ] Bảng hành vi (hit rate, false alarm, RT) từ `results/preproc_log.csv`, so với bài báo
+- [x] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian — đã tạo bản nháp trên 35 subject bằng notebook 03/04; chờ R2 duyệt QC trước khi chốt hình cho report
+- [ ] Đo biên độ và latency đỉnh P300 (target, distractor) theo từng subject → bảng + phân bố — đã có bản thăm dò notebook 05 (210 ứng viên, 35 subject × 2 điều kiện × 3 kênh); chờ review cửa sổ/quy tắc đo và các trường hợp có cờ trước khi chốt
+- [x] Bảng hành vi (hit rate, false alarm, RT) từ log tiền xử lý v2, so với bài báo — notebook 06 đã xuất riêng nhóm 39 trước loại EEG và nhóm ERP 35; mean ± sample SD qua subject, đối chiếu Table 5 và giữ chênh lệch thực tế
 - [ ] Hình kiểm tra chất lượng: phổ công suất trước/sau lọc, ví dụ IC bị loại
 - [ ] Script tổng hợp `results/metrics/*.csv` → bảng kết quả + hình F3
 - [ ] Hình F2, F3 theo quy ước hình

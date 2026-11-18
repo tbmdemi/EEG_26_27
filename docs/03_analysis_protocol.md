@@ -116,6 +116,10 @@ subject, fold, model, family, setting, window, task, bal_acc, auc, f1_target, n_
 4. **Classical:** patterns của LDA (Haufe et al. 2014 — chuyển weights thành patterns) để so sánh công bằng với DL.
 5. Kết luận dựa trên: đặc trưng nằm ở P300 (đỉnh–trung tâm, ~300–600 ms) hay vận động (C3/vùng trung tâm trái, sau ~450 ms)?
 
+Triển khai hình ERP của R3: các giá trị hiển thị nằm trong mục `erp` của config. Topomap gồm trung bình thời gian 250–600 ms và các lát cắt minh họa tại 300/400/500/600 ms. Ghép dữ liệu theo **tên điện cực** trước khi trung bình qua subject; dùng vị trí điện cực trung bình trong hệ tọa độ đầu để vẽ hình nhóm và ghi rõ trong caption. Đây là biểu diễn tín hiệu trên da đầu. Khoảng vẽ topomap chưa phải quyết định về cửa sổ đo đỉnh P300 theo subject.
+
+Đo đỉnh P300: R3 đã chuẩn bị **đề xuất thăm dò để nhóm review**, chưa chốt phương pháp cho report, ở [`reports/p300_measurement_notes.md`](../reports/p300_measurement_notes.md). Các thông số đề xuất nằm riêng trong `erp.p300`; output mang tên `candidate` và giữ cờ kiểm tra của từng phép đo. Không tự loại thêm subject hoặc xác nhận mọi cực đại là P300.
+
 ## 10. Hình bắt buộc cho report
 
 | # | Hình | Người phụ trách |
@@ -135,5 +139,8 @@ Quy ước hình: lưu `figures/F<số>_<mô-tả>.png` (300 dpi) + `.pdf`; font
 | Ngày | Thay đổi | Lý do | Người đề xuất |
 |---|---|---|---|
 | | Phiên bản đầu | | |
+| 2026-11-18 | Bổ sung số tham chiếu hành vi từ Table 5 vào `erp.behaviour_reference`; bảng R3 tách nhóm trước loại EEG và nhóm ERP, dùng mean ± sample SD qua subject và số đếm hành vi trước loại epoch | Đối chiếu mô tả đúng cỡ mẫu/đơn vị; không đổi quy tắc lọc hành vi, tiền xử lý hay phân loại | R3 — triển khai local để review |
+| 2026-11-18 | Chuẩn bị đề xuất thăm dò `erp.p300`: ứng viên cực đại có dấu trong 300–600 ms, Pz chính/CPz-Cz bổ sung, target/distractor riêng; cờ biên 20 ms và kiểm tra cực đại. Chưa chốt phương pháp report | Bước tiếp theo sau ERP/topomap, tạo bảng để xem xét phương pháp và các trường hợp có cờ | R3 — đề xuất local để nhóm review |
+| 2026-11-18 | Cấu hình hóa phần hiển thị ERP đã yêu cầu ở §9–10 (`erp` trong config): Pz/CPz/Cz, topomap 250–600 ms, lát cắt 300/400/500/600 ms, PNG 300 dpi. Ghi rõ ghép theo tên điện cực và hình nhóm dùng vị trí điện cực trung bình | Triển khai hình F2; không thay đổi tiền xử lý, mô hình hay cửa sổ đo đỉnh P300 | R3 — thay đổi local để review |
 | 2026-11-17 | Chỉ dùng **sub-01, sub-03**; cross-subject 2 fold; Wilcoxon theo (subject, fold) | Thu hẹp phạm vi; Wilcoxon theo subject vô nghĩa với n nhỏ | PM — **đã thay bằng dòng dưới** |
 | 2026-11-17 | **Pipeline v2.** (1) Dùng **toàn bộ 42 subject**, loại trước sub-02/14/17 theo bài báo, gắn cờ sub-13/23/24/37/38. (2) **Chỉ giữ trial đúng hành vi** (cửa sổ phản hồi 100–1400 ms), lưu `rt` vào metadata. (3) Loại subject nếu < 40 target đúng; hit rate < 80% chỉ gắn cờ. (4) Đánh dấu BAD quanh chỗ nối recording. (5) Cross-subject: GroupKFold 5 fold theo subject, lưu phân chia fold. (6) Thống kê RQ2 theo **subject** (~37 cặp) thay vì (subject, fold). Dữ liệu v1 (sub-01…05, mọi trial) không dùng nữa | 2 subject không đủ để trả lời RQ1/RQ2; đề bài yêu cầu chỉ dùng trial phản hồi đúng; 3 subject hiểu sai nhiệm vụ làm nhiễu nhãn | PM |

@@ -83,6 +83,32 @@ preprocessing:
   min_target_retained: 0.5   # drop subject if < 50% of correct target epochs survive rejection
   discontinuity_pad_s: 0.5   # mark +-0.5 s around each "New Segment" (file joins) as BAD
 
+erp:
+  # Display settings for protocol sections 9-10, plus a local exploratory P300 proposal.
+  # Preprocessing/classification settings are unchanged; review peak rules before reporting.
+  channels: [Pz, CPz, Cz]
+  topomap_window_s: [0.25, 0.6]
+  topomap_times_s: [0.3, 0.4, 0.5, 0.6]
+  figure_dpi: 300
+  font_size: 11
+  p300:
+    status: exploratory_for_team_review
+    conditions: [target, distractor]
+    primary_channel: Pz
+    window_s: [0.3, 0.6]
+    edge_margin_s: 0.02
+  behaviour_reference:
+    # Published observations, not preprocessing or analysis thresholds.
+    source_url: https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giac015/6543635
+    source_table: 5
+    n_subjects: 39
+    metrics:
+      rt_mean_ms: {mean: 542.13, sd: 65.50, unit: ms, label: Target reaction time}
+      hit_rate_pct: {mean: 94.40, sd: 8.33, unit: percent, label: Target hit rate, derived_from_omission: true}
+      target_omission_pct: {mean: 5.60, sd: 8.33, unit: percent, label: Target omission}
+      false_alarm_distractor_pct: {mean: 9.52, sd: 8.90, unit: percent, label: Distractor false alarm}
+      false_alarm_standard_pct: {mean: 0.24, sd: 0.46, unit: percent, label: Standard false alarm}
+
 classification:
   tasks:
     tgt_std: {positive: target, negative: standard}
