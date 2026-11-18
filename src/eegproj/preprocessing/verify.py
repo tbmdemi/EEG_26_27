@@ -5,6 +5,7 @@ from pathlib import Path
 import mne
 import numpy as np
 
+from .pipeline import usable_subjects
 from .qc import epoch_qc_plot
 
 
@@ -14,14 +15,14 @@ def _epochs_path(root, config, subject):
 
 
 def verify_epochs(root, config, subjects=None):
-    """Re-read each FIF and assert sfreq, window, baseline, classes, PTP, ordering and blocks.
+    """Re-read each FIF and assert sfreq, window, baseline, classes, PTP, ordering, blocks and RTs.
 
     Writes results/preproc_verification.json and returns the per-subject rows.
     """
     root = Path(root)
     pre = config['preprocessing']
     results = []
-    for subject in subjects or config['dataset']['subjects']:
+    for subject in subjects or usable_subjects(root, config):
         _, path = _epochs_path(root, config, subject)
         epochs = mne.read_epochs(path, preload=True, verbose=False)
         data = epochs.get_data()
@@ -34,7 +35,10 @@ def verify_epochs(root, config, subjects=None):
         assert np.max(np.ptp(data, axis=-1)) <= pre['epoch']['reject_ptp_uv'] * 1e-6 * 1.00001
         baseline = (epochs.times >= pre['epoch']['baseline'][0]) & (epochs.times <= pre['epoch']['baseline'][1])
         assert np.max(np.abs(data[:, :, baseline].mean(axis=-1))) < 1e-10
-        assert list(epochs.metadata.columns) == ['subject', 'onset_s', 'block']
+        assert list(epochs.metadata.columns) == ['subject', 'onset_s', 'block', 'rt']
+        # only correct trials: every target has a response time, no standard/distractor has one
+        assert epochs.metadata.loc[epochs.events[:, 2] == epochs.event_id['target'], 'rt'].notna().all()
+        assert epochs.metadata.loc[epochs.events[:, 2] != epochs.event_id['target'], 'rt'].isna().all()
         assert epochs.metadata['onset_s'].is_monotonic_increasing
         assert set(epochs.metadata['block']) <= set(range(config['evaluation']['within']['n_splits']))
         results.append({'subject': subject, 'epochs': len(epochs), 'channels': len(epochs.ch_names),
@@ -51,7 +55,7 @@ def save_epoch_qc(root, config, subjects=None):
     pre = config['preprocessing']
     qc_dir = root / 'figures/preprocessing'
     paths = []
-    for subject in subjects or config['dataset']['subjects']:
+    for subject in subjects or usable_subjects(root, config):
         prefix, path = _epochs_path(root, config, subject)
         epochs = mne.read_epochs(path, preload=True, verbose=False)
         output = qc_dir / f'{prefix}_epoch_qc.png'
