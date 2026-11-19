@@ -21,6 +21,18 @@ lightning_logs/
 runs/
 wandb/
 
+# Generated notebook/script outputs — share via the team's shared folder
+/outputs/
+/notebooks/outputs/
+/scripts/outputs/
+/figures/*
+!/figures/.gitkeep
+/results/*
+!/results/preproc_log.csv
+!/results/metrics/
+/results/metrics/*
+!/results/metrics/.gitkeep
+
 # Python
 __pycache__/
 *.py[cod]
