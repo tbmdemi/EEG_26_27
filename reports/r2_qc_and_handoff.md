@@ -63,7 +63,7 @@ The notebook remains the default review interface and currently contains 24 line
 ## Remaining external actions
 
 - Decide whether to keep the disclosed v2 limitations or promote a versioned replacement using the two candidates. No v3 is published by this work.
-- The GitHub Issue text is prepared in [data_v2_ready_issue.md](data_v2_ready_issue.md); posting requires a connected GitHub account. No Issue is claimed to have been posted.
+- [Data v2 ready #6](https://github.com/tbmdemi/EEG_26_27/issues/6) has been posted. The submitted text is saved in [data_v2_ready_issue.md](data_v2_ready_issue.md). Implementation commits remain local until pushed.
 - No percentage contribution or team-owner assignment is inferred by this handoff.
 
 Local review package (not an official release): `data/r2_candidate_review_20261119.zip`; SHA-256 `23eaca7486e623ddb7511ca4a356f273272c803d236d20378d0fe9c8974136f8`. Data/figures remain outside Git.

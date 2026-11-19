@@ -23,4 +23,4 @@
 - 11/11 tests passed with network disabled; Ruff passed; modular notebook passed real-kernel audit of 35 FIFs and 42 event tables.
 - Published v2 FIFs/archive files remain unchanged. Repository CSV contains documented human QC annotations only.
 - Candidate sub-10/sub-13: 591/648 epochs; local review ZIP: `data/r2_candidate_review_20261119.zip`. A versioned release decision is still needed before using these instead of v2.
-- Data v2 ready Issue body: `reports/data_v2_ready_issue.md`; not posted because GitHub is not connected.
+- Data v2 ready Issue posted: [#6](https://github.com/tbmdemi/EEG_26_27/issues/6). Submitted body: `reports/data_v2_ready_issue.md`. Implementation commits remain local until pushed.

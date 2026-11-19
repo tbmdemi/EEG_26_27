@@ -25,7 +25,7 @@ Core logic has been moved to `scripts/r2_preprocessing.py`, release checks to `r
 - [Methods - Preprocessing, v2](r2_methods_v2.md), inserted into report section 3.1.
 - [Full subject and epoch accounting](r2_subject_epoch_table.md).
 - [QC findings, candidates, coordinate evidence and R3 handoff](r2_qc_and_handoff.md).
-- [Prepared Data v2 ready Issue](data_v2_ready_issue.md).
+- [Data v2 ready Issue #6](https://github.com/tbmdemi/EEG_26_27/issues/6); [submitted text](data_v2_ready_issue.md).
 
 The official report must state its actual release version. Candidate counts cannot be substituted into v2 results. No contribution percentage or expanded ERP/ML/DL responsibility is assigned here.
 
