@@ -26,12 +26,12 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 - [x] Pipeline tiền xử lý theo protocol §1, đọc tham số từ config (v1: sub-01…05, 2026-11-13)
 - [x] Pipeline v2: lọc trial đúng hành vi, loại/gắn cờ subject, đánh dấu chỗ nối recording, chế độ `--download --delete-raw` (2026-11-17)
 - [x] Chạy `python scripts/01_preprocess.py --download --delete-raw` cho **toàn bộ subject** (42 subject, 35 dùng được; phát hành `preproc_v2_20261118.zip`)
-- [ ] Kiểm tra bằng mắt hình QC (`figures/preprocessing/`), ưu tiên subject có cờ trong cột `flags`; cập nhật `visual_review` / `bad_channels.manual` nếu cần rồi chạy lại subject đó
+- [x] Visual summary QC đủ 35 subject dùng được; đã ghi reviewer/scope/findings vào log, cập nhật manual OI1h (sub-10) và AFF1h (sub-13), chạy lại hai candidate từ raw thật. Đây không phải duyệt tương tác toàn bộ raw; candidate chưa thay v2. Xem `reports/r2_qc_and_handoff.md`.
 - [x] Upload `preproc_v2_20261118.zip` lên Drive `EEG_26_27/release/` (**không** qua Git), cập nhật `RELEASE` trong `scripts/00_get_data.py` (2026-11-18)
 - [ ] Commit code v2 + `results/preproc_log.csv`, ghi commit hash vào `reports/meeting_notes.md` → mở Issue **"Data v2 ready"**
-- [ ] Viết mục *Methods – Preprocessing* + bảng subject/epoch bị loại trong report
+- [x] Viết *Methods – Preprocessing* v2 vào report §3.1; bảng đủ 42 subject và accounting epoch tại `reports/r2_subject_epoch_table.md`. Report vẫn dùng v2 (20.600 epoch), tách khỏi candidate.
 
-**Đầu ra:** `src/eegproj/preprocessing/`, `scripts/01_preprocess.py`, epoch `.fif`, log.
+**Đầu ra:** v2 hiện hành từ pipeline nhóm; notebook `01_preproc_five_subjects.ipynb`, code cải tiến `scripts/r2_*.py`, CLI `scripts/02_r2.py`; candidate `.fif`/log/QC riêng. Bản phát hành v2 chưa bị ghi đè.
 **Data v2 đã phát hành (2026-11-18).** Mọi người lấy dữ liệu bằng `python scripts/00_get_data.py` và chỉ làm việc trên v2; dữ liệu v1 đã bỏ.
 
 ## R3 — ERP & Visualization

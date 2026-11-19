@@ -35,7 +35,9 @@ nbstripout --install          # tự xóa output notebook khi commit
 ### Dữ liệu
 
 - **Thành viên:** không cần dữ liệu thô. Chạy `python scripts/00_get_data.py`: script tải bản v2 đã tiền xử lý (`preproc_v2_20261118.zip`, 2.6 GB) từ Drive, kiểm tra rồi giải nén vào `data/derivatives/preproc/`; chỉ dùng subject có `excluded_subject = False` và `pipeline_version = 2` trong `results/preproc_log.csv` (hoặc `eegproj.preprocessing.usable_subjects`).
-- **PM / R2:** tạo dữ liệu bằng `python scripts/01_preprocess.py --download --delete-raw`.
+- **PM / R2:** v2 đang dùng là bản phát hành sẵn có. Quy trình R2 hiện tại dùng `python scripts/02_r2.py --process --download` để tạo candidate riêng; xem bàn giao trước khi thay phiên bản dữ liệu chung. `scripts/01_preprocess.py` là entry point của triển khai v2 lịch sử, chưa nhận các sửa đổi candidate mới.
+
+R2 review/candidate workflow: [`reports/r2_qc_and_handoff.md`](reports/r2_qc_and_handoff.md). Notebook 01 dùng script R2 mới; `python scripts/02_r2.py` mặc định chỉ audit, `--process --download` tạo candidate riêng.
 
 Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commit dữ liệu lên repo.**
 

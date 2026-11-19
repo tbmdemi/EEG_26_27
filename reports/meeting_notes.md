@@ -3,7 +3,7 @@
 ## Link chia sẻ
 - Dữ liệu đã tiền xử lý (pipeline v2): thư mục `EEG_26_27/release/` https://drive.google.com/drive/folders/1sqrYetZH3xr_eFbH2Cce8V_iwulI44KR
   - File `preproc_v2_20261118.zip`, FILE_ID cho `gdown`: `1hXdIGzBk8p1QziEy3DARKdihhgpi95S9` (tải bằng `python scripts/00_get_data.py`)
-  - Cập nhật: 2026-11-18 · code commit: <hash> · số subject dùng được: 35 · sha256: c53f0407
+  - Cập nhật: 2026-11-18 · tracked v2 code: `6fccfc2502f3ee64a919de3ac97e86f52a5e3361` (PR #4; exact generating-job revision was not recorded in the archive) · số subject dùng được: 35 · sha256: c53f0407
 - Checkpoints: <link>
 - Slide: <link>
 

@@ -32,7 +32,7 @@ Mốc Table 5 của bài báo nằm trong `erp.behaviour_reference`: RT 542,13 �
 
 | Người phụ trách | Việc cần xác nhận/cung cấp |
 |---|---|
-| R2 | Visual QC cả 35 subject; nguồn tọa độ `.bvef` của sub-12/sub-24 (33 người còn lại là CapTrak); commit tạo release còn `<hash>` trong biên bản; hình PSD trước/sau và IC bị loại. |
+| R2 | Đã review summary QC đủ 35, ghi nguồn `.bvef` sub-12/sub-24 và có ví dụ PSD/IC loại. Hai candidate sub-10/sub-13 đã chạy từ raw; cần quyết định phiên bản dữ liệu trước khi chốt F2. Code v2 tham chiếu đã ghi vào biên bản; revision chính xác của job tạo ZIP vẫn chưa có provenance. Xem `r2_qc_and_handoff.md`. |
 | R1 / nhóm | Duyệt cửa sổ/quy tắc P300, các ứng viên có cờ và F2/Results sau QC. |
 | R4/R5 → R3 | Gửi metrics cùng cohort và đúng protocol; sau đó R3 triển khai `evaluation/aggregate.py` và F3. Hiện chưa có metrics CSV, chưa có F3. |
 

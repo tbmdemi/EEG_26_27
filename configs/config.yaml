@@ -12,8 +12,10 @@ paths:
   figures: figures
 
 dataset:
-  # Local scope retained for Long; see AGENTS.md.
-  subjects: ['01', '02', '03', '04', '05']
+  # All 42 participants. Excluded ones are skipped by every script (see `exclude`).
+  subjects: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14',
+             '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28',
+             '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42']
   # Excluded a priori, with reason (Dzianok et al. 2022, "Behavioral data"): these participants
   # misunderstood the oddball instructions and pressed the button for distractors.
   exclude:
@@ -27,6 +29,7 @@ dataset:
     '24': 'number of stimuli differs from 660 (acquisition error)'
     '37': 'recording concatenated from several files ("New Segment"); number of stimuli differs from 660'
     '38': 'recording concatenated from several files ("New Segment"); number of stimuli differs from 660'
+  expected_stimuli: 660  # nominal acquisition count; deviations are flags, not exclusions
   task: oddball
   events:            # verify exact strings with mne.events_from_annotations
     standard: "Stimulus/S  5"
@@ -53,7 +56,11 @@ preprocessing:
     robust_z: 5.0
     flat_std_uv: 0.01
     sample_step: 10
-    manual: {}
+    # R2 visual QC 2026-11-19; applied to new candidate runs, not retroactively to v2.
+    # Evidence and before/after counts: reports/r2_qc_and_handoff.md.
+    manual:
+      '10': [OI1h]
+      '13': [AFF1h]
   qc:
     duration_s: 60
     trace_duration_s: 10
