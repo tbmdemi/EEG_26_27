@@ -52,7 +52,7 @@ Nếu hiệu năng giảm mạnh từ `full` → `early`, hoặc saliency tập 
 | Thiết lập | Cách chia | Ghi chú |
 |---|---|---|
 | **Within-subject** | 5-fold **theo khối thời gian liên tục** (chia recording thành 5 đoạn liên tiếp, ví dụ theo các lần nghỉ `S 10`), không xáo trộn trial | Tránh trial liền kề (tương quan) rơi vào cả train và test |
-| **Cross-subject** | **GroupKFold 5 fold theo subject** trên toàn bộ subject dùng được (~37 người) | Không subject nào xuất hiện ở cả train và test. Phân chia fold cố định (seed trong config) và **lưu ra `results/cv_cross_subject_folds.csv`** để mọi mô hình dùng đúng cùng một phân chia |
+| **Cross-subject** | **2 fold theo subject**: train sub-01 → test sub-03 và ngược lại | Không subject nào xuất hiện ở cả train và test; chỉ là kết quả phụ (train trên 1 người) |
 
 Quy tắc chống rò rỉ dữ liệu (data leakage):
 1. Mọi bước **học từ dữ liệu** (scaler, xDAWN, CSP, PCA, chọn đặc trưng, chọn ngưỡng, early stopping, tuning) chỉ fit trên **train**.
@@ -85,8 +85,6 @@ Quy tắc chống rò rỉ dữ liệu (data leakage):
 
 Đầu vào DL: epoch đã chuẩn hóa theo kênh (thống kê tính trên train), resample còn **128 Hz** cho DL nếu cần tiết kiệm tính toán (ghi rõ).
 
-Khối lượng tính toán DL: `within` = ~37 subject × 5 fold mỗi mô hình × cửa sổ (mạng nhỏ, ~400–500 trial train/lần); `cross` = 5 lần train trên ~30 người. Ưu tiên chạy đủ task chính `tgt_std` cho cả 2 setting × 2 cửa sổ; task đối chứng cho DL chỉ khi còn thời gian (classical chạy đủ cả 3 task).
-
 ## 7. Định dạng kết quả (bắt buộc — để ghép bảng/thống kê tự động)
 
 Mỗi lần chạy ghi **một file** `results/metrics/<model>_<setting>_<window>_<task>.csv` với các cột:
@@ -100,11 +98,8 @@ subject, fold, model, family, setting, window, task, bal_acc, auc, f1_target, n_
 
 ## 8. Thống kê cho RQ2
 
-- Đơn vị thống kê là **subject** (một giá trị mỗi người, ~37 cặp):
-  - `within`: trung bình metric của 5 fold trong từng subject;
-  - `cross`: metric trên subject đó khi nó nằm trong test fold.
-- So sánh **mô hình classical tốt nhất vs DL tốt nhất** (chọn theo trung vị balanced accuracy, cửa sổ `full`) bằng **Wilcoxon signed-rank** (two-sided), ghép cặp theo subject, riêng cho từng setting (`within`, `cross`).
-- Không dùng (subject, fold) làm đơn vị: các fold cùng một người không độc lập.
+- So sánh **mô hình classical tốt nhất vs DL tốt nhất**, theo cặp trên từng **(subject, fold)** của within-subject: 2 subject × 5 fold = **10 cặp**, **Wilcoxon signed-rank** (two-sided).
+- Lý do: chỉ có 2 subject nên không thể kiểm định theo subject. Các fold cùng subject không hoàn toàn độc lập → **phải nêu rõ là hạn chế trong report**; kết quả chỉ mang tính thăm dò, không khái quát cho quần thể.
 - Nhiều phép so sánh → hiệu chỉnh **Holm**.
 - Báo kèm: trung vị chênh lệch + effect size (rank-biserial).
 
@@ -116,6 +111,10 @@ subject, fold, model, family, setting, window, task, bal_acc, auc, f1_target, n_
 4. **Classical:** patterns của LDA (Haufe et al. 2014 — chuyển weights thành patterns) để so sánh công bằng với DL.
 5. Kết luận dựa trên: đặc trưng nằm ở P300 (đỉnh–trung tâm, ~300–600 ms) hay vận động (C3/vùng trung tâm trái, sau ~450 ms)?
 
+Triển khai hình ERP của R3: các giá trị hiển thị nằm trong mục `erp` của config. Topomap gồm trung bình thời gian 250–600 ms và các lát cắt minh họa tại 300/400/500/600 ms. Ghép dữ liệu theo **tên điện cực** trước khi trung bình qua subject; dùng vị trí điện cực trung bình trong hệ tọa độ đầu để vẽ hình nhóm và ghi rõ trong caption. Đây là biểu diễn tín hiệu trên da đầu. Khoảng vẽ topomap chưa phải quyết định về cửa sổ đo đỉnh P300 theo subject.
+
+Đo đỉnh P300: R3 đã chuẩn bị **đề xuất thăm dò để nhóm review**, chưa chốt phương pháp cho report, ở [bàn giao R3, mục P300](../reports/r3_review_and_handoff.md#p300). Các thông số đề xuất nằm riêng trong `erp.p300`; output mang tên `candidate` và giữ cờ kiểm tra của từng phép đo. Không tự loại thêm subject hoặc xác nhận mọi cực đại là P300.
+
 ## 10. Hình bắt buộc cho report
 
 | # | Hình | Người phụ trách |
@@ -123,7 +122,7 @@ subject, fold, model, family, setting, window, task, bal_acc, auc, f1_target, n_
 | F1 | Sơ đồ pipeline | PM |
 | F2 | ERP target/standard/distractor tại Pz + topomap | Visualization |
 | F3 | Bảng/boxplot balanced accuracy theo mô hình × setting × window | Visualization |
-| F4 | Paired plot classical-best vs DL-best theo (subject, fold) | Classical ML + DL |
+| F4 | Paired plot classical-best vs DL-best theo subject (within: trung bình fold trong mỗi người; cross: điểm test của người đó), nhất quán với §8 | Classical ML + DL |
 | F5 | Topomap spatial filter EEGNet + saliency kênh × thời gian | Explainability |
 
 Quy ước hình: lưu `figures/F<số>_<mô-tả>.png` (300 dpi) + `.pdf`; font ≥ 10 pt; có đơn vị trục.
@@ -135,5 +134,4 @@ Quy ước hình: lưu `figures/F<số>_<mô-tả>.png` (300 dpi) + `.pdf`; font
 | Ngày | Thay đổi | Lý do | Người đề xuất |
 |---|---|---|---|
 | | Phiên bản đầu | | |
-| 2026-11-17 | Chỉ dùng **sub-01, sub-03**; cross-subject 2 fold; Wilcoxon theo (subject, fold) | Thu hẹp phạm vi; Wilcoxon theo subject vô nghĩa với n nhỏ | PM — **đã thay bằng dòng dưới** |
-| 2026-11-17 | **Pipeline v2.** (1) Dùng **toàn bộ 42 subject**, loại trước sub-02/14/17 theo bài báo, gắn cờ sub-13/23/24/37/38. (2) **Chỉ giữ trial đúng hành vi** (cửa sổ phản hồi 100–1400 ms), lưu `rt` vào metadata. (3) Loại subject nếu < 40 target đúng; hit rate < 80% chỉ gắn cờ. (4) Đánh dấu BAD quanh chỗ nối recording. (5) Cross-subject: GroupKFold 5 fold theo subject, lưu phân chia fold. (6) Thống kê RQ2 theo **subject** (~37 cặp) thay vì (subject, fold). Dữ liệu v1 (sub-01…05, mọi trial) không dùng nữa | 2 subject không đủ để trả lời RQ1/RQ2; đề bài yêu cầu chỉ dùng trial phản hồi đúng; 3 subject hiểu sai nhiệm vụ làm nhiễu nhãn | PM |
+| 2026-11-17 | Chỉ dùng **sub-01, sub-03**; cross-subject 2 fold; Wilcoxon theo (subject, fold) | Thu hẹp phạm vi; Wilcoxon theo subject vô nghĩa với n nhỏ | PM |
