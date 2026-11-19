@@ -15,3 +15,5 @@ The existing download entry point remains `python scripts/00_get_data.py`.
 Persistent broadband channel noise in sub-10/OI1h and sub-13/AFF1h was corrected in separate real-data candidates. Their counts are 591 and 648 epochs versus 269 and 510 in v2. Do not replace files silently or mix versions. If a replacement release is approved, R3 must rerun the affected summaries; all model families must use the same release.
 
 See `reports/r2_qc_and_handoff.md` for review scope, exclusions, findings, comparison figures, reproducible commands and remaining limitations. This text is a prepared Issue body, not evidence that an Issue has been posted.
+
+R2 implementation/QC commit: `fbc41f4a0f58b23f3c8cd2af73e713d6e83c3af9` (local; not yet pushed). Its normalized core-code hash matches both real candidate summaries. The official v2 source reference remains the distinct historical commit noted above.

@@ -67,3 +67,5 @@ The notebook remains the default review interface and currently contains 24 line
 - No percentage contribution or team-owner assignment is inferred by this handoff.
 
 Local review package (not an official release): `data/r2_candidate_review_20261119.zip`; SHA-256 `23eaca7486e623ddb7511ca4a356f273272c803d236d20378d0fe9c8974136f8`. Data/figures remain outside Git.
+
+R2 implementation/QC commit: `fbc41f4a0f58b23f3c8cd2af73e713d6e83c3af9` (local; not yet pushed). Its normalized core-code hash matches both real candidate summaries. The official v2 source reference remains the distinct historical commit noted above.
