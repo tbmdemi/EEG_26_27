@@ -61,16 +61,16 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 **Đầu ra:** `src/eegproj/features/`, `src/eegproj/models/classical.py`, `src/eegproj/evaluation/`, CSV kết quả.
 
 ## R5 — Deep Learning
-**Owner:** ______
+**Owner:** Giang (Trần Bùi Hà Giang, 24022314)
 
-- [ ] Dataloader từ epoch `.fif`, chuẩn hóa theo kênh với thống kê từ train
-- [ ] `eegnet`, `shallow` (bắt buộc), `conformer` (tùy chọn) — dùng **cùng** module chia CV của R4
-- [ ] Early stopping trên validation tách từ train; ghi hyperparameter vào `configs/config.yaml`
-- [ ] Chạy đủ: 2 setting × 2 window × task chính (`tgt_std`); task đối chứng nếu còn thời gian
-- [ ] Lưu checkpoint (gitignored) để R1 làm explainability
-- [ ] Viết mục *Methods – Deep Learning* trong report
+- [x] Dataloader từ epoch `.fif` v2 (`models/dl_runner.load_dl_subject`): resample cả epoch 250 → 128 Hz rồi mới cắt cửa sổ; chuẩn hóa z-score theo kênh với thống kê **chỉ từ phần fit của train** (2026-11-19)
+- [x] `eegnet` (EEGNet-8,2), `shallow` (ShallowFBCSPNet) viết bằng PyTorch thuần, cùng kiến trúc braindecode, các lớp đặt tên rõ để R1 đọc spatial filter / chạy IG — dùng **nguyên** `evaluation/splits.py` + `metrics.py` của R4 (lấy từ nhánh `Trung`, không sửa) và file fold cố định `results/cv_cross_subject_folds.csv` (`evaluation/folds.py`). Within-subject chia 5 đoạn liên tiếp đều nhau (`evaluation.within.split`, xem changelog protocol 2026-11-19) — **R4 cần dùng cùng cách chia**. `conformer` (tùy chọn): chưa làm
+- [x] Early stopping trên validation tách từ train (within: 20% cuối của mỗi đoạn train; cross: 20% subject train), khôi phục trọng số tốt nhất; class weight cân bằng; hyperparameter ghi trong `models.dl` của config
+- [x] Chạy đủ trên 35 subject: 2 setting × 2 window × `tgt_std` cho `eegnet` và `shallow` (2026-11-20, RTX 4060 Laptop, 4.6 giờ). EEGNet tốt nhất: trung vị bal. acc. within/full 0.941, cross/full 0.924, cross/early 0.830 — bảng đầy đủ trong `reports/methods_dl_draft.md`. Task đối chứng DL (`--tasks dis_std tgt_dis`): chưa chạy
+- [x] Lưu checkpoint (gitignored) cho R1: `results/checkpoints/<model>/<setting>_<window>_<task>/*.pt`, đọc lại bằng `eegproj.models.dl.load_checkpoint`; kèm dự đoán từng trial `results/predictions/*.csv.gz` và log huấn luyện `results/dl_runs/*.json`
+- [x] Viết bản nháp *Methods – Deep Learning* + bảng kết quả DL và so sánh EEGNet vs Shallow (`reports/methods_dl_draft.md`)
 
-**Đầu ra:** `src/eegproj/models/dl.py`, `scripts/04_train_dl.py`, CSV kết quả, checkpoints.
+**Đầu ra:** `src/eegproj/models/dl.py`, `src/eegproj/models/dl_runner.py`, `src/eegproj/evaluation/folds.py`, `scripts/04_train_dl.py`, `tests/test_r5_dl.py`, CSV kết quả, checkpoints, `reports/methods_dl_draft.md`.
 
 ---
 
