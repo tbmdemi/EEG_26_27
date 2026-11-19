@@ -3,7 +3,7 @@
 ## 1. Nguyên tắc vàng
 
 1. **Không commit thẳng lên `main`.** Mọi thay đổi đi qua Pull Request (PR).
-2. **Không commit dữ liệu, checkpoint, file lớn** (> 5 MB). `data/` và `results/checkpoints/` đã được gitignore.
+2. **Không commit dữ liệu, checkpoint, file lớn** (> 5 MB) **hoặc output sinh ra khi chạy notebook/script**, theo thông báo cập nhật của nhóm trưởng. Giữ code trong Git; chia sẻ output qua thư mục chung. Riêng `results/preproc_log.csv` là log bàn giao dữ liệu được giữ trong Git.
 3. **Không hard-code tham số.** Đọc từ `configs/config.yaml`.
 4. **Làm đúng protocol** (`docs/03_analysis_protocol.md`). Muốn thay đổi → mở Issue trước.
 5. **Ghi đóng góp** vào `reports/contribution_log.md` mỗi khi xong một việc.
@@ -61,20 +61,22 @@ Reviewer kiểm tra:
 - [ ] Tham số lấy từ config
 - [ ] Chạy được theo hướng dẫn trong PR
 - [ ] Kết quả ghi đúng định dạng CSV (protocol §7)
-- [ ] Không có file dữ liệu / output notebook / file lớn
+- [ ] Không có file dữ liệu / output notebook hoặc script / file lớn
 
 ## 6. Quy ước code
 
 - Python ≥ 3.11; định dạng bằng `ruff format`, kiểm tra bằng `ruff check`.
 - Code dùng lại được → `src/eegproj/`; script chạy end-to-end → `scripts/NN_<tên>.py`; khám phá → `notebooks/`.
 - Notebook: đặt tên `NN_<vai>_<mô-tả>.ipynb`; output được `nbstripout` tự xóa khi commit. Logic quan trọng phải chuyển sang `src/`.
+- Sau khi cài thư viện, chạy `nbstripout --install` một lần trên mỗi máy để bật xóa output nhúng trong notebook khi commit; `.gitignore` không xóa được output nằm bên trong `.ipynb`. Vẫn commit file notebook chứa code.
+- Hình và bảng sinh ra khi chạy lưu vào `figures/`, `results/` hoặc các thư mục `outputs/`, `notebooks/outputs/`, `scripts/outputs/` đã được gitignore. Giữ đúng tên/định dạng đầu ra theo protocol để các role đọc kết quả local hoặc từ thư mục chia sẻ.
 - Hàm công khai có docstring ngắn (đầu vào, đầu ra, đơn vị — ví dụ µV, giây).
 - Đặt seed từ config cho numpy / torch / sklearn.
 - Đường dẫn: dùng `pathlib` và đường dẫn tương đối từ gốc repo, lấy từ config.
 
 ## 7. Chia sẻ file lớn
 
-Dữ liệu đã tiền xử lý, checkpoint: để trên thư mục chia sẻ chung của nhóm (Drive/OneDrive). Link ghi trong `reports/meeting_notes.md`. Khi cập nhật, ghi ngày + commit hash của code tạo ra file đó.
+Dữ liệu đã tiền xử lý, checkpoint, hình và bảng kết quả sinh ra khi chạy: để trên thư mục chia sẻ chung của nhóm (Drive/OneDrive). Link ghi trong `reports/meeting_notes.md`. Khi cập nhật, ghi ngày + commit hash của code tạo ra file đó.
 
 Dữ liệu tiền xử lý hiện hành: **pipeline v2** (`PIPELINE_VERSION = 2`, trial đúng hành vi, toàn bộ subject dùng được). Nếu `epochs.metadata` của bạn **không có cột `rt`**, đó là file v1 cũ → xóa và tải lại. Không trộn dữ liệu từ nguồn tiền xử lý khác vào kết quả.
 
