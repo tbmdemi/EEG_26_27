@@ -67,7 +67,7 @@ Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commi
 | | | Signal Preprocessing | |
 | Bảo | | ERP & Visualization (R3) | |
 | | | Classical ML | |
-| | | Deep Learning | |
+| Trần Bùi Hà Giang | 24022314 | Deep Learning (R5) | |
 
 ## Lưu output khi chạy
 
@@ -84,6 +84,23 @@ Chạy notebook `02_erp_exploration` → `03_erp_grand_average` → `04_erp_topo
 Kiểm tra code R3: `python -m ruff check src/eegproj/evaluation tests notebooks`, `python -m ruff format --check src/eegproj/evaluation tests notebooks`, `python -m unittest discover -s tests -v`.
 
 Xem [bàn giao R3 và ghi chú phương pháp](reports/r3_review_and_handoff.md), [bản nháp Results – ERP](reports/results_erp_draft.md). Nhật ký đóng góp nằm ở `reports/contribution_log.md`.
+
+## R5 — Deep Learning: chạy và bàn giao
+
+Cần dữ liệu v2 (`python scripts/00_get_data.py`). Huấn luyện EEGNet và ShallowConvNet trên **đúng** phân chia CV của R4, ghi CSV theo protocol §7:
+
+```bash
+python scripts/04_train_dl.py                                   # eegnet + shallow × within + cross × full + early, task tgt_std
+python scripts/04_train_dl.py --models eegnet --settings cross   # chạy từng phần
+python scripts/04_train_dl.py --tasks dis_std tgt_dis            # task đối chứng (nếu còn thời gian)
+python scripts/04_train_dl.py --subjects 01 03 --settings within # chạy thử nhanh → results/dev/ (không dùng cho report)
+```
+
+- Tự dùng GPU nếu có (`--device cuda|cpu`). Ước tính: CPU 4–8 nhân khoảng 4–9 giờ cho cả lưới chính; GPU (ví dụ Colab T4) dưới 1 giờ. Bị ngắt giữa chừng thì chạy lại đúng lệnh: kết quả đã xong được bỏ qua, phần dở dang chạy tiếp từ fold cuối.
+- Đầu ra (gitignored): `results/metrics/{eegnet,shallow}_*.csv`, `results/cv_cross_subject_folds.csv` (phân chia subject cố định dùng chung với R4), `results/predictions/*.csv.gz` (điểm từng trial), `results/dl_runs/*.json` (hyperparameter, số epoch, thời gian từng fold), `results/checkpoints/` (mô hình cho R1, đọc bằng `eegproj.models.dl.load_checkpoint`).
+- Kiểm tra code R5: `python -m unittest tests.test_r5_dl -v`, `python -m ruff check src/eegproj/models src/eegproj/evaluation/folds.py scripts/04_train_dl.py tests/test_r5_dl.py`.
+
+Phương pháp: [`reports/methods_dl_draft.md`](reports/methods_dl_draft.md).
 
 ## Liên hệ nộp bài
 
