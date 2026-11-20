@@ -25,39 +25,40 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 - [x] Pipeline tiền xử lý theo protocol §1, đọc tham số từ config (v1: sub-01…05, 2026-11-13)
 - [x] Pipeline v2: lọc trial đúng hành vi, loại/gắn cờ subject, đánh dấu chỗ nối recording, chế độ `--download --delete-raw` (2026-11-17)
 - [x] Chạy `python scripts/01_preprocess.py --download --delete-raw` cho **toàn bộ subject** (42 subject, 35 dùng được; phát hành `preproc_v2_20261118.zip`)
-- [ ] Kiểm tra bằng mắt hình QC (`figures/preprocessing/`), ưu tiên subject có cờ trong cột `flags`; cập nhật `visual_review` / `bad_channels.manual` nếu cần rồi chạy lại subject đó
+- [x] Visual summary QC đủ 35 subject dùng được; đã ghi reviewer/scope/findings vào log, cập nhật manual OI1h (sub-10) và AFF1h (sub-13), chạy lại hai candidate từ raw thật. Đây không phải duyệt tương tác toàn bộ raw; candidate chưa thay v2. Xem `reports/r2_qc_and_handoff.md`.
 - [x] Upload `preproc_v2_20261118.zip` lên Drive `EEG_26_27/release/` (**không** qua Git), cập nhật `RELEASE` trong `scripts/00_get_data.py` (2026-11-18)
-- [ ] Commit code v2 + `results/preproc_log.csv`, mở Issue **"Data v2 ready"** kèm commit hash
-- [ ] Viết mục *Methods – Preprocessing* + bảng subject/epoch bị loại trong report
+- [x] Commit code R2 và log QC: `fbc41f4`; ghi hash vào `reports/meeting_notes.md`. Bản v2 lịch sử tham chiếu `6fccfc2`; không khẳng định đây là revision chính xác của job sinh ZIP.
+- [x] Mở Issue **[Data v2 ready #6](https://github.com/tbmdemi/EEG_26_27/issues/6)**; nội dung lưu tại `reports/data_v2_ready_issue.md`. Code R2 is included in this PR; both candidates remain pending a release decision.
+- [x] Viết *Methods – Preprocessing* v2 vào report §3.1; bảng đủ 42 subject và accounting epoch tại `reports/r2_subject_epoch_table.md`. Report vẫn dùng v2 (20.600 epoch), tách khỏi candidate.
 
-**Đầu ra:** `src/eegproj/preprocessing/`, `scripts/01_preprocess.py`, epoch `.fif`, log.
+**Đầu ra:** v2 hiện hành từ pipeline nhóm; notebook `01_preprocess.ipynb`, code cải tiến `scripts/r2_*.py`, CLI `scripts/02_r2.py`; candidate `.fif`/log/QC riêng. Bản phát hành v2 chưa bị ghi đè.
 **Data v2 đã phát hành (2026-11-18).** Mọi người lấy dữ liệu bằng `python scripts/00_get_data.py` và chỉ làm việc trên v2; dữ liệu v1 đã bỏ.
 
 ## R3 — ERP & Visualization
 **Owner:** Bảo
 
-- [x] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian — đã tạo bản nháp trên 35 subject bằng notebook 03/04; chờ R2 duyệt QC trước khi chốt hình cho report
+- [x] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian — đã tạo bản nháp trên 35 subject bằng notebook 03/04; QC tổng hợp R2 đã hoàn thành, chờ nhóm chốt phiên bản dữ liệu và duyệt hình cuối cho report
 - [ ] Đo biên độ và latency đỉnh P300 (target, distractor) theo từng subject → bảng + phân bố — đã có bản thăm dò notebook 05 (210 ứng viên, 35 subject × 2 điều kiện × 3 kênh); chờ review cửa sổ/quy tắc đo và các trường hợp có cờ trước khi chốt
 - [x] Bảng hành vi (hit rate, false alarm, RT) từ log tiền xử lý v2, so với bài báo — notebook 06 đã xuất riêng nhóm 39 trước loại EEG và nhóm ERP 35; mean ± sample SD qua subject, đối chiếu Table 5 và giữ chênh lệch thực tế
 - [ ] Hình kiểm tra chất lượng: phổ công suất trước/sau lọc, ví dụ IC bị loại
 - [ ] Script tổng hợp `results/metrics/*.csv` → bảng kết quả + hình F3
-- [x] Hình F2 bản nháp (ERP + topomap, PNG 300 dpi/PDF); chờ R2 duyệt QC trước khi chốt
+- [x] Hình F2 bản nháp (ERP + topomap, PNG 300 dpi/PDF); QC tổng hợp R2 đã hoàn thành, chờ nhóm chốt phiên bản dữ liệu và duyệt hình cuối
 - [ ] Hình F3 theo quy ước hình — chờ metrics R4/R5; chưa có kết quả F3
-- [x] Viết bản nháp *Results – ERP* tại `reports/results_erp_draft.md`; chờ duyệt QC và quy tắc P300 trước khi chốt report
+- [x] Viết bản nháp *Results – ERP* tại `reports/results_erp_draft.md`; QC tổng hợp R2 đã hoàn thành, chờ nhóm chốt phiên bản dữ liệu, duyệt quy tắc P300 và hình cuối trước khi chốt report
 
 **Đầu ra đã triển khai:** notebook 02–06, `src/eegproj/evaluation/{erp,topography,p300,behaviour_summary}.py`, hình F2 và bảng hành vi local, bản nháp Results – ERP. `evaluation/aggregate.py` và F3 chưa triển khai. Xem `reports/r3_review_and_handoff.md` để biết kiểm tra đã chạy và các phụ thuộc còn lại.
 
 ## R4 — Classical ML (+ Feature Extraction)
-**Owner:** ______
+**Owner:** Trung (Trần Đức Trung, 24022477, [@TrungDev2431](https://github.com/TrungDev2431))
 
-- [ ] Module chia CV dùng chung (`within` theo khối dùng cột `block`, `cross` GroupKFold 5 fold theo subject, lưu `results/cv_cross_subject_folds.csv`) — **làm trước, DL dùng lại**
-- [ ] Module metric dùng chung + ghi CSV đúng định dạng protocol §7
-- [ ] `lda_tw`, `xdawn_rg` (bắt buộc), `bp_svm` (tùy chọn)
-- [ ] Chạy đủ: 2 setting × 2 window × 3 task
-- [ ] Thống kê RQ2 (Wilcoxon theo subject + Holm, protocol §8) — phối hợp R5; hình F4
-- [ ] Viết mục *Methods – Classical ML* và phần RQ2 trong report
+- [x] Module chia CV dùng chung (`src/eegproj/evaluation/splits.py`: lọc 35 subject v2, tương thích `within_cv_metadata` `equal_segments` và `cross_subject_folds` `results/cv_cross_subject_folds.csv` cùng R5)
+- [x] Module metric dùng chung + ghi CSV đúng định dạng protocol §7 (`src/eegproj/evaluation/metrics.py`)
+- [x] `lda_tw`, `xdawn_rg` (bắt buộc, gồm `_RankSafeXdawnEstimator` và `extract_lda_haufe_patterns` cho R1; căn chỉnh tên điện cực cho `sub-13`/`sub-42`). `bp_svm` (tùy chọn): chưa làm
+- [x] Chạy đủ 24 tổ hợp trên 35 subject v2 (`2 models × 2 settings × 2 windows × 3 tasks` = 2,520 dòng, 0 NaNs; `scripts/02_run_classical_ml.py`)
+- [x] Thống kê RQ2 (Wilcoxon theo subject + Holm + RBC, `scripts/03_stats_rq2.py`) đối chiếu `xdawn_rg` vs `eegnet` trên 35 subject + Hình F4 (`figures/F4_paired_classical_vs_dl.{png,pdf}`)
+- [x] Viết báo cáo kiểm định/bàn giao (`reports/r4_evaluation_review.md`), bản nháp *Methods & Results – Classical ML + RQ2* (`reports/methods_ml_rq2_draft.md`), và 6 unit/integration tests (`tests/test_r4_ml.py`)
 
-**Đầu ra:** `src/eegproj/features/`, `src/eegproj/models/classical.py`, `src/eegproj/evaluation/`, CSV kết quả.
+**Đầu ra:** `src/eegproj/features/`, `src/eegproj/models/{classical,runner}.py`, `src/eegproj/evaluation/{splits,metrics,stats}.py`, `scripts/02_run_classical_ml.py`, `scripts/03_stats_rq2.py`, `tests/test_r4_ml.py`, `reports/r4_evaluation_review.md`, `reports/methods_ml_rq2_draft.md`.
 
 ## R5 — Deep Learning
 **Owner:** Giang (Trần Bùi Hà Giang, 24022314)

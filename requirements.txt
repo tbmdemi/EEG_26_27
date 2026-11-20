@@ -34,6 +34,7 @@ pingouin>=0.5
 
 # Notebooks & dev tools
 jupyterlab
+pybv>=0.8             # synthetic BrainVision input export for R2 integration tests
 ruff
 nbstripout
 

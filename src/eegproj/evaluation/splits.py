@@ -49,15 +49,21 @@ def load_valid_subjects(root, config, subjects=None) -> list[str]:
         Valid two-digit subject codes in sorted order.
     """
     root = Path(root)
+    excluded_cfg = {normalize_subject_id(k) for k in (config["dataset"].get("exclude") or {})}
     requested = [normalize_subject_id(s) for s in (subjects or config["dataset"]["subjects"])]
     log_path = root / "results" / "preproc_log.csv"
-    excluded = set()
+    excluded = set(excluded_cfg)
+    version_mismatch = set()
     if log_path.exists():
         log_df = pd.read_csv(log_path)
         if "excluded_subject" in log_df.columns and "subject" in log_df.columns:
             mask = log_df["excluded_subject"].astype(str).str.lower().isin({"true", "1"})
-            excluded = {normalize_subject_id(s) for s in log_df.loc[mask, "subject"]}
-    valid = [s for s in requested if s not in excluded]
+            excluded |= {normalize_subject_id(s) for s in log_df.loc[mask, "subject"]}
+        if "pipeline_version" in log_df.columns and "subject" in log_df.columns:
+            ver = pd.to_numeric(log_df["pipeline_version"], errors="coerce")
+            bad_ver = ver.notna() & (ver != 2)
+            version_mismatch = {normalize_subject_id(s) for s in log_df.loc[bad_ver, "subject"]}
+    valid = [s for s in requested if s not in excluded and s not in version_mismatch]
     if not valid:
         raise ValueError("No valid subjects remaining after filtering excluded_subject.")
     return valid

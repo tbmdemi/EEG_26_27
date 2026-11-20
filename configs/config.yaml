@@ -29,6 +29,7 @@ dataset:
     '24': 'number of stimuli differs from 660 (acquisition error)'
     '37': 'recording concatenated from several files ("New Segment"); number of stimuli differs from 660'
     '38': 'recording concatenated from several files ("New Segment"); number of stimuli differs from 660'
+  expected_stimuli: 660  # nominal acquisition count; deviations are flags, not exclusions
   task: oddball
   events:            # verify exact strings with mne.events_from_annotations
     standard: "Stimulus/S  5"
@@ -55,7 +56,11 @@ preprocessing:
     robust_z: 5.0
     flat_std_uv: 0.01
     sample_step: 10
-    manual: {}
+    # R2 visual QC 2026-11-19; applied to new candidate runs, not retroactively to v2.
+    # Evidence and before/after counts: reports/r2_qc_and_handoff.md.
+    manual:
+      '10': [OI1h]
+      '13': [AFF1h]
   qc:
     duration_s: 60
     trace_duration_s: 10

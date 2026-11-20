@@ -35,7 +35,9 @@ nbstripout --install          # tự xóa output notebook khi commit
 ### Dữ liệu
 
 - **Thành viên:** không cần dữ liệu thô. Chạy `python scripts/00_get_data.py`: script tải bản v2 đã tiền xử lý (`preproc_v2_20261118.zip`, 2.6 GB) từ Drive, kiểm tra rồi giải nén vào `data/derivatives/preproc/`; chỉ dùng subject có `excluded_subject = False` và `pipeline_version = 2` trong `results/preproc_log.csv` (hoặc `eegproj.preprocessing.usable_subjects`).
-- **PM / R2:** tạo dữ liệu bằng `python scripts/01_preprocess.py --download --delete-raw`.
+- **PM / R2:** v2 đang dùng là bản phát hành sẵn có. Quy trình R2 hiện tại dùng `python scripts/02_r2.py --process --download` để tạo candidate riêng; xem bàn giao trước khi thay phiên bản dữ liệu chung. `scripts/01_preprocess.py` là entry point của triển khai v2 lịch sử, chưa nhận các sửa đổi candidate mới.
+
+R2 review/candidate workflow: [`reports/r2_qc_and_handoff.md`](reports/r2_qc_and_handoff.md). Notebook 01 dùng script R2 mới; `python scripts/02_r2.py` mặc định chỉ audit, `--process --download` tạo candidate riêng.
 
 Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commit dữ liệu lên repo.**
 
@@ -66,7 +68,7 @@ Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commi
 | Trịnh Bình Minh | 24022413 | Project Manager + Explainability | [@tbmdemi](https://github.com/tbmdemi)|
 | | | Signal Preprocessing | |
 | Bảo | | ERP & Visualization (R3) | |
-| | | Classical ML | |
+| Trần Đức Trung | 24022477 | Classical ML (R4) | [@TrungDev2431](https://github.com/TrungDev2431) |
 | Trần Bùi Hà Giang | 24022314 | Deep Learning (R5) | |
 
 ## Lưu output khi chạy
@@ -79,11 +81,25 @@ Commit code `.py` và notebook `.ipynb`; chạy `nbstripout --install` một l�
 
 Chạy notebook `02_erp_exploration` → `03_erp_grand_average` → `04_erp_topomaps` → `05_erp_p300_candidates` → `06_erp_behaviour_summary` bằng kernel của môi trường đã cài requirements; Restart Kernel rồi Run All cho từng notebook. Bộ nạp R3 kiểm tra log v2 đủ subject cấu hình và cohort khớp log bàn giao trong Git; bản hiện tại phải có 35 người ERP.
 
-Đã triển khai ERP/SEM qua subject, difference wave ghép cặp, topomap theo tên điện cực, đo ứng viên P300 thăm dò và bảng hành vi tách nhóm 39/35. **F2 và Results – ERP còn là bản nháp**; visual QC của R2 và quy tắc P300 vẫn chờ nhóm duyệt. F3 và `evaluation/aggregate.py` chưa triển khai; cần metrics của R4/R5 cho phần đó.
+Đã triển khai ERP/SEM qua subject, difference wave ghép cặp, topomap theo tên điện cực, đo ứng viên P300 thăm dò và bảng hành vi tách nhóm 39/35. **F2 và Results – ERP còn là bản nháp**. QC tổng hợp R2 đã hoàn thành cho 35 subject; đây không phải duyệt tương tác toàn bộ raw. Quyết định thay v2 bằng candidate sub-10/sub-13, quy tắc P300 và hình cuối vẫn chờ nhóm duyệt. F3 và `evaluation/aggregate.py` chưa triển khai; cần metrics của R4/R5 cho phần đó.
 
 Kiểm tra code R3: `python -m ruff check src/eegproj/evaluation tests notebooks`, `python -m ruff format --check src/eegproj/evaluation tests notebooks`, `python -m unittest discover -s tests -v`.
 
 Xem [bàn giao R3 và ghi chú phương pháp](reports/r3_review_and_handoff.md), [bản nháp Results – ERP](reports/results_erp_draft.md). Nhật ký đóng góp nằm ở `reports/contribution_log.md`.
+
+## R4 — Classical ML & RQ2: chạy và bàn giao
+
+Cần dữ liệu v2 (`python scripts/00_get_data.py`). Đã triển khai `lda_tw` (50 ms bins + shrinkage LDA, kèm `extract_lda_haufe_patterns` cho R1) và `xdawn_rg` (xDAWN rank-safe + Riemannian Tangent Space + balanced Logistic Regression), căn chỉnh thứ tự 127 kênh theo tên điện cực (`sub-13`, `sub-42`), đồng bộ chia CV `equal_segments` và `results/cv_cross_subject_folds.csv` cùng R5, chạy đủ 24 tổ hợp trên 35 subject và thực hiện kiểm định RQ2 (Wilcoxon + Holm) + Hình F4 đối chiếu với DL:
+
+```bash
+python scripts/02_run_classical_ml.py                # 2 models × 2 settings × 2 windows × 3 tasks (24 CSVs)
+python scripts/03_stats_rq2.py --metric bal_acc      # thống kê RQ2 + hình F4 (sau khi có CSV của R5)
+python scripts/03_stats_rq2.py --metric auc --out-csv results/rq2_wilcoxon_holm_auc.csv --fig-stem figures/F4_paired_classical_vs_dl_auc
+```
+
+- Kiểm tra code R4: `python -m unittest tests.test_r4_ml -v`, `python -m ruff check src/eegproj/evaluation/splits.py src/eegproj/evaluation/stats.py src/eegproj/evaluation/__init__.py src/eegproj/features src/eegproj/models/classical.py src/eegproj/models/runner.py src/eegproj/models/__init__.py scripts/02_run_classical_ml.py scripts/03_stats_rq2.py tests/test_r4_ml.py`.
+
+Báo cáo bàn giao: [`reports/r4_evaluation_review.md`](reports/r4_evaluation_review.md); bản nháp report: [`reports/methods_ml_rq2_draft.md`](reports/methods_ml_rq2_draft.md).
 
 ## R5 — Deep Learning: chạy và bàn giao
 
