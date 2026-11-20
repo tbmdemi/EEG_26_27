@@ -74,7 +74,7 @@ Dữ liệu được chia sẻ dưới dạng **một file zip có phiên bản*
 | Subject dùng được | 35 / 42 |
 | sha256 | `c53f040786b6c23a9b5d135a31f0bef966088018434409a1ca44a2e944c7a6ef` |
 
-Thông tin bản phát hành (FILE_ID, sha256, số subject) nằm trong `RELEASE` ở đầu `scripts/00_get_data.py` và được ghi lại trong `reports/meeting_notes.md` (mục *Link chia sẻ*). `results/preproc_log.csv` đi kèm trong repo (commit được).
+Thông tin bản phát hành (FILE_ID, sha256, số subject) nằm trong `RELEASE` ở đầu `scripts/00_get_data.py`. `results/preproc_log.csv` đi kèm trong repo (commit được).
 
 **Máy cá nhân hoặc Colab:** chạy ở gốc repo:
 
@@ -95,7 +95,7 @@ from eegproj.config import find_root, load_config
 from eegproj.preprocessing import usable_subjects, verify_epochs
 root = find_root(); config = load_config(root)
 subjects = usable_subjects(root, config)     # chỉ subject pipeline v2, không bị loại
-print(len(subjects), subjects)               # phải khớp số trong meeting_notes.md
+print(len(subjects), subjects)               # phải khớp n_usable trong RELEASE (35)
 verify_epochs(root, config, subjects)        # kiểm tra từng file .fif
 ```
 
@@ -144,10 +144,10 @@ python scripts/01_preprocess.py --download -s 01 03          # chỉ vài subjec
 D=$(date +%Y%m%d)
 cd data/derivatives/preproc && zip -r ../../../preproc_v2_$D.zip . -x "_excluded/*" && cd -
 sha256sum preproc_v2_$D.zip; stat -c %s preproc_v2_$D.zip
-git rev-parse --short HEAD          # commit hash ghi vào meeting_notes.md
+git rev-parse --short HEAD          # commit hash ghi vào Issue "Data vN ready"
 ```
 
-Upload zip vào `EEG_26_27/release/` trên Drive (quyền thành viên: **Viewer**, chia sẻ "Anyone with the link" để `gdown` tải được). Sau đó cập nhật `RELEASE` trong `scripts/00_get_data.py` (tên, FILE_ID, sha256, `n_usable`, `n_bytes`), ghi link, ngày, commit hash, số subject dùng được vào `reports/meeting_notes.md` và mở Issue "Data vN ready". Không để zip cũ lẫn trong thư mục `release/`.
+Upload zip vào `EEG_26_27/release/` trên Drive (quyền thành viên: **Viewer**, chia sẻ "Anyone with the link" để `gdown` tải được). Sau đó cập nhật `RELEASE` trong `scripts/00_get_data.py` (tên, FILE_ID, sha256, `n_usable`, `n_bytes`), rồi mở Issue "Data vN ready" ghi link, ngày, commit hash, số subject dùng được. Không để zip cũ lẫn trong thư mục `release/`.
 
 Tải thủ công (nếu cần), ví dụ cho sub-01:
 
