@@ -81,7 +81,7 @@ Commit code `.py` và notebook `.ipynb`; chạy `nbstripout --install` một l�
 
 Chạy notebook `02_erp_exploration` → `03_erp_grand_average` → `04_erp_topomaps` → `05_erp_p300_candidates` → `06_erp_behaviour_summary` bằng kernel của môi trường đã cài requirements; Restart Kernel rồi Run All cho từng notebook. Bộ nạp R3 kiểm tra log v2 đủ subject cấu hình và cohort khớp log bàn giao trong Git; bản hiện tại phải có 35 người ERP.
 
-Đã triển khai ERP/SEM qua subject, difference wave ghép cặp, topomap theo tên điện cực, đo ứng viên P300 thăm dò và bảng hành vi tách nhóm 39/35. **F2 và Results – ERP còn là bản nháp**; visual QC của R2 và quy tắc P300 vẫn chờ nhóm duyệt. F3 và `evaluation/aggregate.py` chưa triển khai; cần metrics của R4/R5 cho phần đó.
+Đã triển khai ERP/SEM qua subject, difference wave ghép cặp, topomap theo tên điện cực, đo ứng viên P300 thăm dò và bảng hành vi tách nhóm 39/35. **F2 và Results – ERP còn là bản nháp**. QC tổng hợp R2 đã hoàn thành cho 35 subject; đây không phải duyệt tương tác toàn bộ raw. Quyết định thay v2 bằng candidate sub-10/sub-13, quy tắc P300 và hình cuối vẫn chờ nhóm duyệt. F3 và `evaluation/aggregate.py` chưa triển khai; cần metrics của R4/R5 cho phần đó.
 
 Kiểm tra code R3: `python -m ruff check src/eegproj/evaluation tests notebooks`, `python -m ruff format --check src/eegproj/evaluation tests notebooks`, `python -m unittest discover -s tests -v`.
 

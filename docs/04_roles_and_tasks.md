@@ -38,14 +38,14 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 ## R3 — ERP & Visualization
 **Owner:** Bảo
 
-- [x] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian — đã tạo bản nháp trên 35 subject bằng notebook 03/04; chờ R2 duyệt QC trước khi chốt hình cho report
+- [x] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian — đã tạo bản nháp trên 35 subject bằng notebook 03/04; QC tổng hợp R2 đã hoàn thành, chờ nhóm chốt phiên bản dữ liệu và duyệt hình cuối cho report
 - [ ] Đo biên độ và latency đỉnh P300 (target, distractor) theo từng subject → bảng + phân bố — đã có bản thăm dò notebook 05 (210 ứng viên, 35 subject × 2 điều kiện × 3 kênh); chờ review cửa sổ/quy tắc đo và các trường hợp có cờ trước khi chốt
 - [x] Bảng hành vi (hit rate, false alarm, RT) từ log tiền xử lý v2, so với bài báo — notebook 06 đã xuất riêng nhóm 39 trước loại EEG và nhóm ERP 35; mean ± sample SD qua subject, đối chiếu Table 5 và giữ chênh lệch thực tế
 - [ ] Hình kiểm tra chất lượng: phổ công suất trước/sau lọc, ví dụ IC bị loại
 - [ ] Script tổng hợp `results/metrics/*.csv` → bảng kết quả + hình F3
-- [x] Hình F2 bản nháp (ERP + topomap, PNG 300 dpi/PDF); chờ R2 duyệt QC trước khi chốt
+- [x] Hình F2 bản nháp (ERP + topomap, PNG 300 dpi/PDF); QC tổng hợp R2 đã hoàn thành, chờ nhóm chốt phiên bản dữ liệu và duyệt hình cuối
 - [ ] Hình F3 theo quy ước hình — chờ metrics R4/R5; chưa có kết quả F3
-- [x] Viết bản nháp *Results – ERP* tại `reports/results_erp_draft.md`; chờ duyệt QC và quy tắc P300 trước khi chốt report
+- [x] Viết bản nháp *Results – ERP* tại `reports/results_erp_draft.md`; QC tổng hợp R2 đã hoàn thành, chờ nhóm chốt phiên bản dữ liệu, duyệt quy tắc P300 và hình cuối trước khi chốt report
 
 **Đầu ra đã triển khai:** notebook 02–06, `src/eegproj/evaluation/{erp,topography,p300,behaviour_summary}.py`, hình F2 và bảng hành vi local, bản nháp Results – ERP. `evaluation/aggregate.py` và F3 chưa triển khai. Xem `reports/r3_review_and_handoff.md` để biết kiểm tra đã chạy và các phụ thuộc còn lại.
 

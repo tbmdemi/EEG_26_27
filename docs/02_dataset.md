@@ -108,7 +108,24 @@ Mỗi file `sub-XX_task-oddball_epo.fif` chứa:
 
 Chỉ dùng các subject có `excluded_subject = False` **và** `pipeline_version = 2` trong `results/preproc_log.csv` (hoặc gọi `eegproj.preprocessing.usable_subjects(root, config)`, hàm này kiểm tra cả hai). File của subject bị loại nằm riêng trong `data/derivatives/preproc/_excluded/`, **không** dùng cho phân tích chính.
 
-### PM / R2 — tạo dữ liệu đã tiền xử lý
+### PM / R2 — quy trình hiện hành
+
+Bản chính thức vẫn là `preproc_v2_20261118.zip` (35 subject, 20.600 epoch). Thành viên tải/kiểm tra bằng `scripts/00_get_data.py`; không cần raw. R2 dùng CLI hiện tại:
+
+```bash
+python scripts/02_r2.py                              # chỉ audit v2 và tạo QC
+python scripts/02_r2.py --process --download -s 10 13  # chủ động tạo candidate
+```
+
+Chỉ `--process` mới chạy tiền xử lý; `--download` cho phép tải oddball và metadata cần thiết. Output mới ở `data/derivatives/preproc/_candidate/`, log ở `results/r2_candidate/`, hình ở `figures/preprocessing/candidate/`; không ghi đè v2. Candidate sub-10/sub-13 chưa được duyệt thay v2.
+
+Tọa độ riêng từng subject: ưu tiên CapTrak `.bvct`, fallback BrainVision `.bvef`. Với `.bvef`, code dùng `mne.channels.read_custom_montage(..., coord_frame="head")` và chuẩn hóa head size mặc định của MNE; nguồn được ghi trong summary. Metadata Latin-1 và thứ tự kênh được xử lý trong bản nhìn BIDS tạm, căn theo tên, giữ nguyên raw.
+
+Nếu nhóm chọn candidate, cần phát hành phiên bản mới, cập nhật hash/log/RELEASE và chạy lại kết quả phụ thuộc. Không ghi đè ZIP v2 hoặc trộn candidate vào dữ liệu chính thức trước khi duyệt. Khi đóng gói chỉ lấy file được duyệt, không đưa thư mục thử nghiệm vào ZIP. Xem `reports/r2_qc_and_handoff.md`.
+
+### Lịch sử — quy trình tạo và phát hành v2
+
+Các lệnh `scripts/01_preprocess.py` và đóng gói v2 bên dưới chỉ mô tả triển khai lịch sử, chưa nhận sửa đổi candidate hiện tại. Không dùng chúng làm hướng dẫn chạy R2 mới; không cần tải/chạy lại raw để audit release. Không chạy lại lệnh đóng gói để ghi đè v2 đã phát hành.
 
 Raw oddball ≈ 0.7 GB/người (~26 GB cho 39 người). Nếu ổ đĩa không đủ, dùng chế độ tải → xử lý → xóa từng người:
 
@@ -143,4 +160,4 @@ openneuro-py download --dataset ds004621 --target-dir data/raw/ds004621 \
 
 Lưu ý:
 - `data/` đã nằm trong `.gitignore`. **Không commit dữ liệu.**
-- Một số `*_channels.tsv` lưu `µV` bằng mã Latin-1; `prepare_raw` / `ensure_utf8_tsv` tự chuyển sang UTF-8.
+- Trong triển khai lịch sử, một số `*_channels.tsv` Latin-1 được chuyển UTF-8 qua `prepare_raw` / `ensure_utf8_tsv`. Quy trình R2 hiện hành dùng bản nhìn tạm và giữ nguyên raw như mô tả phía trên.

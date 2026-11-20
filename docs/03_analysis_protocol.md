@@ -11,7 +11,7 @@ Tất cả tham số số học nằm trong [`configs/config.yaml`](../configs/c
 |---|---|
 | Phạm vi | **Toàn bộ 42 subject** trừ các subject bị loại (`dataset.exclude`, xem [`02_dataset.md`](02_dataset.md)) |
 | Lọc hành vi | **Chỉ giữ trial đúng hành vi**, tính từ `*_events.tsv`: target có bấm trong 100–1400 ms; standard và distractor không bấm trong cửa sổ đó (config `behaviour`). Trial sai bị bỏ trước khi epoch; RT của target lưu trong metadata |
-| Đọc dữ liệu | `mne_bids.read_raw_bids` (giữ thông tin kênh/sự kiện chuẩn BIDS); annotation dựng lại từ cột `event_type`; montage từ tọa độ **CapTrak** riêng của từng người |
+| Đọc dữ liệu | `mne_bids.read_raw_bids` (giữ thông tin kênh/sự kiện chuẩn BIDS); annotation dựng lại từ cột `event_type`; montage riêng từng subject: ưu tiên **CapTrak `.bvct`**, fallback **BrainVision `.bvef`** khi không có `.bvct`. Với `.bvef`, dùng `mne.channels.read_custom_montage(..., coord_frame="head")` và chuẩn hóa head size mặc định của MNE; ghi nguồn trong summary |
 | Kênh | 127 kênh EEG có trong file (FCz là tham chiếu online, không có trong file); bỏ kênh không phải EEG khỏi phân tích |
 | Chỗ nối recording | Marker `New Segment` sau t = 0 (sub-37, sub-38): đánh dấu ±0.5 s là `BAD_ACQ_SKIP` → bỏ qua khi lọc, fit ICA và epoch |
 | Lọc | Band-pass **0.1–40 Hz** (FIR, zero-phase); notch **50 Hz** nếu còn nhiễu lưới |
@@ -26,7 +26,7 @@ Tất cả tham số số học nằm trong [`configs/config.yaml`](../configs/c
 
 ICA được fit trên toàn bộ recording của từng subject (không dùng nhãn) — chấp nhận được, nhưng **phải nêu rõ trong report**.
 
-Dữ liệu dùng cho mọi phân tích là bộ do `scripts/01_preprocess.py` tạo ra (pipeline v2, xem `PIPELINE_VERSION` trong `src/eegproj/preprocessing/pipeline.py`). Không dùng bộ dữ liệu tiền xử lý bằng cách khác (ví dụ notebook Colab thử nghiệm) cho kết quả trong report.
+Dữ liệu chính thức dùng cho mọi phân tích hiện là `preproc_v2_20261118.zip` (35 subject, 20.600 epoch), gắn với triển khai v2 lịch sử có entry point `scripts/01_preprocess.py`. Quy trình R2 hiện tại dùng `scripts/02_r2.py`: mặc định audit v2; chỉ tạo dữ liệu mới khi bật `--process`, ghi riêng vào `_candidate/`. Candidate sub-10/sub-13 chưa được duyệt thay v2. Không dùng candidate hoặc dữ liệu từ nguồn xử lý khác cho kết quả report trước khi nhóm duyệt và phát hành phiên bản mới. Xem `02_dataset.md` cho hướng dẫn chạy và bàn giao.
 
 ## 2. Bài toán phân loại
 
