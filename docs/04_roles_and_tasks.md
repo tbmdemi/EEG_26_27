@@ -49,16 +49,16 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 **Đầu ra đã triển khai:** notebook 02–06, `src/eegproj/evaluation/{erp,topography,p300,behaviour_summary}.py`, hình F2 và bảng hành vi local, bản nháp Results – ERP. `evaluation/aggregate.py` và F3 chưa triển khai. Xem `reports/r3_review_and_handoff.md` để biết kiểm tra đã chạy và các phụ thuộc còn lại.
 
 ## R4 — Classical ML (+ Feature Extraction)
-**Owner:** ______
+**Owner:** Trung (Trần Đức Trung, 24022477, [@TrungDev2431](https://github.com/TrungDev2431))
 
-- [ ] Module chia CV dùng chung (`within` theo khối dùng cột `block`, `cross` GroupKFold 5 fold theo subject, lưu `results/cv_cross_subject_folds.csv`) — **làm trước, DL dùng lại**
-- [ ] Module metric dùng chung + ghi CSV đúng định dạng protocol §7
-- [ ] `lda_tw`, `xdawn_rg` (bắt buộc), `bp_svm` (tùy chọn)
-- [ ] Chạy đủ: 2 setting × 2 window × 3 task
-- [ ] Thống kê RQ2 (Wilcoxon theo subject + Holm, protocol §8) — phối hợp R5; hình F4
-- [ ] Viết mục *Methods – Classical ML* và phần RQ2 trong report
+- [x] Module chia CV dùng chung (`src/eegproj/evaluation/splits.py`: lọc 35 subject v2, tương thích `within_cv_metadata` `equal_segments` và `cross_subject_folds` `results/cv_cross_subject_folds.csv` cùng R5)
+- [x] Module metric dùng chung + ghi CSV đúng định dạng protocol §7 (`src/eegproj/evaluation/metrics.py`)
+- [x] `lda_tw`, `xdawn_rg` (bắt buộc, gồm `_RankSafeXdawnEstimator` và `extract_lda_haufe_patterns` cho R1; căn chỉnh tên điện cực cho `sub-13`/`sub-42`). `bp_svm` (tùy chọn): chưa làm
+- [x] Chạy đủ 24 tổ hợp trên 35 subject v2 (`2 models × 2 settings × 2 windows × 3 tasks` = 2,520 dòng, 0 NaNs; `scripts/02_run_classical_ml.py`)
+- [x] Thống kê RQ2 (Wilcoxon theo subject + Holm + RBC, `scripts/03_stats_rq2.py`) đối chiếu `xdawn_rg` vs `eegnet` trên 35 subject + Hình F4 (`figures/F4_paired_classical_vs_dl.{png,pdf}`)
+- [x] Viết báo cáo kiểm định/bàn giao (`reports/r4_evaluation_review.md`), bản nháp *Methods & Results – Classical ML + RQ2* (`reports/methods_ml_rq2_draft.md`), và 6 unit/integration tests (`tests/test_r4_ml.py`)
 
-**Đầu ra:** `src/eegproj/features/`, `src/eegproj/models/classical.py`, `src/eegproj/evaluation/`, CSV kết quả.
+**Đầu ra:** `src/eegproj/features/`, `src/eegproj/models/{classical,runner}.py`, `src/eegproj/evaluation/{splits,metrics,stats}.py`, `scripts/02_run_classical_ml.py`, `scripts/03_stats_rq2.py`, `tests/test_r4_ml.py`, `reports/r4_evaluation_review.md`, `reports/methods_ml_rq2_draft.md`.
 
 ## R5 — Deep Learning
 **Owner:** Giang (Trần Bùi Hà Giang, 24022314)
