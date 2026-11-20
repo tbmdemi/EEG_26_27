@@ -32,7 +32,7 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 - [x] Mở Issue **[Data v2 ready #6](https://github.com/tbmdemi/EEG_26_27/issues/6)**; nội dung lưu tại `reports/data_v2_ready_issue.md`. Commit mới hiện chỉ local, chưa push; hai candidate vẫn chờ quyết định phát hành.
 - [x] Viết *Methods – Preprocessing* v2 vào report §3.1; bảng đủ 42 subject và accounting epoch tại `reports/r2_subject_epoch_table.md`. Report vẫn dùng v2 (20.600 epoch), tách khỏi candidate.
 
-**Đầu ra:** v2 hiện hành từ pipeline nhóm; notebook `01_preproc_five_subjects.ipynb`, code cải tiến `scripts/r2_*.py`, CLI `scripts/02_r2.py`; candidate `.fif`/log/QC riêng. Bản phát hành v2 chưa bị ghi đè.
+**Đầu ra:** v2 hiện hành từ pipeline nhóm; notebook `01_preprocess.ipynb`, code cải tiến `scripts/r2_*.py`, CLI `scripts/02_r2.py`; candidate `.fif`/log/QC riêng. Bản phát hành v2 chưa bị ghi đè.
 **Data v2 đã phát hành (2026-11-18).** Mọi người lấy dữ liệu bằng `python scripts/00_get_data.py` và chỉ làm việc trên v2; dữ liệu v1 đã bỏ.
 
 ## R3 — ERP & Visualization

@@ -4,7 +4,7 @@ Updated: 2026-11-19. Long is responsible for R2. All 42 oddball participants are
 
 ## Run the notebook
 
-Open `notebooks/01_preproc_five_subjects.ipynb` and select **EEG oddball (Python 3.11)**, Restart Kernel and Run All. The historical filename is retained. Default Run All audits the published v2 data and creates QC plots; `RUN_PREPROCESS`, `DOWNLOAD_RAW` and `RUN_SYNTHETIC_TESTS` are False.
+Open `notebooks/01_preprocess.ipynb` and select **EEG oddball (Python 3.11)**, Restart Kernel and Run All. Default Run All audits the published v2 data and creates QC plots; `RUN_PREPROCESS`, `DOWNLOAD_RAW` and `RUN_SYNTHETIC_TESTS` are False.
 
 For new candidates, enable `RUN_PREPROCESS=True` and `DOWNLOAD_RAW=True` if the requested recordings are missing. `SUBJECTS=None` means the configured 42 IDs; `[]` means no work. The current manual decisions for sub-10/OI1h and sub-13/AFF1h are in `configs/config.yaml` and apply to candidate runs. They do not describe the already published v2 preprocessing.
 
@@ -38,7 +38,7 @@ Updated: 2026-11-18. This guide applies to the current saved notebook, not the h
 
 ## Start here
 
-1. Open `notebooks/01_preproc_five_subjects.ipynb`. Its filename is historical; the configured scope is all 42 subjects, oddball only.
+1. Open `notebooks/01_preprocess.ipynb`. The configured scope is all 42 subjects, oddball only.
 2. Select the existing **EEG oddball (Python 3.11)** kernel (or the tested `python3` kernel in the same Python 3.11 environment).
 3. For the already downloaded v2 release, keep `RUN_PREPROCESS = False`, `DOWNLOAD_RAW = False` and `RUN_SYNTHETIC_TESTS = False`, then Run All. This validates the current release and regenerates audit/QC outputs.
 4. To download raw and generate new candidate preprocessing, set both `RUN_PREPROCESS = True` and `DOWNLOAD_RAW = True` before Run All. Raw recordings were deleted previously. This is a large download/processing job, not required to inspect the existing v2 data.
@@ -58,9 +58,9 @@ The official v2 release and its exclusion CSV remain unchanged. Candidate output
 
 ## Operational R2 notebook update - 2026-11-18
 
-The R2 implementation in `notebooks/01_preproc_five_subjects.ipynb` is now
+The R2 implementation in `notebooks/01_preprocess.ipynb` is now
 operational, rather than reference code with an unconditional processing block.
-The historical filename is retained; the configured scope is all 42 participants.
+The configured scope is all 42 participants.
 No shared Python script or `src/` module was changed, following Long's notebook-only
 implementation constraint. The shared CLI still has the earlier limitations;
 this updated notebook is the personal implementation to inspect and test.
@@ -164,7 +164,7 @@ These counts replace the historical five-participant results for any v2 reportin
 `configs/config.yaml` now matches the current main-branch configuration, including
 all 42 IDs, behavioural criteria and five cross-subject folds.
 The historical notebook filename is retained. All personal preprocessing
-and verification code remains in `notebooks/01_preproc_five_subjects.ipynb`; no new
+and verification code remains in `notebooks/01_preprocess.ipynb`; no new
 Python scripts/modules were created or edited. Run All validates the released data
 and creates audit/QC outputs. Writes to the published release are blocked; explicit preprocessing writes candidates only. Promoting a candidate requires a new team release.
 
@@ -255,7 +255,7 @@ không tự thay đổi phân công chính thức hoặc phần trăm đóng gó
 
 Trách nhiệm: kiểm tra dữ liệu, làm sạch tín hiệu cho sub-01 đến sub-05,
 kiểm tra chất lượng và bàn giao epoch cùng log cho người làm ERP, ML và DL.
-Notebook thực hiện: `notebooks/01_preproc_five_subjects.ipynb`.
+Notebook thực hiện: `notebooks/01_preprocess.ipynb`.
 
 ## Phạm vi và các thay đổi cấu hình riêng cho lần chạy
 
@@ -277,7 +277,7 @@ Notebook thực hiện: `notebooks/01_preproc_five_subjects.ipynb`.
 
 ## Chạy
 
-Mở `notebooks/01_preproc_five_subjects.ipynb`, chọn kernel Python 3.11 có
+Mở `notebooks/01_preprocess.ipynb`, chọn kernel Python 3.11 có
 các thư viện trong `environment.yml`, rồi chạy các ô từ trên xuống.
 Trên máy hiện tại, chọn kernel **EEG oddball (Python 3.11)** đã được cài.
 Ô thực hiện dùng `run(ROOT, subjects=CONFIG['dataset']['subjects'], overwrite=False)`.
