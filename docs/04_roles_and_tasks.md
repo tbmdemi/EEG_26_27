@@ -10,12 +10,11 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 ## R1 — Project Manager + Explainability
 **Owner:** Minh
 
-- [ ] Tạo Issues/Project board từ file này; bật branch protection cho `main`
-- [ ] Họp tiến độ hằng tuần (15–20 phút), ghi biên bản vào `reports/meeting_notes.md`
+- [X] Tạo Issues/Project board từ file này; bật branch protection cho `main`
 - [ ] Review PR liên quan đến protocol/config
-- [ ] Explainability: spatial filter EEGNet, Integrated Gradients, LDA patterns (protocol §9)
+- [ ] Explainability: spatial filter EEGNet, Integrated Gradients, LDA patterns (protocol §9). Đã xong EEGNet spatial pattern và IG (2026-11-20, `scripts/05_explain_dl.py`, `reports/explain_dl_draft.md`); LDA patterns chờ `lda_tw` của R4
 - [ ] Phân tích đối chứng nhiễu vận động (`early` vs `full`, task `dis_std`, `tgt_dis`)
-- [ ] Hình F1, F5
+- [ ] Hình F1, F5. F5 bản nháp: `figures/F5a_eegnet_spatial_patterns`, `figures/F5b_eegnet_saliency_{cross,within}`; F1 chưa làm
 - [ ] Ghép report, kiểm tra tổng % đóng góp = 100%, gửi email đúng hạn
 
 **Đầu ra:** `src/eegproj/explain/`, `figures/F1*`, `figures/F5*`, report hoàn chỉnh.
@@ -28,7 +27,7 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 - [x] Chạy `python scripts/01_preprocess.py --download --delete-raw` cho **toàn bộ subject** (42 subject, 35 dùng được; phát hành `preproc_v2_20261118.zip`)
 - [ ] Kiểm tra bằng mắt hình QC (`figures/preprocessing/`), ưu tiên subject có cờ trong cột `flags`; cập nhật `visual_review` / `bad_channels.manual` nếu cần rồi chạy lại subject đó
 - [x] Upload `preproc_v2_20261118.zip` lên Drive `EEG_26_27/release/` (**không** qua Git), cập nhật `RELEASE` trong `scripts/00_get_data.py` (2026-11-18)
-- [ ] Commit code v2 + `results/preproc_log.csv`, ghi commit hash vào `reports/meeting_notes.md` → mở Issue **"Data v2 ready"**
+- [ ] Commit code v2 + `results/preproc_log.csv`, mở Issue **"Data v2 ready"** kèm commit hash
 - [ ] Viết mục *Methods – Preprocessing* + bảng subject/epoch bị loại trong report
 
 **Đầu ra:** `src/eegproj/preprocessing/`, `scripts/01_preprocess.py`, epoch `.fif`, log.
@@ -68,6 +67,7 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 - [x] Early stopping trên validation tách từ train (within: 20% cuối của mỗi đoạn train; cross: 20% subject train), khôi phục trọng số tốt nhất; class weight cân bằng; hyperparameter ghi trong `models.dl` của config
 - [x] Chạy đủ trên 35 subject: 2 setting × 2 window × `tgt_std` cho `eegnet` và `shallow` (2026-11-20, RTX 4060 Laptop, 4.6 giờ). EEGNet tốt nhất: trung vị bal. acc. within/full 0.941, cross/full 0.924, cross/early 0.830 — bảng đầy đủ trong `reports/methods_dl_draft.md`. Task đối chứng DL (`--tasks dis_std tgt_dis`): chưa chạy
 - [x] Lưu checkpoint (gitignored) cho R1: `results/checkpoints/<model>/<setting>_<window>_<task>/*.pt`, đọc lại bằng `eegproj.models.dl.load_checkpoint`; kèm dự đoán từng trial `results/predictions/*.csv.gz` và log huấn luyện `results/dl_runs/*.json`
+- [x] Chia sẻ outputs qua Drive (`r5_dl_results_20261120_fc0cfaf.zip`), tải bằng `python scripts/04_get_dl_results.py` (2026-11-20)
 - [x] Viết bản nháp *Methods – Deep Learning* + bảng kết quả DL và so sánh EEGNet vs Shallow (`reports/methods_dl_draft.md`)
 
 **Đầu ra:** `src/eegproj/models/dl.py`, `src/eegproj/models/dl_runner.py`, `src/eegproj/evaluation/folds.py`, `scripts/04_train_dl.py`, `tests/test_r5_dl.py`, CSV kết quả, checkpoints, `reports/methods_dl_draft.md`.
