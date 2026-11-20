@@ -68,7 +68,7 @@ Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commi
 | Trịnh Bình Minh | 24022413 | Project Manager + Explainability | [@tbmdemi](https://github.com/tbmdemi)|
 | | | Signal Preprocessing | |
 | Bảo | | ERP & Visualization (R3) | |
-| | | Classical ML | |
+| Trần Đức Trung | 24022477 | Classical ML (R4) | [@TrungDev2431](https://github.com/TrungDev2431) |
 | Trần Bùi Hà Giang | 24022314 | Deep Learning (R5) | |
 
 ## Lưu output khi chạy
@@ -86,6 +86,20 @@ Chạy notebook `02_erp_exploration` → `03_erp_grand_average` → `04_erp_topo
 Kiểm tra code R3: `python -m ruff check src/eegproj/evaluation tests notebooks`, `python -m ruff format --check src/eegproj/evaluation tests notebooks`, `python -m unittest discover -s tests -v`.
 
 Xem [bàn giao R3 và ghi chú phương pháp](reports/r3_review_and_handoff.md), [bản nháp Results – ERP](reports/results_erp_draft.md). Nhật ký đóng góp nằm ở `reports/contribution_log.md`.
+
+## R4 — Classical ML & RQ2: chạy và bàn giao
+
+Cần dữ liệu v2 (`python scripts/00_get_data.py`). Đã triển khai `lda_tw` (50 ms bins + shrinkage LDA, kèm `extract_lda_haufe_patterns` cho R1) và `xdawn_rg` (xDAWN rank-safe + Riemannian Tangent Space + balanced Logistic Regression), căn chỉnh thứ tự 127 kênh theo tên điện cực (`sub-13`, `sub-42`), đồng bộ chia CV `equal_segments` và `results/cv_cross_subject_folds.csv` cùng R5, chạy đủ 24 tổ hợp trên 35 subject và thực hiện kiểm định RQ2 (Wilcoxon + Holm) + Hình F4 đối chiếu với DL:
+
+```bash
+python scripts/02_run_classical_ml.py                # 2 models × 2 settings × 2 windows × 3 tasks (24 CSVs)
+python scripts/03_stats_rq2.py --metric bal_acc      # thống kê RQ2 + hình F4 (sau khi có CSV của R5)
+python scripts/03_stats_rq2.py --metric auc --out-csv results/rq2_wilcoxon_holm_auc.csv --fig-stem figures/F4_paired_classical_vs_dl_auc
+```
+
+- Kiểm tra code R4: `python -m unittest tests.test_r4_ml -v`, `python -m ruff check src/eegproj/evaluation/splits.py src/eegproj/evaluation/stats.py src/eegproj/evaluation/__init__.py src/eegproj/features src/eegproj/models/classical.py src/eegproj/models/runner.py src/eegproj/models/__init__.py scripts/02_run_classical_ml.py scripts/03_stats_rq2.py tests/test_r4_ml.py`.
+
+Báo cáo bàn giao: [`reports/r4_evaluation_review.md`](reports/r4_evaluation_review.md); bản nháp report: [`reports/methods_ml_rq2_draft.md`](reports/methods_ml_rq2_draft.md).
 
 ## R5 — Deep Learning: chạy và bàn giao
 
