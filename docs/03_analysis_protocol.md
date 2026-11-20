@@ -52,7 +52,7 @@ Nếu hiệu năng giảm mạnh từ `full` → `early`, hoặc saliency tập 
 | Thiết lập | Cách chia | Ghi chú |
 |---|---|---|
 | **Within-subject** | 5-fold **theo khối thời gian liên tục** (chia recording thành 5 đoạn liên tiếp, ví dụ theo các lần nghỉ `S 10`), không xáo trộn trial | Tránh trial liền kề (tương quan) rơi vào cả train và test |
-| **Cross-subject** | **2 fold theo subject**: train sub-01 → test sub-03 và ngược lại | Không subject nào xuất hiện ở cả train và test; chỉ là kết quả phụ (train trên 1 người) |
+| **Cross-subject** | **GroupKFold 5 fold theo subject** trên toàn bộ subject dùng được (35 người trong bản v2 hiện hành, lấy danh sách từ log) | Không subject nào xuất hiện ở cả train và test. Phân chia fold cố định (seed trong config) và **lưu ra `results/cv_cross_subject_folds.csv`** để mọi mô hình dùng đúng cùng một phân chia |
 
 Quy tắc chống rò rỉ dữ liệu (data leakage):
 1. Mọi bước **học từ dữ liệu** (scaler, xDAWN, CSP, PCA, chọn đặc trưng, chọn ngưỡng, early stopping, tuning) chỉ fit trên **train**.
@@ -85,6 +85,8 @@ Quy tắc chống rò rỉ dữ liệu (data leakage):
 
 Đầu vào DL: epoch đã chuẩn hóa theo kênh (thống kê tính trên train), resample còn **128 Hz** cho DL nếu cần tiết kiệm tính toán (ghi rõ).
 
+Khối lượng tính toán DL với bản v2 hiện hành: `within` = 35 subject × 5 fold mỗi mô hình × cửa sổ; `cross` = 5 lần train trên khoảng 28 người mỗi lần (số thực tế phụ thuộc phân chia fold). Số trial train phụ thuộc subject và số epoch còn lại. Ưu tiên chạy đủ task chính `tgt_std` cho cả 2 setting × 2 cửa sổ; task đối chứng cho DL chỉ khi còn thời gian (classical chạy đủ cả 3 task).
+
 ## 7. Định dạng kết quả (bắt buộc — để ghép bảng/thống kê tự động)
 
 Mỗi lần chạy ghi **một file** `results/metrics/<model>_<setting>_<window>_<task>.csv` với các cột:
@@ -98,8 +100,11 @@ subject, fold, model, family, setting, window, task, bal_acc, auc, f1_target, n_
 
 ## 8. Thống kê cho RQ2
 
-- So sánh **mô hình classical tốt nhất vs DL tốt nhất**, theo cặp trên từng **(subject, fold)** của within-subject: 2 subject × 5 fold = **10 cặp**, **Wilcoxon signed-rank** (two-sided).
-- Lý do: chỉ có 2 subject nên không thể kiểm định theo subject. Các fold cùng subject không hoàn toàn độc lập → **phải nêu rõ là hạn chế trong report**; kết quả chỉ mang tính thăm dò, không khái quát cho quần thể.
+- Đơn vị thống kê là **subject** (một giá trị mỗi người; tối đa 35 cặp với bản v2 hiện hành, kiểm tra đủ kết quả theo subject):
+  - `within`: trung bình metric của 5 fold trong từng subject;
+  - `cross`: metric trên subject đó khi nó nằm trong test fold.
+- So sánh **mô hình classical tốt nhất vs DL tốt nhất** (chọn theo trung vị balanced accuracy, cửa sổ `full`) bằng **Wilcoxon signed-rank** (two-sided), ghép cặp theo subject, riêng cho từng setting (`within`, `cross`).
+- Không dùng (subject, fold) làm đơn vị: các fold cùng một người không độc lập.
 - Nhiều phép so sánh → hiệu chỉnh **Holm**.
 - Báo kèm: trung vị chênh lệch + effect size (rank-biserial).
 
@@ -134,4 +139,11 @@ Quy ước hình: lưu `figures/F<số>_<mô-tả>.png` (300 dpi) + `.pdf`; font
 | Ngày | Thay đổi | Lý do | Người đề xuất |
 |---|---|---|---|
 | | Phiên bản đầu | | |
-| 2026-11-17 | Chỉ dùng **sub-01, sub-03**; cross-subject 2 fold; Wilcoxon theo (subject, fold) | Thu hẹp phạm vi; Wilcoxon theo subject vô nghĩa với n nhỏ | PM |
+| 2026-11-19 | **Within-subject CV: 5 đoạn liên tiếp đều nhau** (`evaluation.within.split: equal_segments`) thay cho 5 block giữa các lần nghỉ `S 10`. Trial vẫn theo thứ tự ghi, không xáo trộn; mỗi đoạn có số trial gần bằng nhau. Block gốc giữ ở cột `s10_block`. Dùng `eegproj.evaluation.folds.within_cv_metadata` trước `iter_within_folds` | Các block `S 10` lệch nhau nhiều: block cuối ở mọi subject chỉ có ~40–50 trial và 0–4 target (sub-13: 0 target → fold không xác định, code dừng; sub-07/10/11: 1 target → balanced accuracy của fold gần như ngẫu nhiên). Protocol §4 cho phép "5 đoạn liên tiếp"; với cách chia mới, cả 35 subject × 3 task đều có đủ 2 lớp ở mọi fold. **R4 cần dùng cùng cách chia** để RQ2 ghép cặp đúng | R5 — chờ nhóm review |
+| 2026-11-19 | **R5 — Deep Learning.** (1) Thêm hyperparameter DL vào `models.dl` (kernel/pooling tính theo giây, `min_delta`); giá trị cũ giữ nguyên. (2) Validation cho early stopping: `within` = 20% trial cuối của mỗi block train; `cross` = 20% subject train (seed + fold). (3) EEGNet/ShallowConvNet viết bằng PyTorch thuần theo đúng kiến trúc gốc thay vì import braindecode `EEGNetv4`. (4) Resample cả epoch 250 → 128 Hz rồi mới cắt cửa sổ. (5) Ghi `results/cv_cross_subject_folds.csv` từ `iter_cross_folds` của R4 và mọi lần chạy sau đọc lại file này. (6) Cột `seed` = seed config; mô hình fold k khởi tạo bằng seed + k | (2) Validation tách theo thời gian/subject giống cấu trúc test, tránh trial liền kề ở cả fit và validation; trên sub-01 cho kết quả tương đương chia ngẫu nhiên phân tầng (0.723 vs 0.734 bal. acc.). (3) Kiểm soát được tên lớp và đọc trọng số cho explainability, không phụ thuộc phiên bản braindecode. (4) Tránh hiệu ứng biên khi resample. (5) Protocol §4 yêu cầu lưu fold | R5 — chờ nhóm review |
+| 2026-11-18 | Review sau `b97a0684`: ghi đúng cohort hiện hành 35/42; làm rõ F4 dùng đơn vị subject theo §8; bổ sung kiểm tra cohort và metadata v2 trong code R3 | Sửa kiểm tra đầu vào và mô tả; giữ nguyên mọi tham số config, CV/metric và trạng thái P300/QC | R3 — đợt review chưa commit |
+| 2026-11-18 | Bổ sung số tham chiếu hành vi từ Table 5 vào `erp.behaviour_reference`; bảng R3 tách nhóm trước loại EEG và nhóm ERP, dùng mean ± sample SD qua subject và số đếm hành vi trước loại epoch | Đối chiếu mô tả đúng cỡ mẫu/đơn vị; không đổi quy tắc lọc hành vi, tiền xử lý hay phân loại | R3 — commit `b97a0684`, chờ nhóm review |
+| 2026-11-18 | Chuẩn bị đề xuất thăm dò `erp.p300`: ứng viên cực đại có dấu trong 300–600 ms, Pz chính/CPz-Cz bổ sung, target/distractor riêng; cờ biên 20 ms và kiểm tra cực đại. Chưa chốt phương pháp report | Bước tiếp theo sau ERP/topomap, tạo bảng để xem xét phương pháp và các trường hợp có cờ | R3 — commit `b97a0684`, đề xuất chờ nhóm review |
+| 2026-11-18 | Cấu hình hóa phần hiển thị ERP đã yêu cầu ở §9–10 (`erp` trong config): Pz/CPz/Cz, topomap 250–600 ms, lát cắt 300/400/500/600 ms, PNG 300 dpi. Ghi rõ ghép theo tên điện cực và hình nhóm dùng vị trí điện cực trung bình | Triển khai hình F2; không thay đổi tiền xử lý, mô hình hay cửa sổ đo đỉnh P300 | R3 — commit `b97a0684`, chờ nhóm review |
+| 2026-11-17 | Chỉ dùng **sub-01, sub-03**; cross-subject 2 fold; Wilcoxon theo (subject, fold) | Thu hẹp phạm vi; Wilcoxon theo subject vô nghĩa với n nhỏ | PM — **đã thay bằng dòng dưới** |
+| 2026-11-17 | **Pipeline v2.** (1) Dùng **toàn bộ 42 subject**, loại trước sub-02/14/17 theo bài báo, gắn cờ sub-13/23/24/37/38. (2) **Chỉ giữ trial đúng hành vi** (cửa sổ phản hồi 100–1400 ms), lưu `rt` vào metadata. (3) Loại subject nếu < 40 target đúng; hit rate < 80% chỉ gắn cờ. (4) Đánh dấu BAD quanh chỗ nối recording. (5) Cross-subject: GroupKFold 5 fold theo subject, lưu phân chia fold. (6) Thống kê RQ2 theo **subject** (~37 cặp) thay vì (subject, fold). Dữ liệu v1 (sub-01…05, mọi trial) không dùng nữa | 2 subject không đủ để trả lời RQ1/RQ2; đề bài yêu cầu chỉ dùng trial phản hồi đúng; 3 subject hiểu sai nhiệm vụ làm nhiễu nhãn | PM |
