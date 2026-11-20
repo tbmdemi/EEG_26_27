@@ -76,7 +76,7 @@ Reviewer kiểm tra:
 
 ## 7. Chia sẻ file lớn
 
-Dữ liệu đã tiền xử lý, checkpoint, hình và bảng kết quả sinh ra khi chạy: để trên thư mục chia sẻ chung của nhóm (Drive/OneDrive). Link ghi trong `reports/meeting_notes.md`. Khi cập nhật, ghi ngày + commit hash của code tạo ra file đó.
+Dữ liệu đã tiền xử lý, checkpoint, hình và bảng kết quả sinh ra khi chạy: để trên thư mục chia sẻ chung của nhóm (Drive/OneDrive). Link và sha256 ghi trong `RELEASE` ở đầu script tải tương ứng (`scripts/00_get_data.py` cho dữ liệu, `scripts/04_get_dl_results.py` cho outputs DL). Khi cập nhật, ghi ngày + commit hash của code tạo ra file đó vào tên file zip.
 
 Dữ liệu tiền xử lý hiện hành: **pipeline v2** (`PIPELINE_VERSION = 2`, trial đúng hành vi, toàn bộ subject dùng được). Nếu `epochs.metadata` của bạn **không có cột `rt`**, đó là file v1 cũ → xóa và tải lại. Không trộn dữ liệu từ nguồn tiền xử lý khác vào kết quả.
 

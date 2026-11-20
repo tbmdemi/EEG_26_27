@@ -52,7 +52,7 @@ Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commi
 │   ├── features/              # trích xuất đặc trưng cho ML truyền thống
 │   ├── models/                # ML truyền thống + Deep Learning
 │   ├── evaluation/            # chia CV, metric, thống kê
-│   └── explain/               # giải thích mô hình
+│   └── explain/               # giải thích mô hình: dl.py (IG, spatial pattern, bảng ROI), plots.py (hình F5)
 ├── results/                   # preproc_log.csv được giữ trong Git; kết quả chạy được gitignore
 ├── figures/                   # hình sinh ra cho report/slide (PNG/PDF, gitignored)
 ├── reports/                   # report_template.md, contribution_log.md, slide
@@ -98,9 +98,26 @@ python scripts/04_train_dl.py --subjects 01 03 --settings within # chạy thử 
 
 - Tự dùng GPU nếu có (`--device cuda|cpu`). Ước tính: CPU 4–8 nhân khoảng 4–9 giờ cho cả lưới chính; GPU (ví dụ Colab T4) dưới 1 giờ. Bị ngắt giữa chừng thì chạy lại đúng lệnh: kết quả đã xong được bỏ qua, phần dở dang chạy tiếp từ fold cuối.
 - Đầu ra (gitignored): `results/metrics/{eegnet,shallow}_*.csv`, `results/cv_cross_subject_folds.csv` (phân chia subject cố định dùng chung với R4), `results/predictions/*.csv.gz` (điểm từng trial), `results/dl_runs/*.json` (hyperparameter, số epoch, thời gian từng fold), `results/checkpoints/` (mô hình cho R1, đọc bằng `eegproj.models.dl.load_checkpoint`).
+- Không cần train lại: `python scripts/04_get_dl_results.py` tải bản outputs đã chạy (285 MB, Google Drive) vào `results/`, kiểm tra sha256, không ghi đè file bạn tự train (trừ khi có `--force`).
 - Kiểm tra code R5: `python -m unittest tests.test_r5_dl -v`, `python -m ruff check src/eegproj/models src/eegproj/evaluation/folds.py scripts/04_train_dl.py tests/test_r5_dl.py`.
 
 Phương pháp: [`reports/methods_dl_draft.md`](reports/methods_dl_draft.md).
+
+## R1: Explainability (RQ3), chạy và bàn giao
+
+Cần dữ liệu v2 và checkpoint/predictions của R5 trong `results/`. Giải thích EEGNet theo protocol mục 9.2-9.3: spatial pattern (Haufe 2014) của từng spatial filter cùng mức quan trọng (AUC giảm bao nhiêu khi tắt filter), và Integrated Gradients (theo kênh và thời gian) trên các trial target được đoán đúng ở fold test:
+
+```bash
+python scripts/05_explain_dl.py                    # cross + within, full + early, tgt_std (~5 phút trên GPU)
+python scripts/05_explain_dl.py --settings cross   # chỉ mô hình cross-subject
+```
+
+- Trước khi giải thích, script tính lại quyết định của từng checkpoint trên đúng trial test và so với `results/predictions/`; lệch quá 0.01 thì dừng (sai dữ liệu/thứ tự kênh). Sai số completeness của IG được ghi vào `results/explain/manifest.json`.
+- Đầu ra (gitignored): `results/explain/` (`*_saliency.npz`, `*_patterns.csv`, `saliency_roi_tgt_std.csv`, `saliency_summary_tgt_std.csv`), hình `figures/F5a_eegnet_spatial_patterns`, `figures/F5b_eegnet_saliency_{cross,within}` (PNG 300 dpi + PDF).
+- Kiểm tra code R1: `python -m unittest tests.test_r1_explain -v`, `python -m ruff check src/eegproj/explain scripts/05_explain_dl.py tests/test_r1_explain.py`.
+- Chưa làm: LDA patterns (mục 9.4, chờ `lda_tw` của R4).
+
+Phương pháp và kết quả: [`reports/explain_dl_draft.md`](reports/explain_dl_draft.md).
 
 ## Liên hệ nộp bài
 
