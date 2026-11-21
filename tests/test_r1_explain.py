@@ -18,6 +18,8 @@ from eegproj.explain.dl import (
     roi_table,
     time_bins,
 )
+from eegproj.explain.lda import lda_pattern
+from eegproj.models.classical import build_lda_tw, extract_lda_haufe_patterns
 from eegproj.models.dl import TorchClassifier
 
 SFREQ = 128.0
@@ -100,6 +102,26 @@ class TestImportance(unittest.TestCase):
         self.assertEqual(drops.shape, (4,))
         self.assertTrue(np.isfinite(drops).all())
         torch.testing.assert_close(clf.net_(x_list[0]).detach(), before)
+
+
+class TestLdaPattern(unittest.TestCase):
+    def test_matches_r4_on_binned_features(self):
+        """Fit trên đặc trưng đã lấy trung bình theo bin phải cho cùng mô hình và cùng pattern với pipeline đầy đủ của R4."""
+        rng = np.random.default_rng(2)
+        times = np.arange(0, 0.2 + 1e-9, 1 / 250)  # 4 bin 50 ms ở 250 Hz
+        y = np.r_[np.zeros(60, int), np.ones(20, int)]
+        X = rng.normal(size=(80, 5, len(times))) + y[:, None, None] * np.array([0, 0, 1, 2, 0])[None, :, None]
+        config = {
+            "models": {"classical": {"lda_tw": {"bin_ms": 50, "shrinkage": "auto"}}},
+            "classification": {"class_balance": "class_weight"},
+        }
+        full = build_lda_tw(times, config).fit(X, y)
+        expected = extract_lda_haufe_patterns(full, X)["pattern_uv"]
+
+        Z = full.named_steps["time_windows"].transform(X)
+        binned = build_lda_tw(times, config)[1:].fit(Z, y)
+        np.testing.assert_allclose(binned.predict_proba(Z), full.predict_proba(X))
+        np.testing.assert_allclose(lda_pattern(binned, Z).reshape(expected.shape), expected, rtol=1e-6, atol=1e-9)
 
 
 class TestRoiTable(unittest.TestCase):

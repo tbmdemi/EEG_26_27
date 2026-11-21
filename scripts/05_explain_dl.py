@@ -3,6 +3,7 @@
 Cách chạy:
     python scripts/05_explain_dl.py                    # cross + within, full + early, task tgt_std
     python scripts/05_explain_dl.py --settings cross   # chỉ mô hình cross-subject
+    python scripts/05_explain_dl.py --task dis_std     # task đối chứng (cần checkpoint của task đó)
 
 Cần: dữ liệu v2 (scripts/00_get_data.py) và checkpoint/predictions của R5 trong results/ (scripts/04_get_dl_results.py hoặc scripts/04_train_dl.py).
 
@@ -12,6 +13,7 @@ Cần: dữ liệu v2 (scripts/00_get_data.py) và checkpoint/predictions của 
     results/explain/saliency_roi_<task>.csv, saliency_summary_<task>.csv   |IG| ở vùng P300 / vùng vận động trái
     results/explain/manifest.json                                    kết quả các bước kiểm tra
     figures/F5a_eegnet_spatial_patterns.{png,pdf}, figures/F5b_eegnet_saliency_<setting>.{png,pdf}
+Với task đối chứng, manifest và tên hình có thêm hậu tố _<task>, ví dụ F5b_eegnet_saliency_cross_dis_std.
 """
 
 import argparse
@@ -39,7 +41,7 @@ from eegproj.explain.dl import (
     summarise_roi,
     write_manifest,
 )
-from eegproj.explain.plots import plot_saliency, plot_spatial_patterns
+from eegproj.explain.plots import plot_saliency, plot_spatial_patterns, task_classes
 from eegproj.models.dl import load_checkpoint, pick_device
 
 
@@ -47,7 +49,7 @@ def save_figure(fig, path, dpi):
     """Lưu hình thành .png và .pdf (quy ước hình của protocol mục 10)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     for ext in (".png", ".pdf"):
-        fig.savefig(path.with_suffix(ext), dpi=dpi)
+        fig.savefig(path.with_suffix(ext), dpi=dpi, bbox_inches="tight")  # không cắt nhãn colorbar ở mép hình
     plt.close(fig)
 
 
@@ -66,6 +68,7 @@ def main():
     out_dir = root / "results" / "explain"
     fig_dir = root / config["paths"]["figures"]
     dpi = config["erp"]["figure_dpi"]
+    suffix = "" if args.task == "tgt_std" else f"_{args.task}"  # task chính giữ tên file cũ
     device = str(pick_device(args.device))
     start = time.monotonic()
 
@@ -81,7 +84,9 @@ def main():
     # 2. Thông tin dùng chung: vị trí điện cực, bản đồ P300 tham chiếu, RT trung vị.
     info = group_info(root, config, subjects, ch_names, config["models"]["dl"]["sfreq"])
     ref_map = p300_reference_map(data, config)
-    rt_median = median_rt(data)
+    # Chỉ trial target có bấm nút, nên chỉ có RT khi lớp dương là target
+    positive = task_classes(config, args.task)[0]
+    rt_median = median_rt(data) if positive == "target" else None
 
     # 3. Giải thích từng tổ hợp setting và window, kiểm tra, lưu kết quả và vẽ hình.
     checks, roi_tables = [], []
@@ -104,30 +109,32 @@ def main():
                 }
             )
             print(
-                f"[{name}] {res['n_correct'].sum()}/{res['n_targets'].sum()} target đoán đúng | "
+                f"[{name}] {res['n_correct'].sum()}/{res['n_targets'].sum()} trial {positive} đoán đúng | "
                 f"lệch quyết định {diff:.1e} | sai số IG {res['ig_rel_error']:.1e} | {time.monotonic() - t0:.0f}s",
                 flush=True,
             )
             results[window] = res
 
-        save_figure(plot_saliency(results, info, config, rt_median), fig_dir / f"F5b_eegnet_saliency_{setting}", dpi)
+        save_figure(
+            plot_saliency(results, info, config, rt_median), fig_dir / f"F5b_eegnet_saliency_{setting}{suffix}", dpi
+        )
         if setting == "cross":
             fig = plot_spatial_patterns(results, info, ref_map, config)
-            save_figure(fig, fig_dir / "F5a_eegnet_spatial_patterns", dpi)
+            save_figure(fig, fig_dir / f"F5a_eegnet_spatial_patterns{suffix}", dpi)
 
     # 4. Bảng |IG| theo vùng kênh và khoảng thời gian, cùng file manifest.
     table = pd.concat(roi_tables, ignore_index=True)
     table.to_csv(out_dir / f"saliency_roi_{args.task}.csv", index=False)
     summary = summarise_roi(table)
     summary.to_csv(out_dir / f"saliency_summary_{args.task}.csv", index=False)
-    write_manifest(root, out_dir, checks, args.steps)
+    write_manifest(root, out_dir, checks, args.steps, f"manifest{suffix}.json")
 
     columns = ["setting", "window", "time_bin", "bin_share_median", "p300_enrichment_median"]
     columns += ["motor_enrichment_median", "p_p300_vs_motor"]
     print(summary[columns].round(3).to_string(index=False))
-    print(
-        f"RT trung vị của target đúng: {rt_median * 1000:.0f} ms | xong sau {(time.monotonic() - start) / 60:.1f} phút"
-    )
+    if rt_median is not None:
+        print(f"RT trung vị của target đúng: {rt_median * 1000:.0f} ms")
+    print(f"xong sau {(time.monotonic() - start) / 60:.1f} phút")
 
 
 if __name__ == "__main__":

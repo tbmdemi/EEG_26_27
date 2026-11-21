@@ -479,9 +479,9 @@ def save_run(result, out_dir):
     return name
 
 
-def write_manifest(root, out_dir, checks, steps):
-    """Ghi kết quả các bước kiểm tra và commit hiện tại vào results/explain/manifest.json."""
-    path = Path(out_dir) / "manifest.json"
+def write_manifest(root, out_dir, checks, steps, name="manifest.json"):
+    """Ghi kết quả các bước kiểm tra và commit hiện tại vào results/explain/<name>."""
+    path = Path(out_dir) / name
     content = {"git_commit": _git_commit(root), "ig_steps": steps, "runs": checks}
     path.write_text(json.dumps(content, indent=2), encoding="utf-8")
     return path

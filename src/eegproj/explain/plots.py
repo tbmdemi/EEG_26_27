@@ -2,6 +2,7 @@
 
 F5a: spatial pattern của EEGNet (cross-subject).
 F5b: Integrated Gradients theo kênh và thời gian.
+F5c: activation pattern của LDA (lda_tw, cross-subject) để so sánh với EEGNet.
 """
 
 import matplotlib.pyplot as plt
@@ -9,6 +10,12 @@ import mne
 import numpy as np
 
 from .dl import BIN_LABELS, LATE_S, MOTOR_ROI, P300_ROI, time_bins
+
+
+def task_classes(config, task):
+    """Tên lớp dương và lớp âm của bài toán (config classification.tasks), ví dụ ('target', 'standard')."""
+    classes = config["classification"]["tasks"][task]
+    return classes["positive"], classes["negative"]
 
 
 def plot_spatial_patterns(results, info, ref_map, config, top=2):
@@ -25,13 +32,14 @@ def plot_spatial_patterns(results, info, ref_map, config, top=2):
     fig = plt.figure(figsize=(2.3 * (len(folds) + 1.4), 2.35 * n_rows + 0.8), layout="constrained")
     grid = fig.add_gridspec(n_rows, len(folds) + 1, width_ratios=[1.4] + [1] * len(folds))
 
-    # Cột trái, nửa trên: bản đồ ERP target - standard để so sánh
+    # Cột trái, nửa trên: bản đồ ERP lớp dương - lớp âm (task chính: target - standard) để so sánh
+    pos, neg = task_classes(config, results[windows[0]]["task"])
     ax = fig.add_subplot(grid[: n_rows // 2, 0])
     limit = np.max(np.abs(ref_map))
     image, _ = mne.viz.plot_topomap(ref_map, info, axes=ax, show=False, cmap="RdBu_r", vlim=(-limit, limit))
     fig.colorbar(image, ax=ax, shrink=0.6, label="µV", location="bottom")
     start, stop = config["erp"]["topomap_window_s"]
-    ax.set_title(f"ERP target - standard\n{start * 1000:g}-{stop * 1000:g} ms (reference)", fontsize=font)
+    ax.set_title(f"ERP {pos} - {neg}\n{start * 1000:g}-{stop * 1000:g} ms (reference)", fontsize=font)
 
     # Cột trái, nửa dưới: mỗi điểm là một filter (độ giống P300 và độ quan trọng)
     ax = fig.add_subplot(grid[n_rows // 2 :, 0])
@@ -67,7 +75,7 @@ def plot_spatial_patterns(results, info, ref_map, config, top=2):
     fig.colorbar(image, ax=topo_axes, shrink=0.5, label="Pattern (normalised, a.u.)")
 
     fig.suptitle(
-        "F5a: EEGNet spatial patterns (cross-subject, task target vs standard)\n"
+        f"F5a: EEGNet spatial patterns (cross-subject, task {pos} vs {neg})\n"
         "Top filters by importance per fold; polarity aligned with the P300 map; mean electrode positions",
         fontsize=font + 1,
     )
@@ -116,8 +124,10 @@ def plot_saliency(results, info, config, rt_median=None):
         row_of = {ch[j]: row for row, j in enumerate(order)}
         ax.set_yticks([row_of[c] for c in landmarks], landmarks)
         ax.set(xlabel="Time from stimulus onset (ms)", ylabel="Channel (anterior to posterior)")
-        ax.set_title(f"{window}: mean |IG| over correct targets ({n_subjects} subjects)", fontsize=font)
-        fig.colorbar(image, ax=ax, label="|IG| (logit per sample)", shrink=0.9)
+        pos, neg = task_classes(config, res["task"])
+        ax.set_title(f"{window}: mean |IG| over correct {pos} trials ({n_subjects} subjects)", fontsize=font)
+        # Colorbar đặt dưới heatmap: đặt bên phải sẽ kéo giãn khe giữa cột 2 và 3 của hàng topomap
+        fig.colorbar(image, ax=ax, label="|IG| (logit per sample)", location="bottom", shrink=0.8, aspect=50)
 
         # 2) Đường thời gian: vùng P300, vùng vận động trái và trung bình mọi kênh (trung bình và SEM qua subject)
         ax = fig.add_subplot(grid[2 * wi, 2:])
@@ -149,19 +159,80 @@ def plot_saliency(results, info, config, rt_median=None):
         topo_axes = []
         for b, (label, values) in enumerate(zip(BIN_LABELS, maps)):
             ax = fig.add_subplot(grid[2 * wi + 1, b])
+            topo_axes.append(ax)  # gồm cả ô trống, để colorbar nằm ở mép phải thay vì chen vào giữa hàng
             if values is None:  # khoảng nằm ngoài cửa sổ `early`
                 ax.axis("off")
                 ax.text(0.5, 0.5, "outside window", ha="center", va="center", color="gray")
                 continue
             image, _ = mne.viz.plot_topomap(values, info, axes=ax, show=False, cmap="magma_r", vlim=(0, vmax))
             ax.set_title(f"{window}: |IG| {label}", fontsize=font)
-            topo_axes.append(ax)
-        fig.colorbar(image, ax=topo_axes, shrink=0.7, label="mean |IG| (logit per sample)")
+        fig.colorbar(image, ax=topo_axes, shrink=0.7, label="mean |IG| (logit)")
 
     setting = results[windows[0]]["setting"]
     fig.suptitle(
-        f"F5b: EEGNet Integrated Gradients, {setting}-subject, target vs standard\n"
+        f"F5b: EEGNet Integrated Gradients, {setting}-subject, {pos} vs {neg}\n"
         "|IG| = how much each channel/time point moved the decision; baseline = training mean; mean electrode positions",
+        fontsize=font + 1,
+    )
+    return fig
+
+
+def plot_lda_patterns(results, info, config, task="tgt_std"):
+    """F5c: với mỗi cửa sổ, đường thời gian của pattern LDA ở vùng P300 và vùng vận động trái, và topomap theo khoảng.
+
+    results : {window: {"patterns": (fold, kênh, bin) uV, "bin_edges": (bin + 1,) s}}
+    Dùng cùng các khoảng thời gian với F5b để dễ đặt cạnh nhau.
+    """
+    font = config["erp"]["font_size"]
+    plt.rcParams.update({"font.size": font})
+    windows = list(results)
+    n_bins = len(BIN_LABELS)
+    ch = info.ch_names
+    fig = plt.figure(figsize=(16, 3.6 * len(windows) + 0.8), layout="constrained")
+    grid = fig.add_gridspec(len(windows), n_bins + 1, width_ratios=[1.8] + [1] * n_bins)
+
+    for wi, window in enumerate(windows):
+        patterns = results[window]["patterns"]  # (fold, kênh, bin)
+        edges = results[window]["bin_edges"]
+        centers_ms = (edges[:-1] + edges[1:]) / 2 * 1000
+
+        # 1) Đường thời gian: trung bình kênh trong vùng, đường = trung bình qua fold, vùng tô = min..max qua fold
+        ax = fig.add_subplot(grid[wi, 0])
+        for label, channels, color in [
+            (f"P300 ROI ({', '.join(P300_ROI[:3])}...)", P300_ROI, "tab:orange"),
+            (f"Left motor ROI ({', '.join(MOTOR_ROI[:3])}...)", MOTOR_ROI, "tab:purple"),
+        ]:
+            per_fold = patterns[:, [ch.index(c) for c in channels]].mean(1)
+            ax.plot(centers_ms, per_fold.mean(0), marker="o", ms=3, color=color, label=label)
+            ax.fill_between(centers_ms, per_fold.min(0), per_fold.max(0), color=color, alpha=0.2)
+        ax.axhline(0, color="gray", lw=0.6)
+        ax.axvline(LATE_S * 1000, color="gray", ls="--", lw=0.8, label="end of early window")
+        ax.set_xlim(0, 800)
+        ax.set(xlabel="Time from stimulus onset (ms)", ylabel="Pattern (µV)")
+        ax.set_title(f"{window}: ROI pattern per 50 ms bin (5 folds)", fontsize=font)
+        ax.legend(fontsize=font - 2, loc="center left")
+
+        # 2) Topomap pattern trung bình qua fold, gộp các bin 50 ms có tâm nằm trong từng khoảng (cùng thang màu)
+        mean = patterns.mean(0)
+        bin_of = time_bins(centers_ms / 1000)
+        maps = [mean[:, bin_of == b].mean(1) if (bin_of == b).any() else None for b in range(n_bins)]
+        limit = max(np.abs(m).max() for m in maps if m is not None)
+        topo_axes = []
+        for b, (label, values) in enumerate(zip(BIN_LABELS, maps)):
+            ax = fig.add_subplot(grid[wi, b + 1])
+            topo_axes.append(ax)  # gồm cả ô trống, để colorbar nằm ở mép phải thay vì chen vào giữa hàng
+            if values is None:  # khoảng nằm ngoài cửa sổ `early`
+                ax.axis("off")
+                ax.text(0.5, 0.5, "outside window", ha="center", va="center", color="gray")
+                continue
+            image, _ = mne.viz.plot_topomap(values, info, axes=ax, show=False, cmap="RdBu_r", vlim=(-limit, limit))
+            ax.set_title(f"{window}: {label}", fontsize=font)
+        fig.colorbar(image, ax=topo_axes, shrink=0.7, label="LDA pattern (µV)")
+
+    pos, neg = task_classes(config, task)
+    fig.suptitle(
+        f"F5c: LDA activation patterns (lda_tw, cross-subject, {pos} vs {neg})\n"
+        "Haufe patterns of the 50 ms bin features, mean over 5 folds; mean electrode positions",
         fontsize=font + 1,
     )
     return fig

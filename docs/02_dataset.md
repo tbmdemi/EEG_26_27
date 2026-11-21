@@ -117,6 +117,8 @@ python scripts/02_r2.py                              # chỉ audit v2 và tạo 
 python scripts/02_r2.py --process --download -s 10 13  # chủ động tạo candidate
 ```
 
+Notebook Colab tiền xử lý dữ liệu: [`preprocess_oddball_colab.ipynb`](https://colab.research.google.com/drive/1nqyGmEw7IiSgC1svfK4Oud3w8JP8NLi3?usp=sharing).
+
 Chỉ `--process` mới chạy tiền xử lý; `--download` cho phép tải oddball và metadata cần thiết. Output mới ở `data/derivatives/preproc/_candidate/`, log ở `results/r2_candidate/`, hình ở `figures/preprocessing/candidate/`; không ghi đè v2. Candidate sub-10/sub-13 chưa được duyệt thay v2.
 
 Tọa độ riêng từng subject: ưu tiên CapTrak `.bvct`, fallback BrainVision `.bvef`. Với `.bvef`, code dùng `mne.channels.read_custom_montage(..., coord_frame="head")` và chuẩn hóa head size mặc định của MNE; nguồn được ghi trong summary. Metadata Latin-1 và thứ tự kênh được xử lý trong bản nhìn BIDS tạm, căn theo tên, giữ nguyên raw.

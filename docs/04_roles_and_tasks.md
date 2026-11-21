@@ -12,9 +12,9 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 
 - [X] Tạo Issues/Project board từ file này; bật branch protection cho `main`
 - [ ] Review PR liên quan đến protocol/config
-- [ ] Explainability: spatial filter EEGNet, Integrated Gradients, LDA patterns (protocol §9). Đã xong EEGNet spatial pattern và IG (2026-11-20, `scripts/05_explain_dl.py`, `reports/explain_dl_draft.md`); LDA patterns chờ `lda_tw` của R4
-- [ ] Phân tích đối chứng nhiễu vận động (`early` vs `full`, task `dis_std`, `tgt_dis`)
-- [ ] Hình F1, F5. F5 bản nháp: `figures/F5a_eegnet_spatial_patterns`, `figures/F5b_eegnet_saliency_{cross,within}`; F1 chưa làm
+- [x] Explainability: spatial filter EEGNet, Integrated Gradients, LDA patterns (protocol §9). EEGNet spatial pattern và IG (`scripts/05_explain_dl.py`), LDA patterns (`scripts/06_explain_lda.py`), viết vào `reports/explain_dl_draft.md` (2026-11-20)
+- [x] Phân tích đối chứng nhiễu vận động (`early` vs `full`, task `dis_std`, `tgt_dis`). EEGNet train trên Kaggle T4 (2026-11-21), IG cho cả 3 task; kết quả và kết luận trong `reports/explain_dl_draft.md`
+- [ ] Hình F1, F5. Bản nháp: `figures/F1_pipeline` (`scripts/07_plot_pipeline.py`), `figures/F5a_eegnet_spatial_patterns`, `figures/F5b_eegnet_saliency_{cross,within}`, `figures/F5c_lda_patterns`; chờ nhóm duyệt
 - [ ] Ghép report, kiểm tra tổng % đóng góp = 100%, gửi email đúng hạn
 
 **Đầu ra:** `src/eegproj/explain/`, `figures/F1*`, `figures/F5*`, report hoàn chỉnh.

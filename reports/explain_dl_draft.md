@@ -1,8 +1,10 @@
 # Methods and Results: Explainability of the DL models (R1 draft, for report section 3.6 / RQ3)
 
 > Draft 2026-11-20, data v2 (35 usable subjects), task `tgt_std`, R5 checkpoints of 2026-11-20
-> (`results/checkpoints/eegnet/`). Produced by `python scripts/05_explain_dl.py` (code: `src/eegproj/explain/dl.py`, figures: `src/eegproj/explain/plots.py`).
-> Still missing for protocol section 9: LDA patterns (9.4, needs R4's `lda_tw`) and the control tasks `dis_std` / `tgt_dis`.
+> (`results/checkpoints/eegnet/`). Produced by `python scripts/05_explain_dl.py` (code: `src/eegproj/explain/dl.py`, figures: `src/eegproj/explain/plots.py`)
+> and, for the LDA patterns, `python scripts/06_explain_lda.py` (code: `src/eegproj/explain/lda.py`).
+> Control tasks: EEGNet trained on `dis_std` and `tgt_dis` with the R5 code (commit f865c97, same folds and
+> hyperparameters) on a Kaggle Tesla T4 (2026-11-21), then explained with `python scripts/05_explain_dl.py --task <task>`.
 
 ## 3.6 Model explanation
 
@@ -41,6 +43,24 @@ share of the |IG| mass divided by its share of the channels (1 means as much as 
 compared with a two-sided Wilcoxon signed-rank test over subjects (descriptive, not corrected for the number of
 bins).
 
+**LDA activation patterns (protocol 9.4).** As a linear reference we refitted the classical `lda_tw` model (50 ms
+bin means per channel, standardisation, shrinkage LDA with equal priors) on the same five cross-subject folds and
+converted its weights into activation patterns (Haufe et al., 2014, eq. 7): a = Cov(z, s) / Var(s), where z are the
+bin features of the training trials and s = w^T z is the LDA output, so that a is in microvolts per unit of output.
+The refit reproduced the classical results exactly (mean balanced accuracy 0.8605 for `full` and 0.7910 for
+`early`; mean AUC 0.9391 and 0.8799). Unlike EEGNet filters, LDA patterns live in a fixed feature space (channel by
+50 ms bin), so they were averaged over the five folds. For each bin we computed the spatial correlation with the
+P300 reference map and the same regional enrichment as for |IG|, using the absolute pattern |a|.
+
+**Control tasks (protocol 2 and 9.5).** After the behavioural filter every target trial contains a right-hand button
+press and no standard or distractor trial does, so a target classifier could use motor activity instead of the P300.
+We therefore trained EEGNet, with the same code, folds and hyperparameters, on two control tasks: distractor vs
+standard (`dis_std`: a rare class but no response in either class) and target vs distractor (`tgt_dis`: both classes
+rare, only targets have a response). The models were explained with the same Integrated Gradients procedure, on the
+correctly classified trials of the positive class (distractors for `dis_std`, targets for `tgt_dis`). The `dis_std`
+model gives the attribution that the motor region receives when no response is involved; motor-region attribution
+above this level in `tgt_std` or `tgt_dis` points to response-related activity.
+
 ## Results: RQ3
 
 Numbers from `results/explain/` (run of 2026-11-20, commit 17b72dd plus uncommitted R1 code). Median RT of correct
@@ -78,17 +98,87 @@ the end of the window (peak 441 ms cross, 402 ms within) and the P300 region was
 Median [IQR] over 35 subjects; an enrichment of 1 equals the attribution of an average channel. Full table:
 `results/explain/saliency_summary_tgt_std.csv`.
 
+**LDA patterns (Figure F5c, cross-subject).** The patterns were almost identical across folds (correlation between
+the patterns of any two folds 0.98 or higher). In the `full` model, 71% of the absolute pattern lay after 450 ms,
+and its topography matched the P300 reference map from 350 ms onwards (r = 0.92 for 250-450 ms, 0.99 for 450-600 ms,
+0.95 for 600-800 ms). The P300 region peaked at 0.58 µV in the 500-550 ms bin and the largest channels after 450 ms
+were Pz, CPz, CPP1h and CPP2h. The P300 region was enriched about twofold after 450 ms, whereas the left motor
+region stayed below an average channel in every bin (enrichment 0.54 to 0.70).
+The `early` model had the same centro-parietal pattern, growing towards the end of the window (0.95 µV at
+400-450 ms).
+
+| Window | Time bin | Share of \|pattern\| | r with P300 map | P300 enrichment | Motor enrichment |
+|---|---|---|---|---|---|
+| full | 0-250 ms | 0.07 | 0.50 | 0.96 | 0.57 |
+| full | 250-450 ms | 0.22 | 0.92 | 1.94 | 0.54 |
+| full | 450-600 ms | 0.35 | 0.99 | 2.32 | 0.70 |
+| full | 600-800 ms | 0.37 | 0.95 | 2.09 | 0.61 |
+| early | 0-250 ms | 0.23 | 0.54 | 1.07 | 0.52 |
+| early | 250-450 ms | 0.77 | 0.92 | 2.01 | 0.54 |
+
+Fold-mean pattern; per 50 ms bin: `results/explain/lda_pattern_summary_tgt_std.csv`.
+
+**Control tasks: decoding.** Distractors were decoded from standards almost as well as targets, although neither
+class involves a response, and the `early` window kept most of the performance. Target vs distractor was the
+hardest task and lost the most in the `early` window, close to chance within subjects.
+
+| Task | Setting | EEGNet full | EEGNet early | Drop full to early | Classical best, full (R4) |
+|---|---|---|---|---|---|
+| `tgt_std` | within | 0.941 | 0.875 | 0.066 | 0.949 (`xdawn_rg`) |
+| `tgt_std` | cross | 0.924 | 0.830 | 0.094 | 0.872 (`xdawn_rg`) |
+| `dis_std` | within | 0.866 | 0.824 | 0.042 | 0.857 (`xdawn_rg`) |
+| `dis_std` | cross | 0.839 | 0.783 | 0.056 | 0.830 (`xdawn_rg`) |
+| `tgt_dis` | within | 0.684 | 0.549 | 0.135 | 0.784 (`xdawn_rg`) |
+| `tgt_dis` | cross | 0.723 | 0.620 | 0.103 | 0.715 (`xdawn_rg`) |
+
+Median balanced accuracy over 35 subjects; classical values from `reports/r4_evaluation_review.md`.
+
+**Control tasks: attributions (cross-subject, `full`).** With no response in either class (`dis_std`), the left
+motor region received the attribution of an average channel after 250 ms (enrichment 0.96 to 1.01), while the P300
+region was enriched (1.16 to 1.30). In both tasks where the positive class contains a button press, the motor region
+rose above this baseline from 250 to 600 ms (1.27 to 1.30 at 250-450 ms, 1.15 at 450-600 ms). In `tgt_dis` it became
+the most attributed region: its |IG| peaked at 456 ms, before the median response (536 ms), at 1.71 times the
+average channel, and the strongest channels at 450-600 ms were FCC3h, FC1, FCC1h and C1, over the left
+(contralateral) motor cortex. In `tgt_std` the motor region peaked at about the same time (464 ms, 1.31 times the
+average channel) but the P300 region stayed at least as high (472 ms, 1.37 times) and remained enriched after the
+response (600-800 ms: 1.26 vs 0.99).
+
+| Task | 0-250 ms | 250-450 ms | 450-600 ms | 600-800 ms |
+|---|---|---|---|---|
+| `tgt_std` (response in target class) | 1.07 / 1.26 | 1.38 / 1.30 | 1.27 / 1.15 | 1.26 / 0.99 |
+| `dis_std` (no response) | 1.10 / 0.76 | 1.16 / 1.01 | 1.30 / 0.96 | 1.15 / 1.01 |
+| `tgt_dis` (response in target class) | 0.87 / 1.62 | 1.08 / 1.27 | 1.27 / 1.15 | 1.10 / 1.14 |
+
+P300 / motor enrichment of |IG|, median over 35 subjects. Within-subject models showed the same direction with
+smaller differences (450-800 ms, motor: 1.00 `tgt_std`, 1.01 `dis_std`, 1.03 `tgt_dis`). Full tables:
+`results/explain/saliency_summary_<task>.csv`; figures `figures/F5b_eegnet_saliency_<setting>_<task>`.
+
 **Interpretation.** Both analyses point to the P300 as the main basis of EEGNet's decisions. Its most important
 spatial filters reproduce the centro-parietal P3b topography, and its attributions peak over the parietal midline at
-about 450 to 500 ms, before most responses, with no late, motor-specific increase over the left central region. Two
+about 450 to 500 ms, before most responses, with no motor-specific increase over the left central region after
+the response (600-800 ms). Two
 observations temper this conclusion. First, two left central channels (C1, FCC3h) received about twice the
 attribution of an average channel in the cross-subject `full` model in every time bin, already at 0-250 ms. This is
 not time-locked to the response and so is unlikely to be motor execution, but it may reflect early central ERP
 components or motor preparation in fast trials (the lateralised readiness potential starts before the press, and a
 quarter of responses occurred before 461 ms). Second, gradient-based attributions are not activation patterns:
-channels can receive attribution because they help cancel noise rather than because they carry the signal. The
-control tasks (`dis_std`: no response in either class; `tgt_dis`: both classes rare) are needed to settle the motor
-question, and LDA patterns of the classical model (protocol 9.4) will give a linear reference.
+channels can receive attribution because they help cancel noise rather than because they carry the signal.
+
+The LDA patterns, which are activation patterns and do not have this problem, give the same answer for the
+classical model: the signal it uses is the centro-parietal P3b, peaking at 500-550 ms, without a left-central
+motor component (after 450 ms the pattern is 0.14 µV at C3 against 0.55 µV at Pz). Because an LDA pattern closely
+follows the target-minus-standard difference in its features, this also shows that a late left-central difference
+is small in these data, which makes a mainly motor strategy unlikely for either model.
+
+The control tasks qualify this answer. Response-related activity is used: the left central attribution in
+`tgt_std` is above the no-response baseline of `dis_std`, it peaks shortly before the median press, and when the
+P300 differs less between the two classes (`tgt_dis`, two rare stimuli) EEGNet relies on the same left central
+channels more than on the P300 region. Because this activity starts before the press, it is more likely motor
+preparation (the lateralised readiness potential) than the movement itself, and part of it falls inside the
+`early` window. For the main task, however, the P300 region carries at least as much attribution, the distractor
+task without any response reaches 0.84 to 0.87 balanced accuracy, and the `early` window keeps 0.83 to 0.88. We
+therefore conclude that the target vs standard decision rests mainly on the P300, with a smaller contribution
+from motor preparation that cannot be removed by the `early` window alone.
 
 ## Limitations (for the Discussion)
 
@@ -104,6 +194,10 @@ question, and LDA patterns of the classical model (protocol 9.4) will give a lin
 python scripts/00_get_data.py      # data v2
 python scripts/04_get_dl_results.py   # R5 checkpoints + predictions from Drive (or retrain: scripts/04_train_dl.py)
 python scripts/05_explain_dl.py    # results/explain/, figures/F5a_*, figures/F5b_*
+python scripts/04_train_dl.py --models eegnet --tasks dis_std tgt_dis   # control tasks (81 min on a T4)
+python scripts/05_explain_dl.py --task dis_std && python scripts/05_explain_dl.py --task tgt_dis
+python scripts/06_explain_lda.py   # results/explain/lda_*, figures/F5c_lda_patterns
+python scripts/07_plot_pipeline.py # figures/F1_pipeline
 python -m unittest tests.test_r1_explain -v
 ```
 
