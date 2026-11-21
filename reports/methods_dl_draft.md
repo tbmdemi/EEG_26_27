@@ -104,9 +104,9 @@ Key observations:
   slow ERP deflections such as the P300; this fits its weaker within/early results.
 - The `full`–`early` gap (≈ 0.05–0.10) is consistent with either a late P3b (~400–600 ms in this task, R3) or motor
   activity after ~450 ms contributing to `full`; the saliency / spatial-filter analysis (R1) and control tasks are
-  needed to separate the two. R1's analysis (`reports/explain_dl_draft.md`) favours the P3b: EEGNet attributions
-  peak over the parietal midline at about 470 to 510 ms, before the median response, with no late left-central increase;
-  the control tasks are still to be run.
+  needed to separate the two. R1's analysis (`reports/explain_dl_draft.md`, including EEGNet on the control tasks)
+  finds that the decisions rest mainly on the P3b, with a smaller contribution from motor preparation over the left
+  central region before the response (clearest for target vs distractor).
 - No hyper-parameter search was performed (fixed published settings), which is conservative for DL and keeps the
   comparison with the classical pipelines fair but may underestimate the best achievable DL performance.
 - Validation on a contiguous tail per block is stricter than a random stratified split; on one pilot subject both gave

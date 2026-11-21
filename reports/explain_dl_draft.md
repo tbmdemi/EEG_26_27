@@ -1,6 +1,6 @@
-# Methods and Results: Explainability of the DL models (R1 draft, for report section 3.6 / RQ3)
+# Methods and Results: Explainability of EEGNet and LDA (R1 draft, for report section 3.6 / RQ3)
 
-> Draft 2026-11-20, data v2 (35 usable subjects), task `tgt_std`, R5 checkpoints of 2026-11-20
+> Draft 2026-11-21, data v2 (35 usable subjects), main task `tgt_std`, R5 checkpoints of 2026-11-20
 > (`results/checkpoints/eegnet/`). Produced by `python scripts/05_explain_dl.py` (code: `src/eegproj/explain/dl.py`, figures: `src/eegproj/explain/plots.py`)
 > and, for the LDA patterns, `python scripts/06_explain_lda.py` (code: `src/eegproj/explain/lda.py`).
 > Control tasks: EEGNet trained on `dis_std` and `tgt_dis` with the R5 code (commit f865c97, same folds and
@@ -63,7 +63,7 @@ above this level in `tgt_std` or `tgt_dis` points to response-related activity.
 
 ## Results: RQ3
 
-Numbers from `results/explain/` (run of 2026-11-20, commit 17b72dd plus uncommitted R1 code). Median RT of correct
+Numbers from `results/explain/` (runs of 2026-11-21 with the code of commit ac98248). Median RT of correct
 targets: 536 ms (10% of responses before 412 ms, 25% before 461 ms).
 
 **Spatial patterns (Figure F5a, cross-subject).** In the `full` window, the most important spatial filter of every
@@ -187,6 +187,11 @@ from motor preparation that cannot be removed by the `early` window alone.
 - The ROIs and time bins are fixed a priori from protocol section 9.5 and `docs/02_dataset.md` (right-hand
   responses); the Wilcoxon tests are descriptive and uncorrected.
 - Single-filter ablation underestimates the role of filters that are redundant with others.
+- Only EEGNet (the DL-best model) was trained on the control tasks, on a different GPU (Kaggle Tesla T4) than the
+  main-task models; code, folds and hyperparameters were identical. The control tasks were not tested statistically
+  against the classical models.
+- The motor ROI is a coarse proxy: attribution there before the response is consistent with motor preparation but
+  could also include other central ERP components that differ between the classes.
 
 ## Reproduction
 
