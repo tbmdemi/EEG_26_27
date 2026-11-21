@@ -37,6 +37,8 @@ nbstripout --install          # tự xóa output notebook khi commit
 - **Thành viên:** không cần dữ liệu thô. Chạy `python scripts/00_get_data.py`: script tải bản v2 đã tiền xử lý (`preproc_v2_20261118.zip`, 2.6 GB) từ Drive, kiểm tra rồi giải nén vào `data/derivatives/preproc/`; chỉ dùng subject có `excluded_subject = False` và `pipeline_version = 2` trong `results/preproc_log.csv` (hoặc `eegproj.preprocessing.usable_subjects`).
 - **PM / R2:** v2 đang dùng là bản phát hành sẵn có. Quy trình R2 hiện tại dùng `python scripts/02_r2.py --process --download` để tạo candidate riêng; xem bàn giao trước khi thay phiên bản dữ liệu chung. `scripts/01_preprocess.py` là entry point của triển khai v2 lịch sử, chưa nhận các sửa đổi candidate mới.
 
+Notebook Colab tiền xử lý dữ liệu: [`preprocess_oddball_colab.ipynb`](https://colab.research.google.com/drive/1nqyGmEw7IiSgC1svfK4Oud3w8JP8NLi3?usp=sharing).
+
 R2 review/candidate workflow: [`reports/r2_qc_and_handoff.md`](reports/r2_qc_and_handoff.md). Notebook 01 dùng script R2 mới; `python scripts/02_r2.py` mặc định chỉ audit, `--process --download` tạo candidate riêng.
 
 Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commit dữ liệu lên repo.**
@@ -130,8 +132,10 @@ python scripts/05_explain_dl.py --settings cross   # chỉ mô hình cross-subje
 
 - Trước khi giải thích, script tính lại quyết định của từng checkpoint trên đúng trial test và so với `results/predictions/`; lệch quá 0.01 thì dừng (sai dữ liệu/thứ tự kênh). Sai số completeness của IG được ghi vào `results/explain/manifest.json`.
 - Đầu ra (gitignored): `results/explain/` (`*_saliency.npz`, `*_patterns.csv`, `saliency_roi_tgt_std.csv`, `saliency_summary_tgt_std.csv`), hình `figures/F5a_eegnet_spatial_patterns`, `figures/F5b_eegnet_saliency_{cross,within}` (PNG 300 dpi + PDF).
-- Kiểm tra code R1: `python -m unittest tests.test_r1_explain -v`, `python -m ruff check src/eegproj/explain scripts/05_explain_dl.py tests/test_r1_explain.py`.
-- Chưa làm: LDA patterns (mục 9.4, chờ `lda_tw` của R4).
+- LDA patterns (mục 9.4): `python scripts/06_explain_lda.py` fit lại `lda_tw` của R4 trên đúng 5 fold cross-subject, đổi trọng số thành pattern (Haufe 2014). Script in bal_acc/AUC trung bình để so với CSV của R4 (phải khớp). Đầu ra: `results/explain/lda_*`, hình `figures/F5c_lda_patterns`. Chỉ cần CPU, khoảng 5 phút.
+- Hình F1 (sơ đồ pipeline): `python scripts/07_plot_pipeline.py`. Chữ trong hình lấy từ protocol, đổi protocol thì sửa script.
+- Kiểm tra code R1: `python -m unittest tests.test_r1_explain -v`, `python -m ruff check src/eegproj/explain scripts/05_explain_dl.py scripts/06_explain_lda.py scripts/07_plot_pipeline.py tests/test_r1_explain.py`.
+- Task đối chứng (nhiễu vận động): train `python scripts/04_train_dl.py --models eegnet --tasks dis_std tgt_dis` (khoảng 80 phút trên GPU T4), rồi `python scripts/05_explain_dl.py --task dis_std` và `--task tgt_dis`. Hình và manifest của task đối chứng có hậu tố `_<task>`, không ghi đè hình của task chính.
 
 Phương pháp và kết quả: [`reports/explain_dl_draft.md`](reports/explain_dl_draft.md).
 
