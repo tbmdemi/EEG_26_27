@@ -81,13 +81,9 @@ Commit code `.py` và notebook `.ipynb`; chạy `nbstripout --install` một l�
 
 ## R3 — Chạy lại và trạng thái bàn giao
 
-Chạy notebook `02_erp_exploration` → `03_erp_grand_average` → `04_erp_topomaps` → `05_erp_p300_candidates` → `06_erp_behaviour_summary` bằng kernel của môi trường đã cài requirements; Restart Kernel rồi Run All cho từng notebook. Bộ nạp R3 kiểm tra log v2 đủ subject cấu hình và cohort khớp log bàn giao trong Git; bản hiện tại phải có 35 người ERP.
+ERP/P300/hành vi và F3 đã triển khai, kiểm chứng trên release v2; F2 còn chờ duyệt hình cuối và gói output mới chuẩn bị local, chưa xác nhận upload Drive. [Bàn giao R3](reports/r3_review_and_handoff.md) tập trung phương pháp, lệnh tái lập, validation, bằng chứng, ZIP/SHA256 và các phụ thuộc; xem riêng [mục F3](reports/r3_review_and_handoff.md#f3) cho tổng hợp ML/DL.
 
-Đã triển khai ERP/SEM qua subject, difference wave ghép cặp, topomap theo tên điện cực, đo ứng viên P300 thăm dò và bảng hành vi tách nhóm 39/35. **F2 và Results – ERP còn là bản nháp**. QC tổng hợp R2 đã hoàn thành cho 35 subject; đây không phải duyệt tương tác toàn bộ raw. Quyết định thay v2 bằng candidate sub-10/sub-13, quy tắc P300 và hình cuối vẫn chờ nhóm duyệt. F3 và `evaluation/aggregate.py` chưa triển khai; cần metrics của R4/R5 cho phần đó.
-
-Kiểm tra code R3: `python -m ruff check src/eegproj/evaluation tests notebooks`, `python -m ruff format --check src/eegproj/evaluation tests notebooks`, `python -m unittest discover -s tests -v`.
-
-Xem [bàn giao R3 và ghi chú phương pháp](reports/r3_review_and_handoff.md), [bản nháp Results – ERP](reports/results_erp_draft.md). Nhật ký đóng góp nằm ở `reports/contribution_log.md`.
+Báo cáo khoa học nằm trong [LaTeX](reports/latex/README.md). [Đường dẫn ERP draft cũ](reports/results_erp_draft.md) được giữ để tương thích; nhật ký chung ở `reports/contribution_log.md`.
 
 ## R4 — Classical ML & RQ2: chạy và bàn giao
 
