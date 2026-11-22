@@ -1,0 +1,2 @@
+# Overleaf và latexmk dùng XeLaTeX cho báo cáo này (cần fontspec).
+$pdf_mode = 5;

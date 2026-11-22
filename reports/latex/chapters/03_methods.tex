@@ -1,0 +1,54 @@
+% Mục 3. Quyết định đã chốt: docs/03_analysis_protocol.md. Chi tiết bỏ khỏi report nằm ở reports/qa_backup.md.
+\section{Methods}
+\label{ch:methods}
+
+All decisions were fixed in a written protocol before the models were run (Figure~\ref{fig:pipeline}). One preprocessed data release was used by every step, and all models shared the same splits, metrics and output format.
+
+\begin{figure}[H]
+\centering
+\reportfig{F1_pipeline.pdf}
+\caption{Analysis pipeline (F1). Labels R1 to R5 give the responsible team role (Section~\ref{ch:contributions}).}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Preprocessing}
+\label{sec:preprocessing}
+Preprocessing used MNE-Python \citep{gramfort2013}. Bad channels (robust z-score of the channel standard deviation above 5, or flat) were interpolated, the data were band-pass filtered at 0.1 to 40~Hz (zero-phase FIR) and re-referenced to the average. Extended Infomax ICA was fitted on a 1~Hz high-passed copy, and components labelled as eye blink or muscle with a probability of at least 0.8 by ICLabel \citep{piontonachini2019} were removed (7.5 per participant on average). Data were resampled to 250~Hz and cut into epochs from $-200$ to 800~ms with a $-200$ to 0~ms baseline; epochs above 150~µV peak-to-peak were rejected.
+
+\subsection{ERP analysis}
+\label{sec:erp-methods}
+ERPs at Pz, CPz and Cz were averaged within each participant and then across participants (SEM across participants). The P300 peak of each participant was the largest positive voltage at Pz between 300 and 600~ms.
+
+\subsection{Tasks and time windows}
+\label{sec:tasks}
+The main task was target versus standard (\code{tgt_std}). Two control tasks separate the P300 from the response: distractor versus standard (\code{dis_std}; rare versus frequent, no response in either class) and target versus distractor (\code{tgt_dis}; both rare, only targets have a response). All models were run on a \code{full} window (0 to 800~ms) and an \code{early} window (0 to 450~ms), which ends before most responses (median RT 536~ms; 25\% of RTs below 461~ms).
+
+\subsection{Models}
+\label{sec:classical}
+\label{sec:dl}
+Table~\ref{tab:models} summarises the four models. The classical models used scikit-learn \citep{pedregosa2011} and pyRiemann. The deep networks were written in PyTorch \citep{paszke2019} following the original architectures; they received the epoch resampled to 128~Hz and z-scored per channel with training statistics, and were trained with Adam (learning rate $10^{-3}$, batch 64), class-weighted cross-entropy and early stopping on a validation split taken from the training data (patience 20, at most 200 epochs). No hyperparameters were tuned.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Models. All learned steps were fitted on the training data of each fold only.}
+\label{tab:models}
+\begin{tabularx}{\linewidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Model} & \textbf{Input and features} & \textbf{Classifier} \\
+\midrule
+\code{lda_tw} & Mean amplitude per channel in 50~ms bins (2,032 features for \code{full}) & Shrinkage LDA, equal priors \\
+\code{xdawn_rg} & 4 xDAWN filters per class, covariance matrices, Riemannian tangent space (136 features) & Logistic regression, balanced class weights \\
+\code{eegnet} & EEGNet-8,2 \citep{lawhern2018}, 3,258 parameters & Softmax, trained end to end \\
+\code{shallow} & ShallowConvNet \citep{schirrmeister2017}, 204,402 parameters & Softmax, trained end to end \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Evaluation}
+\label{sec:evaluation}
+Within participants, each recording was split in time order into five equal segments (5-fold blocked cross-validation without shuffling). Across participants, the 35 participants were split into five fixed folds (GroupKFold), shared by all models. The metrics were balanced accuracy and AUC (chance 0.5), with the F1 score of the target class as a secondary metric. The unit of statistics was the participant (within: mean over folds). For RQ2, the best classical and the best DL model (highest median balanced accuracy in the \code{full} window) were compared with two-sided Wilcoxon signed-rank tests, Holm-corrected \citep{holm1979} over the four setting and window combinations, with the rank-biserial correlation $r$ as effect size \citep{vallat2018}.
+
+\subsection{Model explanation}
+\label{sec:explain-methods}
+We explained EEGNet, the best DL model, exactly as evaluated (each participant by the models that had it in their test set). Its 16 spatial filters were converted into activation patterns \citep{haufe2014} and compared with the target-minus-standard ERP map (250 to 600~ms) by spatial correlation; a filter's importance was the drop in test AUC when it was removed. Integrated Gradients \citep{sundararajan2017} (64 steps, baseline the training mean) attributed the logit difference of each correctly classified target to channels and time points. To separate the P300 from the right-hand response, we compared a parietal P300 region (Pz, CPz, POz, CP1, CP2, P1, P2) with a left central motor region (C3, C1, C5, FC3, CP3) in four time bins; a region's enrichment is its share of the absolute attribution divided by its share of channels (1 = an average channel). EEGNet was also trained and explained on the two control tasks with the same code and folds. As a linear reference, we computed the activation patterns of \code{lda_tw}.

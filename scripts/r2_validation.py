@@ -9,7 +9,7 @@ import mne
 import numpy as np
 import pandas as pd
 import yaml
-from r2_preprocessing import ROOT, match_onsets, score_trials, summarise
+from r2_preprocessing import ROOT, fetch_file, match_onsets, score_trials, summarise
 
 QC_COLUMNS = {"visual_review", "visual_review_by", "visual_review_date", "visual_review_scope", "qc_findings"}
 
@@ -29,6 +29,9 @@ def audit_release(root=ROOT):
     RELEASE_CONFIG = json.loads((OUT / "config.json").read_text(encoding="utf-8"))
     assert LOG.subject.is_unique
     assert set(LOG.subject) == {f"sub-{s}" for s in CONFIG["dataset"]["subjects"]}
+    # Tải events.tsv gốc của file nào còn thiếu (khoảng 20 KB mỗi file), để kiểm tra đủ 42 người trên mọi máy.
+    for subject in LOG.subject:
+        fetch_file(f"{subject}/eeg/{subject}_task-oddball_events.tsv", ROOT / "data/validation/ds004621")
     assert (LOG.pipeline_version == 2).all()
     assert LOG.excluded_subject.notna().all()
     assert set(LOG.excluded_subject.unique()) <= {True, False}
