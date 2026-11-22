@@ -1,0 +1,203 @@
+% Chương 4. Chỉ báo kết quả, phần diễn giải để ở Chương 5. Số liệu lấy từ results/, không gõ tay từ trí nhớ.
+\chapter{Results}
+\label{ch:results}
+
+% ------------------------------------------------------------------
+\section{Preprocessing outcome}
+\label{sec:res-preproc}
+\fillpara{[R2] Số subject và epoch cuối cùng (tham chiếu Bảng \ref{tab:accounting}), số kênh nội suy và số IC loại trung bình, tỉ lệ epoch bị loại, các vấn đề còn lại phát hiện khi QC.}
+
+% ------------------------------------------------------------------
+\section{Event-related potentials}
+\label{sec:res-erp}
+\fillpara{[R3] Mô tả hình \ref{fig:erp}: P300 lớn hơn ở target so với standard tại Pz, biên độ tại thời điểm đại diện (mean và SEM), phân bố trên da đầu, so sánh target với distractor. Nguồn: \src{reports/results_erp_draft.md}.}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{\linewidth}
+  \centering
+  \reportfig{F2_erp_grand_average.png}
+  \caption{Grand-average ERPs. \fillin{chú thích}}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{\linewidth}
+  \centering
+  \reportfig{F2_erp_topomap.png}
+  \caption{Scalp topography, 250 to 600 ms. \fillin{chú thích}}
+\end{subfigure}
+\caption{ERPs for target, standard and distractor stimuli (F2). \fillin{chú thích chung: N, kênh, mean và SEM qua subject}}
+\label{fig:erp}
+\end{figure}
+
+\subsection{P300 peak amplitude and latency}
+\fillpara{[R3] Chỉ điền sau khi nhóm chốt quy tắc đo đỉnh (protocol mục 9.1). Nêu cửa sổ, kênh, số trường hợp đỉnh ở biên.}
+
+\begin{table}[H]
+\centering
+\caption{P300 peak amplitude and latency at Pz, median [IQR] over participants. \fillin{chú thích}}
+\label{tab:p300}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Condition} & \textbf{Amplitude (µV)} & \textbf{Latency (ms)} \\
+\midrule
+Target & \fillin{} & \fillin{} \\
+Distractor & \fillin{} & \fillin{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------
+\section{Classification performance (RQ1)}
+\label{sec:res-rq1}
+\fillpara{[R4, R5] Mô hình tốt nhất cho từng setting (within, cross) và cửa sổ (full, early); mức giảm từ full sang early; độ biến thiên giữa các subject. Nguồn: \src{reports/methods_ml_rq2_draft.md} mục 4.2, \src{reports/methods_dl_draft.md}, \src{results/metrics/}.}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Single-trial classification on the main task (target vs standard), N = \fillin{} participants. Balanced accuracy and AUC: median [IQR]; F1 of the target class: mean (SD). \fillin{chú thích: within là trung bình 5 fold trong mỗi subject}}
+\label{tab:rq1}
+\begin{tabular}{lllccc}
+\toprule
+\textbf{Model} & \textbf{Setting} & \textbf{Window} & \textbf{Bal. acc.} & \textbf{AUC} & \textbf{F1 target} \\
+\midrule
+\code{lda_tw}   & within & full & \fillin{} & \fillin{} & \fillin{} \\
+\code{xdawn_rg} & within & full & \fillin{} & \fillin{} & \fillin{} \\
+\code{eegnet}   & within & full & \fillin{} & \fillin{} & \fillin{} \\
+\code{shallow}  & within & full & \fillin{} & \fillin{} & \fillin{} \\
+\midrule
+\code{lda_tw}   & within & early & \fillin{} & \fillin{} & \fillin{} \\
+\code{xdawn_rg} & within & early & \fillin{} & \fillin{} & \fillin{} \\
+\code{eegnet}   & within & early & \fillin{} & \fillin{} & \fillin{} \\
+\code{shallow}  & within & early & \fillin{} & \fillin{} & \fillin{} \\
+\midrule
+\code{lda_tw}   & cross & full & \fillin{} & \fillin{} & \fillin{} \\
+\code{xdawn_rg} & cross & full & \fillin{} & \fillin{} & \fillin{} \\
+\code{eegnet}   & cross & full & \fillin{} & \fillin{} & \fillin{} \\
+\code{shallow}  & cross & full & \fillin{} & \fillin{} & \fillin{} \\
+\midrule
+\code{lda_tw}   & cross & early & \fillin{} & \fillin{} & \fillin{} \\
+\code{xdawn_rg} & cross & early & \fillin{} & \fillin{} & \fillin{} \\
+\code{eegnet}   & cross & early & \fillin{} & \fillin{} & \fillin{} \\
+\code{shallow}  & cross & early & \fillin{} & \fillin{} & \fillin{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\reportfig{F3_balanced_accuracy.png}
+\caption{Balanced accuracy by model, setting and window (F3). \fillin{chú thích}}
+\label{fig:rq1}
+\end{figure}
+
+% ------------------------------------------------------------------
+\section{Classical versus deep learning (RQ2)}
+\label{sec:res-rq2}
+\fillpara{[R4] Mô hình được chọn làm classical tốt nhất và DL tốt nhất; kết quả Wilcoxon cho từng setting và cửa sổ; chiều của khác biệt và effect size; kết quả có đổi chiều giữa balanced accuracy và AUC không. Nguồn: \src{reports/methods_ml_rq2_draft.md} mục 4.3, \src{results/rq2_wilcoxon_holm.csv}.}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Paired Wilcoxon signed-rank tests, DL best minus classical best, N = \fillin{} participants, Holm-corrected. Classical and DL columns: median. \fillin{chú thích}}
+\label{tab:rq2}
+\begin{tabular}{lllccccccc}
+\toprule
+\textbf{Metric} & \textbf{Setting} & \textbf{Window} & \textbf{Classical} & \textbf{DL} & \textbf{Diff.} & \textbf{W} & \textbf{p} & \textbf{p (Holm)} & \textbf{r} \\
+\midrule
+Bal. acc. & within & full  & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+Bal. acc. & within & early & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+Bal. acc. & cross  & full  & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+Bal. acc. & cross  & early & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+\midrule
+AUC & within & full  & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+AUC & within & early & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+AUC & cross  & full  & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+AUC & cross  & early & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\reportfig{F4_paired_classical_vs_dl.png}
+\caption{Paired comparison of the best classical and the best DL model per participant (F4). \fillin{chú thích}}
+\label{fig:rq2}
+\end{figure}
+
+% ------------------------------------------------------------------
+\section{What did the models learn? (RQ3)}
+\label{sec:res-rq3}
+\fillpara{[R1] Nguồn: \src{reports/report_template.md} mục 4.4 (đã viết sẵn, số liệu đã đối chiếu với \src{results/explain/}), chi tiết thêm ở \src{reports/explain_dl_draft.md}.}
+
+\subsection{EEGNet spatial patterns}
+\fillpara{[R1] Filter quan trọng nhất của mỗi fold có pattern giống bản đồ P300 không (|r|, kênh đỉnh); mức giảm AUC khi bỏ một filter; khác biệt giữa full và early.}
+
+\subsection{Integrated Gradients over time}
+\fillpara{[R1] Thời điểm đỉnh của attribution so với đỉnh P3b trên ERP và RT trung vị; enrichment vùng P300 so với vùng vận động sau 450 ms và sau 600 ms; ngoại lệ ở 0 đến 250 ms.}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{\linewidth}
+  \centering
+  \reportfig[width=\linewidth,height=0.36\textheight,keepaspectratio]{F5a_eegnet_spatial_patterns.png}
+  \caption{EEGNet spatial patterns, cross-subject. \fillin{chú thích}}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{\linewidth}
+  \centering
+  \reportfig[width=\linewidth,height=0.36\textheight,keepaspectratio]{F5b_eegnet_saliency_cross.png}
+  \caption{Integrated Gradients, channel by time, cross-subject. \fillin{chú thích}}
+\end{subfigure}
+\caption{What EEGNet learned (F5). \fillin{chú thích chung}}
+\label{fig:rq3-eegnet}
+\end{figure}
+
+\subsection{LDA activation patterns}
+\fillpara{[R1] Pattern ổn định giữa các fold; tỉ lệ pattern sau 450 ms; tương quan với bản đồ P300 theo bin; vùng vận động so với Pz.}
+
+\begin{figure}[H]
+\centering
+\reportfig{F5c_lda_patterns.png}
+\caption{Activation patterns of the classical LDA model, cross-subject. \fillin{chú thích}}
+\label{fig:rq3-lda}
+\end{figure}
+
+\subsection{Control tasks}
+\fillpara{[R1] Kết quả phân loại các task đối chứng (Bảng \ref{tab:rq3-control}) và attribution vùng vận động khi không có phản hồi (Bảng \ref{tab:rq3-enrichment}).}
+
+\begin{table}[H]
+\centering
+\small
+\caption{EEGNet balanced accuracy on the main and control tasks, median over participants. Response: whether the positive class contains a button press. \fillin{chú thích}}
+\label{tab:rq3-control}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Task} & \textbf{Response} & \textbf{Within, full} & \textbf{Within, early} & \textbf{Cross, full} & \textbf{Cross, early} \\
+\midrule
+\code{tgt_std} & yes & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+\code{dis_std} & no  & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+\code{tgt_dis} & yes & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Enrichment of absolute Integrated Gradients attribution, P300 region / motor region (cross-subject, full window, median over participants; 1 equals an average channel). \fillin{chú thích}}
+\label{tab:rq3-enrichment}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Task} & \textbf{0-250 ms} & \textbf{250-450 ms} & \textbf{450-600 ms} & \textbf{600-800 ms} \\
+\midrule
+\code{tgt_std} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+\code{dis_std} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+\code{tgt_dis} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Answer to RQ3}
+\fillpara{[R1] Một đoạn trả lời trực tiếp: đặc trưng DL có giải thích được không, dựa chủ yếu vào P300 hay vận động, mức độ đóng góp của chuẩn bị vận động.}

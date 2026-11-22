@@ -1,0 +1,64 @@
+% Chương 2. Người phụ trách chính: R2, phần hành vi: R3. Nguồn: docs/02_dataset.md, reports/r2_methods_v2.md, reports/r2_subject_epoch_table.md.
+\chapter{Data}
+\label{ch:data}
+
+\section{Dataset}
+\fillpara{[R2] Nencki-Symfonia \citep{dzianok2022}, OpenNeuro ds004621: số người tham gia, độ tuổi, thiết bị ghi (số kênh, tần số lấy mẫu, hệ điện cực, tham chiếu khi ghi). Nguồn: \src{docs/02_dataset.md}.}
+
+\section{Task design}
+\fillpara{[R2] Visual oddball: 3 loại kích thích (standard S5, target S6, distractor S7), tỉ lệ từng loại, thời gian trình bày, khoảng cách giữa các kích thích, tay bấm nút (tay phải), các lần nghỉ (S 10). Có thể thêm hình minh hoạ trình tự trial.}
+
+\section{Behavioural scoring}
+\fillpara{[R2] Quy tắc giữ trial đúng: target có phản hồi trong 100 đến 1400 ms sau kích thích; standard và distractor không có phản hồi trong khoảng đó. RT lấy từ phản hồi đầu tiên. Nguồn: \src{reports/report_template.md} mục 3.1.}
+
+\section{Participants and exclusions}
+\fillpara{[R2] Loại trước sub-02, sub-14, sub-17 (hiểu sai nhiệm vụ, theo bài báo); loại theo tiêu chí pipeline (dưới 40 target đúng, hoặc giữ dưới 50\% target sau khi loại epoch); các subject chỉ gắn cờ. Bảng chi tiết từng subject đặt ở Phụ lục \ref{app:subjects}.}
+
+\begin{table}[H]
+\centering
+\caption{Participant and epoch accounting. \fillin{chú thích}}
+\label{tab:accounting}
+\begin{tabular}{lr}
+\toprule
+\textbf{Item} & \textbf{Count} \\
+\midrule
+Participants considered & \fillin{} \\
+Excluded a priori (misunderstood task) & \fillin{} \\
+Excluded by pipeline criteria & \fillin{} \\
+Usable participants & \fillin{} \\
+\midrule
+Retained epochs, standard & \fillin{} \\
+Retained epochs, target & \fillin{} \\
+Retained epochs, distractor & \fillin{} \\
+Retained epochs, total & \fillin{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+\fillpara{[R2] Nguồn số liệu: \src{results/preproc_log.csv}, \src{reports/r2_subject_epoch_table.md}.}
+
+\section{Behavioural performance}
+\fillpara{[R3] So sánh hit rate, false alarm, RT với Table 5 của bài báo; nêu rõ nhóm nào (trước hay sau khi loại EEG) và chênh lệch. Nguồn: notebook 06, \src{results/erp/behaviour_vs_paper.csv}.}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Behavioural performance compared with the original study, mean (SD) over participants. This study: N = \fillin{}. \fillin{chú thích}}
+\label{tab:behaviour}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Measure} & \textbf{This study} & \textbf{Original study} & \textbf{Difference} \\
+\midrule
+Target hit rate (\%) & \fillin{} & \fillin{} & \fillin{} \\
+False alarms to distractors (\%) & \fillin{} & \fillin{} & \fillin{} \\
+False alarms to standards (\%) & \fillin{} & \fillin{} & \fillin{} \\
+Target RT (ms) & \fillin{} & \fillin{} & \fillin{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\reportfig[width=0.85\linewidth]{R3_behaviour_comparison.png}
+\caption{Behavioural performance per participant. \fillin{chú thích}}
+\label{fig:behaviour}
+\end{figure}

@@ -1,0 +1,88 @@
+% !TeX program = xelatex
+% Báo cáo môn học Neuroimaging: EEG. Compile bằng XeLaTeX (hoặc tectonic), không dùng pdfLaTeX.
+\documentclass[a4paper,12pt]{report}
+
+% ---- Font và ngôn ngữ (fontspec để hiển thị tên tiếng Việt, µV) ----
+\usepackage{fontspec}
+\usepackage[english]{babel}
+
+% ---- Trình bày ----
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{15pt}
+
+% ---- Toán, hình, bảng ----
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+
+% ---- Tài liệu tham khảo (author-year) ----
+\usepackage[round]{natbib}
+\bibliographystyle{plainnat}
+
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+
+% ---- Macro cho vùng cần điền ----
+% Tìm mọi chỗ còn trống: grep -rn "fillin\|fillpara\|Missing figure" reports/latex
+% \fillin{gợi ý}: chỗ trống ngắn trong câu hoặc trong ô bảng.
+\newcommand{\fillin}[1]{\textcolor{red}{[#1]}}
+% \fillpara{gợi ý}: khung trống cho cả đoạn văn.
+\newcommand{\fillpara}[1]{\par\noindent\fcolorbox{red}{red!4}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\small\color{red}\textbf{TODO.} #1}}\par\medskip}
+% Tên file, tên mô hình có dấu gạch dưới.
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\src}[1]{\nolinkurl{#1}}
+
+% Hình lấy từ thư mục figures/ của repo. Trên Overleaf: tải hình vào figures/ rồi sửa thành {figures}.
+\newcommand{\figdir}{../../figures}
+% \reportfig[tuỳ chọn includegraphics]{tên file}: chèn hình, nếu chưa có file thì hiện khung đỏ.
+% Mặc định rộng bằng dòng và không cao quá 0,8 trang.
+\newcommand{\reportfig}[2][width=\linewidth,height=0.8\textheight,keepaspectratio]{%
+  \IfFileExists{\figdir/#2}%
+    {\includegraphics[#1]{\figdir/#2}}%
+    {\fcolorbox{red}{white}{\parbox[c][4cm][c]{0.9\linewidth}{\centering\color{red}Missing figure: \texttt{\detokenize{#2}}}}}}
+
+\begin{document}
+
+% Tắt anchor trang ở bìa để hyperref không báo trùng số trang.
+\hypersetup{pageanchor=false}
+\input{frontmatter/titlepage}
+\hypersetup{pageanchor=true}
+
+\pagenumbering{roman}
+\input{frontmatter/abstract}
+\tableofcontents
+\listoffigures
+\listoftables
+\input{frontmatter/abbreviations}
+
+\cleardoublepage
+\pagenumbering{arabic}
+\input{chapters/01_introduction}
+\input{chapters/02_data}
+\input{chapters/03_methods}
+\input{chapters/04_results}
+\input{chapters/05_discussion}
+\input{chapters/06_conclusion}
+\input{chapters/07_contributions}
+\input{chapters/08_availability}
+
+% Bỏ \nocite{*} khi các chương đã \citep đủ tài liệu.
+\nocite{*}
+\bibliography{references}
+
+\appendix
+\input{appendices/a_subject_table}
+\input{appendices/b_supplementary}
+
+\end{document}

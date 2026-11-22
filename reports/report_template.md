@@ -51,6 +51,34 @@ EEGNet spatial filters, Integrated Gradients, LDA activation patterns (Haufe et 
 ### 4.3 Classical vs deep learning — RQ2 (Fig. F4, statistics)
 ### 4.4 What did the models learn? — RQ3 (Fig. F5, control tasks)
 
+We explained the fitted EEGNet models exactly as they were evaluated (Section 3.6) and used the activation patterns of the classical `lda_tw` model as a linear reference. The question was whether the decisions rest on the P300, a centro-parietal positivity that peaked at 484 ms at Pz in the grand-average target ERP (Section 4.1), or on activity related to the right-hand button press, which every correct target trial and no standard trial contains (median correct RT 536 ms; 25% of responses before 461 ms). Regional summaries compare a P300 region (Pz, CPz, POz, CP1, CP2, P1, P2) with a left central motor region (C3, C1, C5, FC3, CP3). Enrichment is a region's share of the absolute attribution divided by its share of the channels, so a value of 1 equals the attribution of an average channel.
+
+**Spatial filters (Fig. F5a).** In the cross-subject `full` models, the most important spatial filter of every fold had a positive centro-parietal activation pattern that resembled the target-minus-standard ERP map (|r| = 0.61 to 0.91, median 0.83; peaks at CCP2h, PPO1h and PPO2h). Nine of the ten filters ranked first or second across the five folds had |r| of at least 0.5. Removing any single filter reduced test AUC by at most 0.018, so the networks spread the information over several redundant filters, the most useful of which are P300-like. In the `early` models, three folds again relied most on a Pz or CP1 pattern (|r| of 0.90 or more), whereas the other two relied on a right parieto-occipital and a left fronto-central pattern.
+
+**Attributions over time (Fig. F5b).** In the `full` models, Integrated Gradients attribution rose from about 250 ms and peaked at 495 ms (cross-subject) and 511 ms (within-subject), before the median response. The signed attribution of the P300 region favoured the target class and peaked at 472 and 456 ms, close to the P3b peak of the ERP. After 450 ms the P300 region was more enriched than the motor region (median 1.20 vs 1.05 cross-subject, p = 0.002; 1.19 vs 1.00 within-subject, p = 0.010; two-sided Wilcoxon over 35 subjects, descriptive). Between 600 and 800 ms, after most responses, the motor region received no more than an average channel (0.99 and 1.00). The one interval in which the motor region led was 0-250 ms (1.26 vs 1.07 cross-subject, p = 0.001), driven mainly by C1 and FCC3h. This attribution is not time-locked to the response and therefore unlikely to reflect motor execution.
+
+**Linear reference (Fig. F5c).** The cross-subject LDA patterns were almost identical across folds (r of at least 0.98 between any two folds). In the `full` model, 71% of the absolute pattern lay after 450 ms. Its topography matched the P300 map from 350 ms onwards (r = 0.92, 0.99 and 0.95 for 250-450, 450-600 and 600-800 ms) and reached 0.58 µV over the P300 region at 500-550 ms. The motor region stayed below an average channel in every bin (enrichment 0.54 to 0.70); after 450 ms the pattern was 0.14 µV at C3 against 0.55 µV at Pz. Unlike gradient attributions, activation patterns cannot assign weight to a channel merely because it suppresses noise (Haufe et al., 2014). The LDA result therefore shows that the classical model uses the P3b and that a late left-central class difference is small in these data.
+
+**Control tasks.** Distractors, which require no response, were decoded from standards almost as well as targets, and the `early` window kept most of this performance (Table 3). Target vs distractor, where both classes are rare and only targets involve a response, was the hardest task and lost the most in the `early` window. With no response in either class (`dis_std`), the motor region received the attribution of an average channel after 250 ms, while the P300 region was enriched (Table 4). In both tasks whose positive class contains a button press, the motor region rose above this no-response baseline between 250 and 600 ms. In `tgt_dis` it became the most attributed region, peaking at 456 ms at 1.71 times the average channel, with the strongest channels (FCC3h, FC1, FCC1h, C1) over the left, contralateral motor cortex. In `tgt_std` the motor region peaked at a similar time (464 ms, 1.31), but the P300 region stayed at least as high (472 ms, 1.37) and remained enriched after the response (600-800 ms: 1.26 vs 0.99).
+
+**Table 3.** EEGNet balanced accuracy on the main and control tasks (median over 35 subjects).
+
+| Task | Response in positive class | Within, `full` | Within, `early` | Cross, `full` | Cross, `early` |
+|---|---|---:|---:|---:|---:|
+| `tgt_std` (target vs standard) | yes | 0.941 | 0.875 | 0.924 | 0.830 |
+| `dis_std` (distractor vs standard) | no | 0.866 | 0.824 | 0.839 | 0.783 |
+| `tgt_dis` (target vs distractor) | yes | 0.684 | 0.549 | 0.723 | 0.620 |
+
+**Table 4.** Enrichment of absolute Integrated Gradients attribution, P300 region / motor region (cross-subject, `full`, median over 35 subjects; 1 = average channel).
+
+| Task | 0-250 ms | 250-450 ms | 450-600 ms | 600-800 ms |
+|---|---:|---:|---:|---:|
+| `tgt_std` | 1.07 / 1.26 | 1.38 / 1.30 | 1.27 / 1.15 | 1.26 / 0.99 |
+| `dis_std` | 1.10 / 0.76 | 1.16 / 1.01 | 1.30 / 0.96 | 1.15 / 1.01 |
+| `tgt_dis` | 0.87 / 1.62 | 1.08 / 1.27 | 1.27 / 1.15 | 1.10 / 1.14 |
+
+**Answer to RQ3.** The features discovered by EEGNet are interpretable and physiologically plausible. Its most useful spatial filters reproduce the centro-parietal P3b topography, its attributions peak over the parietal midline near the P3b latency and before most button presses, and the classical LDA relies on the same P3b signal. The control tasks show that response-related activity is also used. Left-central attribution exceeds the no-response baseline, peaks shortly before the median response, and dominates when the P300 differs little between the classes (`tgt_dis`). Because this activity begins before the press, it more likely reflects motor preparation (the lateralised readiness potential) than the movement itself, and part of it falls inside the `early` window. We conclude that the target vs standard decision rests mainly on the P300, with a smaller contribution from motor preparation that the `early` window alone cannot remove. These conclusions rest on a priori regions and uncorrected descriptive tests, and gradient attributions are not activation patterns (Section 5).
+
 ## 5. Discussion
 - Interpretation of main findings; comparison with literature.
 - Motor confound: what the `early` window and control tasks show.

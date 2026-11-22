@@ -1,0 +1,18 @@
+% Chương 5. Diễn giải kết quả, so sánh tài liệu, hạn chế. Khoảng 2 trang.
+\chapter{Discussion}
+\label{ch:discussion}
+
+\section{Main findings}
+\fillpara{[R1] Tóm tắt 3 đến 4 phát hiện chính, mỗi phát hiện một đoạn ngắn, gắn với RQ1, RQ2, RQ3. Không nhắc lại toàn bộ số liệu, chỉ số quan trọng nhất.}
+
+\section{Comparison with previous work}
+\fillpara{[R4, R5] So sánh balanced accuracy và AUC với các nghiên cứu P300 single-trial khác (EEGNet, xDAWN); so sánh ERP và hành vi với bài báo gốc \citep{dzianok2022}. Giải thích vì sao DL hơn classical ở cross-subject nhưng không hơn ở within-subject (nếu kết quả cuối vẫn như vậy).}
+
+\section{Motor confound}
+\fillpara{[R1] Kết quả cửa sổ early, task đối chứng và saliency nói gì về tín hiệu vận động; vì sao cửa sổ early một mình không loại hết chuẩn bị vận động (lateralised readiness potential).}
+
+\section{Limitations}
+\fillpara{[Cả nhóm] Mỗi ý một câu hoặc hai: chỉ một bộ dữ liệu; ngân sách tuning hyperparameter nhỏ; ICA fit trên toàn bộ recording; chỉ giữ trial đúng nên target trùng với bấm nút; ROI và bin thời gian chọn trước, kiểm định mô tả không hiệu chỉnh; attribution dựa trên gradient không phải activation pattern; chỉ EEGNet được huấn luyện trên task đối chứng.}
+
+\section{Future work}
+\fillpara{[Cả nhóm] 2 đến 4 hướng cụ thể, ví dụ: mô hình tuỳ chọn chưa làm (\code{bp_svm}, EEG-Conformer), transfer learning cho cross-subject, kiểm soát vận động bằng thiết kế khác (đếm thầm thay vì bấm nút).}
