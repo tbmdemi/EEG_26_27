@@ -14,8 +14,8 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 - [ ] Review PR liên quan đến protocol/config
 - [x] Explainability: spatial filter EEGNet, Integrated Gradients, LDA patterns (protocol mục 9)
 - [x] Phân tích đối chứng nhiễu vận động (`early` vs `full`, task `dis_std`, `tgt_dis`)
-- [ ] Hình F1, F5: đã có bản nháp, chờ nhóm duyệt
-- [ ] Ghép report, kiểm tra tổng % đóng góp = 100%, gửi email đúng hạn
+- [ ] Hình F1, F5 (F5a, F5b, F5c): đã có bản nháp, chờ nhóm duyệt
+- [ ] Ghép report, kiểm tra tổng % đóng góp = 100%, gửi email đúng hạn: đã ghép đủ nội dung các vai vào `reports/latex/` (2026-11-22, khoảng 15 trang; chi tiết dự phòng cho hỏi đáp ở `reports/qa_backup.md`). Còn chờ: họ tên, MSSV, tên nhóm, giảng viên; % đóng góp (cả nhóm chốt); hình F3 (R3); duyệt quy tắc đo đỉnh P300 (mục 9.1)
 
 **Đầu ra:** `src/eegproj/explain/`, `scripts/05_explain_dl.py`, `06_explain_lda.py`, `07_plot_pipeline.py`, `figures/F1*`, `figures/F5*`, nháp `reports/explain_dl_draft.md`, report hoàn chỉnh.
 
@@ -38,7 +38,7 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 **Owner:** Bảo
 
 - [x] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian — đã tạo bản nháp trên 35 subject bằng notebook 03/04; QC tổng hợp R2 đã hoàn thành, chờ nhóm chốt phiên bản dữ liệu và duyệt hình cuối cho report
-- [ ] Đo biên độ và latency đỉnh P300 (target, distractor) theo từng subject → bảng + phân bố — đã có bản thăm dò notebook 05 (210 ứng viên, 35 subject × 2 điều kiện × 3 kênh); chờ review cửa sổ/quy tắc đo và các trường hợp có cờ trước khi chốt
+- [ ] Đo biên độ và latency đỉnh P300 (target, distractor) theo từng subject, ra bảng và phân bố: đã có bản thăm dò notebook 05 (210 ứng viên = 35 subject, 2 điều kiện, 3 kênh); PM đã duyệt quy tắc đo cho report (2026-11-22, changelog protocol), bảng đã đưa vào report mục 4.2.1
 - [x] Bảng hành vi (hit rate, false alarm, RT) từ log tiền xử lý v2, so với bài báo — notebook 06 đã xuất riêng nhóm 39 trước loại EEG và nhóm ERP 35; mean ± sample SD qua subject, đối chiếu Table 5 và giữ chênh lệch thực tế
 - [ ] Hình kiểm tra chất lượng: phổ công suất trước/sau lọc, ví dụ IC bị loại
 - [ ] Script tổng hợp `results/metrics/*.csv` → bảng kết quả + hình F3

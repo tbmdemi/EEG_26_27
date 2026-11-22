@@ -1,203 +1,133 @@
-% Chương 4. Chỉ báo kết quả, phần diễn giải để ở Chương 5. Số liệu lấy từ results/, không gõ tay từ trí nhớ.
-\chapter{Results}
+% Mục 4. Chỉ báo kết quả. Số liệu lấy từ results/ (metrics, rq2_wilcoxon_holm*.csv, erp, explain), không gõ tay.
+\section{Results}
 \label{ch:results}
 
-% ------------------------------------------------------------------
-\section{Preprocessing outcome}
-\label{sec:res-preproc}
-\fillpara{[R2] Số subject và epoch cuối cùng (tham chiếu Bảng \ref{tab:accounting}), số kênh nội suy và số IC loại trung bình, tỉ lệ epoch bị loại, các vấn đề còn lại phát hiện khi QC.}
-
-% ------------------------------------------------------------------
-\section{Event-related potentials}
+\subsection{ERPs}
 \label{sec:res-erp}
-\fillpara{[R3] Mô tả hình \ref{fig:erp}: P300 lớn hơn ở target so với standard tại Pz, biên độ tại thời điểm đại diện (mean và SEM), phân bố trên da đầu, so sánh target với distractor. Nguồn: \src{reports/results_erp_draft.md}.}
+\label{sec:res-preproc}
+Of the 22,751 correct trials of the final cohort, 90.5\% survived artefact rejection. Targets elicited a large centro-parietal positivity that was absent for standards (Figure~\ref{fig:erp}). At Pz the grand-average target ERP peaked at 484~ms (9.46~µV, SEM 0.50); at 500~ms the target-minus-standard difference was 8.61 (SEM 0.48)~µV. Distractors elicited a smaller positivity that peaked later (504~ms). Per participant, the median P300 peak at Pz was 10.34~µV at 484~ms (IQR 448 to 562~ms) for targets and 7.91~µV at 504~ms for distractors.
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}{\linewidth}
-  \centering
-  \reportfig{F2_erp_grand_average.png}
-  \caption{Grand-average ERPs. \fillin{chú thích}}
-\end{subfigure}
-
-\medskip
-\begin{subfigure}{\linewidth}
-  \centering
-  \reportfig{F2_erp_topomap.png}
-  \caption{Scalp topography, 250 to 600 ms. \fillin{chú thích}}
-\end{subfigure}
-\caption{ERPs for target, standard and distractor stimuli (F2). \fillin{chú thích chung: N, kênh, mean và SEM qua subject}}
+\reportfig[width=0.9\linewidth]{F2_erp_topomap.pdf}
+\caption{ERPs (F2). Top: grand average at Pz, mean (shading: SEM) over 35 participants. Bottom: mean scalp maps over 250 to 600~ms (grey interval) per class and for target minus standard.}
 \label{fig:erp}
 \end{figure}
 
-\subsection{P300 peak amplitude and latency}
-\fillpara{[R3] Chỉ điền sau khi nhóm chốt quy tắc đo đỉnh (protocol mục 9.1). Nêu cửa sổ, kênh, số trường hợp đỉnh ở biên.}
-
-\begin{table}[H]
-\centering
-\caption{P300 peak amplitude and latency at Pz, median [IQR] over participants. \fillin{chú thích}}
-\label{tab:p300}
-\begin{tabular}{lcc}
-\toprule
-\textbf{Condition} & \textbf{Amplitude (µV)} & \textbf{Latency (ms)} \\
-\midrule
-Target & \fillin{} & \fillin{} \\
-Distractor & \fillin{} & \fillin{} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-% ------------------------------------------------------------------
-\section{Classification performance (RQ1)}
+\subsection{Classification performance (RQ1)}
 \label{sec:res-rq1}
-\fillpara{[R4, R5] Mô hình tốt nhất cho từng setting (within, cross) và cửa sổ (full, early); mức giảm từ full sang early; độ biến thiên giữa các subject. Nguồn: \src{reports/methods_ml_rq2_draft.md} mục 4.2, \src{reports/methods_dl_draft.md}, \src{results/metrics/}.}
+All models were far above chance in every setting and window (Table~\ref{tab:rq1}). Within participants, \code{xdawn_rg} was best (median balanced accuracy 0.949, AUC 0.995), closely followed by EEGNet (0.941) and \code{lda_tw} (0.939). Across participants, EEGNet was best (0.924, AUC 0.979). The \code{early} window, which ends before most responses, lowered the best balanced accuracy by 0.074 within and 0.094 across participants. The hardest participant within participants was sub-07, who kept only 31 targets.
 
 \begin{table}[H]
 \centering
 \small
-\caption{Single-trial classification on the main task (target vs standard), N = \fillin{} participants. Balanced accuracy and AUC: median [IQR]; F1 of the target class: mean (SD). \fillin{chú thích: within là trung bình 5 fold trong mỗi subject}}
+\caption{Classification of target vs standard, N = 35 participants. Balanced accuracy and AUC: median [IQR]; F1 of the target class: mean (SD). Bold: best per setting and window in each column.}
 \label{tab:rq1}
+\setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{lllccc}
 \toprule
 \textbf{Model} & \textbf{Setting} & \textbf{Window} & \textbf{Bal. acc.} & \textbf{AUC} & \textbf{F1 target} \\
 \midrule
-\code{lda_tw}   & within & full & \fillin{} & \fillin{} & \fillin{} \\
-\code{xdawn_rg} & within & full & \fillin{} & \fillin{} & \fillin{} \\
-\code{eegnet}   & within & full & \fillin{} & \fillin{} & \fillin{} \\
-\code{shallow}  & within & full & \fillin{} & \fillin{} & \fillin{} \\
+\code{lda_tw} & within & full & 0.939 [0.887, 0.964] & 0.984 [0.966, 0.996] & 0.843 (0.125) \\
+\code{xdawn_rg} & within & full & \textbf{0.949 [0.893, 0.966]} & \textbf{0.995 [0.981, 0.998]} & \textbf{0.862 (0.156)} \\
+\code{eegnet} & within & full & 0.941 [0.898, 0.965] & 0.981 [0.965, 0.993] & 0.795 (0.147) \\
+\code{shallow} & within & full & 0.901 [0.824, 0.933] & 0.964 [0.915, 0.984] & 0.717 (0.178) \\
 \midrule
-\code{lda_tw}   & within & early & \fillin{} & \fillin{} & \fillin{} \\
-\code{xdawn_rg} & within & early & \fillin{} & \fillin{} & \fillin{} \\
-\code{eegnet}   & within & early & \fillin{} & \fillin{} & \fillin{} \\
-\code{shallow}  & within & early & \fillin{} & \fillin{} & \fillin{} \\
+\code{lda_tw} & within & early & 0.849 [0.808, 0.930] & 0.946 [0.915, 0.984] & 0.723 (0.170) \\
+\code{xdawn_rg} & within & early & 0.873 [0.809, 0.927] & \textbf{0.970 [0.920, 0.991]} & \textbf{0.747 (0.192)} \\
+\code{eegnet} & within & early & \textbf{0.875 [0.777, 0.923]} & 0.945 [0.865, 0.980] & 0.662 (0.166) \\
+\code{shallow} & within & early & 0.773 [0.587, 0.875] & 0.864 [0.648, 0.954] & 0.525 (0.231) \\
 \midrule
-\code{lda_tw}   & cross & full & \fillin{} & \fillin{} & \fillin{} \\
-\code{xdawn_rg} & cross & full & \fillin{} & \fillin{} & \fillin{} \\
-\code{eegnet}   & cross & full & \fillin{} & \fillin{} & \fillin{} \\
-\code{shallow}  & cross & full & \fillin{} & \fillin{} & \fillin{} \\
+\code{lda_tw} & cross & full & 0.855 [0.817, 0.913] & 0.944 [0.929, 0.975] & 0.694 (0.106) \\
+\code{xdawn_rg} & cross & full & 0.872 [0.848, 0.931] & 0.961 [0.944, 0.981] & 0.697 (0.136) \\
+\code{eegnet} & cross & full & \textbf{0.924 [0.866, 0.948]} & \textbf{0.979 [0.960, 0.991]} & 0.745 (0.126) \\
+\code{shallow} & cross & full & 0.905 [0.871, 0.942] & 0.978 [0.963, 0.991] & \textbf{0.749 (0.139)} \\
 \midrule
-\code{lda_tw}   & cross & early & \fillin{} & \fillin{} & \fillin{} \\
-\code{xdawn_rg} & cross & early & \fillin{} & \fillin{} & \fillin{} \\
-\code{eegnet}   & cross & early & \fillin{} & \fillin{} & \fillin{} \\
-\code{shallow}  & cross & early & \fillin{} & \fillin{} & \fillin{} \\
+\code{lda_tw} & cross & early & 0.796 [0.750, 0.848] & 0.891 [0.855, 0.938] & 0.551 (0.121) \\
+\code{xdawn_rg} & cross & early & 0.813 [0.749, 0.868] & \textbf{0.922 [0.883, 0.961]} & 0.547 (0.133) \\
+\code{eegnet} & cross & early & \textbf{0.830 [0.780, 0.876]} & 0.919 [0.859, 0.966] & \textbf{0.594 (0.138)} \\
+\code{shallow} & cross & early & 0.792 [0.715, 0.865] & 0.899 [0.808, 0.953] & 0.543 (0.146) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{figure}[H]
 \centering
-\reportfig{F3_balanced_accuracy.png}
-\caption{Balanced accuracy by model, setting and window (F3). \fillin{chú thích}}
+\reportfig{F3_balanced_accuracy.pdf}
+\caption{Balanced accuracy by model, setting and window (F3). \fillin{chú thích, chờ hình F3 của R3}}
 \label{fig:rq1}
 \end{figure}
 
-% ------------------------------------------------------------------
-\section{Classical versus deep learning (RQ2)}
+\subsection{Classical versus deep learning (RQ2)}
 \label{sec:res-rq2}
-\fillpara{[R4] Mô hình được chọn làm classical tốt nhất và DL tốt nhất; kết quả Wilcoxon cho từng setting và cửa sổ; chiều của khác biệt và effect size; kết quả có đổi chiều giữa balanced accuracy và AUC không. Nguồn: \src{reports/methods_ml_rq2_draft.md} mục 4.3, \src{results/rq2_wilcoxon_holm.csv}.}
+The best classical model was \code{xdawn_rg} and the best DL model EEGNet in both settings. Within participants they did not differ in balanced accuracy (Holm-corrected $p$ = 0.74), but \code{xdawn_rg} had a higher AUC ($p = 1.0 \times 10^{-5}$). Across participants, EEGNet was better in the \code{full} window on both metrics (balanced accuracy $+0.020$, $p = 1.7 \times 10^{-4}$, $r = 0.75$, better for 28 of 35 participants; AUC $p = 2.4 \times 10^{-5}$); in the \code{early} window the difference was not significant (Table~\ref{tab:rq2}, Figure~\ref{fig:rq2}). EEGNet was also clearly better than ShallowConvNet within participants (better for 34 of 35, $p < 10^{-7}$).
 
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Paired Wilcoxon signed-rank tests, DL best minus classical best, N = \fillin{} participants, Holm-corrected. Classical and DL columns: median. \fillin{chú thích}}
+\caption{EEGNet vs \code{xdawn_rg}, paired Wilcoxon tests over 35 participants. Classical, DL: medians; Diff.: median paired difference (DL minus classical); $r$: rank-biserial correlation. Bold: significant after Holm correction.}
 \label{tab:rq2}
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lllccccccc}
 \toprule
 \textbf{Metric} & \textbf{Setting} & \textbf{Window} & \textbf{Classical} & \textbf{DL} & \textbf{Diff.} & \textbf{W} & \textbf{p} & \textbf{p (Holm)} & \textbf{r} \\
 \midrule
-Bal. acc. & within & full  & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-Bal. acc. & within & early & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-Bal. acc. & cross  & full  & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-Bal. acc. & cross  & early & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+Bal. acc. & within & full & 0.949 & 0.941 & $-0.004$ & 294 & 0.740 & 0.740 & $-0.07$ \\
+Bal. acc. & within & early & 0.873 & 0.875 & $-0.011$ & 233 & 0.184 & 0.369 & $-0.26$ \\
+Bal. acc. & cross & full & 0.872 & 0.924 & $+0.020$ & 80 & $4.2 \times 10^{-5}$ & {\boldmath$1.7 \times 10^{-4}$} & $+0.75$ \\
+Bal. acc. & cross & early & 0.813 & 0.830 & $+0.016$ & 182 & 0.029 & 0.086 & $+0.42$ \\
 \midrule
-AUC & within & full  & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-AUC & within & early & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-AUC & cross  & full  & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-AUC & cross  & early & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+AUC & within & full & 0.995 & 0.981 & $-0.006$ & 53 & $2.6 \times 10^{-6}$ & {\boldmath$1.0 \times 10^{-5}$} & $-0.83$ \\
+AUC & within & early & 0.970 & 0.945 & $-0.016$ & 78 & $3.5 \times 10^{-5}$ & {\boldmath$6.9 \times 10^{-5}$} & $-0.75$ \\
+AUC & cross & full & 0.961 & 0.979 & $+0.011$ & 63 & $7.8 \times 10^{-6}$ & {\boldmath$2.4 \times 10^{-5}$} & $+0.80$ \\
+AUC & cross & early & 0.922 & 0.919 & $+0.006$ & 245 & 0.259 & 0.259 & $+0.22$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{figure}[H]
 \centering
-\reportfig{F4_paired_classical_vs_dl.png}
-\caption{Paired comparison of the best classical and the best DL model per participant (F4). \fillin{chú thích}}
+\reportfig[width=0.75\linewidth]{F4_paired_classical_vs_dl.pdf}
+\caption{Balanced accuracy of \code{xdawn_rg} and EEGNet per participant (F4). Grey lines connect the two scores of one participant; black diamonds: medians; dashed: chance.}
 \label{fig:rq2}
 \end{figure}
 
-% ------------------------------------------------------------------
-\section{What did the models learn? (RQ3)}
+\subsection{What did the models learn? (RQ3)}
 \label{sec:res-rq3}
-\fillpara{[R1] Nguồn: \src{reports/report_template.md} mục 4.4 (đã viết sẵn, số liệu đã đối chiếu với \src{results/explain/}), chi tiết thêm ở \src{reports/explain_dl_draft.md}.}
+\textbf{Spatial patterns.} In the cross-subject \code{full} models, the most important spatial filter of every fold had a centro-parietal pattern that resembled the P300 map ($|r|$ = 0.61 to 0.91; Figure~\ref{fig:rq3-patterns}). Removing any single filter cost at most 0.018 AUC, so the information is spread over several redundant, mostly P300-like filters.
 
-\subsection{EEGNet spatial patterns}
-\fillpara{[R1] Filter quan trọng nhất của mỗi fold có pattern giống bản đồ P300 không (|r|, kênh đỉnh); mức giảm AUC khi bỏ một filter; khác biệt giữa full và early.}
+\textbf{Attributions over time.} Attribution rose from about 250~ms and peaked at 495~ms, before the median response (Figure~\ref{fig:rq3-ig}). After 450~ms the P300 region was more enriched than the motor region (1.20 vs 1.05, $p$ = 0.002), and after most responses (600 to 800~ms) the motor region received no more than an average channel (0.99). The classical LDA showed the same picture: its activation pattern matched the P300 map after 450~ms (spatial correlation 0.99) and was small at C3 (0.14~µV vs 0.55~µV at Pz).
 
-\subsection{Integrated Gradients over time}
-\fillpara{[R1] Thời điểm đỉnh của attribution so với đỉnh P3b trên ERP và RT trung vị; enrichment vùng P300 so với vùng vận động sau 450 ms và sau 600 ms; ngoại lệ ở 0 đến 250 ms.}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}{\linewidth}
-  \centering
-  \reportfig[width=\linewidth,height=0.36\textheight,keepaspectratio]{F5a_eegnet_spatial_patterns.png}
-  \caption{EEGNet spatial patterns, cross-subject. \fillin{chú thích}}
-\end{subfigure}
-
-\medskip
-\begin{subfigure}{\linewidth}
-  \centering
-  \reportfig[width=\linewidth,height=0.36\textheight,keepaspectratio]{F5b_eegnet_saliency_cross.png}
-  \caption{Integrated Gradients, channel by time, cross-subject. \fillin{chú thích}}
-\end{subfigure}
-\caption{What EEGNet learned (F5). \fillin{chú thích chung}}
-\label{fig:rq3-eegnet}
-\end{figure}
-
-\subsection{LDA activation patterns}
-\fillpara{[R1] Pattern ổn định giữa các fold; tỉ lệ pattern sau 450 ms; tương quan với bản đồ P300 theo bin; vùng vận động so với Pz.}
-
-\begin{figure}[H]
-\centering
-\reportfig{F5c_lda_patterns.png}
-\caption{Activation patterns of the classical LDA model, cross-subject. \fillin{chú thích}}
-\label{fig:rq3-lda}
-\end{figure}
-
-\subsection{Control tasks}
-\fillpara{[R1] Kết quả phân loại các task đối chứng (Bảng \ref{tab:rq3-control}) và attribution vùng vận động khi không có phản hồi (Bảng \ref{tab:rq3-enrichment}).}
+\textbf{Control tasks.} Distractors, which need no response, were decoded from standards almost as well as targets (EEGNet median 0.84 to 0.87 in the \code{full} window), while target vs distractor was hardest (0.68 to 0.72) and lost most in the \code{early} window. Without a response (\code{dis_std}) the motor region received the attribution of an average channel after 250~ms (Table~\ref{tab:rq3-enrichment}). With a response it rose above this baseline between 250 and 600~ms, and in \code{tgt_dis} it became the most attributed region (peak 456~ms, before the median response).
 
 \begin{table}[H]
 \centering
 \small
-\caption{EEGNet balanced accuracy on the main and control tasks, median over participants. Response: whether the positive class contains a button press. \fillin{chú thích}}
-\label{tab:rq3-control}
-\begin{tabular}{lccccc}
-\toprule
-\textbf{Task} & \textbf{Response} & \textbf{Within, full} & \textbf{Within, early} & \textbf{Cross, full} & \textbf{Cross, early} \\
-\midrule
-\code{tgt_std} & yes & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-\code{dis_std} & no  & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-\code{tgt_dis} & yes & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[H]
-\centering
-\small
-\caption{Enrichment of absolute Integrated Gradients attribution, P300 region / motor region (cross-subject, full window, median over participants; 1 equals an average channel). \fillin{chú thích}}
+\caption{Attribution enrichment, P300 region / motor region (EEGNet, cross-subject, \code{full}, median over 35 participants; 1 = an average channel).}
 \label{tab:rq3-enrichment}
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Task} & \textbf{0-250 ms} & \textbf{250-450 ms} & \textbf{450-600 ms} & \textbf{600-800 ms} \\
 \midrule
-\code{tgt_std} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-\code{dis_std} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
-\code{tgt_dis} & \fillin{} & \fillin{} & \fillin{} & \fillin{} \\
+\code{tgt_std} & 1.07 / 1.25 & 1.38 / 1.30 & 1.27 / 1.15 & 1.26 / 0.99 \\
+\code{dis_std} & 1.10 / 0.76 & 1.16 / 1.01 & 1.30 / 0.96 & 1.15 / 1.01 \\
+\code{tgt_dis} & 0.87 / 1.62 & 1.08 / 1.27 & 1.27 / 1.15 & 1.09 / 1.14 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Answer to RQ3}
-\fillpara{[R1] Một đoạn trả lời trực tiếp: đặc trưng DL có giải thích được không, dựa chủ yếu vào P300 hay vận động, mức độ đóng góp của chuẩn bị vận động.}
+\textbf{Answer to RQ3.} The features learned by EEGNet are interpretable: its decisions rest mainly on the centro-parietal P3b, which the classical LDA also uses. A smaller part comes from left central activity that starts before the button press, most likely motor preparation, and part of it falls inside the \code{early} window.
+
+\begin{figure}[H]
+\centering
+\reportfig[width=0.95\linewidth]{F5a_eegnet_spatial_patterns.pdf}
+\caption{EEGNet spatial patterns, cross-subject (F5a): the two most important filters per fold for the \code{full} (top) and \code{early} (bottom) windows, next to the target-minus-standard ERP map. Titles: AUC drop when the filter is removed and $|r|$ with the ERP map.}
+\label{fig:rq3-patterns}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\reportfig[width=0.95\linewidth]{F5b_eegnet_saliency_cross.pdf}
+\caption{Integrated Gradients of EEGNet, cross-subject (F5b): absolute attribution by channel and time, time courses of the P300 and motor regions (dashed: end of the \code{early} window; dotted: median RT) and scalp maps per time bin.}
+\label{fig:rq3-ig}
+\end{figure}

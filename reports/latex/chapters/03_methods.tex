@@ -1,157 +1,54 @@
-% Chương 3. Mỗi mục ghi người phụ trách và file nháp để chép nội dung sang. Quyết định đã chốt: docs/03_analysis_protocol.md.
-\chapter{Methods}
+% Mục 3. Quyết định đã chốt: docs/03_analysis_protocol.md. Chi tiết bỏ khỏi report nằm ở reports/qa_backup.md.
+\section{Methods}
 \label{ch:methods}
 
-\section{Pipeline overview}
-\fillpara{[R1] Một đoạn mô tả toàn bộ pipeline theo hình \ref{fig:pipeline}: dữ liệu thô, tiền xử lý, epoch, hai nhánh classical và DL, đánh giá, giải thích.}
+All decisions were fixed in a written protocol before the models were run (Figure~\ref{fig:pipeline}). One preprocessed data release was used by every step, and all models shared the same splits, metrics and output format.
 
 \begin{figure}[H]
 \centering
-\reportfig{F1_pipeline.png}
-\caption{Analysis pipeline. \fillin{chú thích}}
+\reportfig{F1_pipeline.pdf}
+\caption{Analysis pipeline (F1). Labels R1 to R5 give the responsible team role (Section~\ref{ch:contributions}).}
 \label{fig:pipeline}
 \end{figure}
 
-% ------------------------------------------------------------------
-\section{Preprocessing}
+\subsection{Preprocessing}
 \label{sec:preprocessing}
-\fillpara{[R2] Nguồn chính: \src{reports/report_template.md} mục 3.1 (đã viết), \src{reports/r2_methods_v2.md}. Chia theo các mục nhỏ dưới đây.}
+Preprocessing used MNE-Python \citep{gramfort2013}. Bad channels (robust z-score of the channel standard deviation above 5, or flat) were interpolated, the data were band-pass filtered at 0.1 to 40~Hz (zero-phase FIR) and re-referenced to the average. Extended Infomax ICA was fitted on a 1~Hz high-passed copy, and components labelled as eye blink or muscle with a probability of at least 0.8 by ICLabel \citep{piontonachini2019} were removed (7.5 per participant on average). Data were resampled to 250~Hz and cut into epochs from $-200$ to 800~ms with a $-200$ to 0~ms baseline; epochs above 150~µV peak-to-peak were rejected.
 
-\subsection{Channels and electrode positions}
-\fillpara{[R2] 127 kênh EEG, không thêm FCz; vị trí điện cực CapTrak theo từng subject, trường hợp dùng file .bvef; bỏ kênh không phải EEG.}
-
-\subsection{Bad channels and recording joins}
-\fillpara{[R2] Tiêu chí phát hiện kênh hỏng (robust z-score, ngưỡng kênh phẳng), nội suy spherical spline; đánh dấu BAD quanh chỗ nối recording.}
-
-\subsection{Filtering and re-referencing}
-\fillpara{[R2] Lọc FIR pha không 0,1 đến 40 Hz, lý do không dùng notch, tham chiếu trung bình.}
-
-\subsection{Independent component analysis}
-\fillpara{[R2] Extended Infomax, dữ liệu lọc 1 Hz, giữ 99\% phương sai, seed; ICLabel, ngưỡng loại IC mắt và cơ; số IC loại trung bình mỗi người; hạn chế (ICA fit trên toàn bộ recording).}
-
-\subsection{Epoching and rejection}
-\fillpara{[R2] Resample 250 Hz, epoch -200 đến 800 ms, baseline -200 đến 0 ms, ngưỡng peak-to-peak, loại epoch chồng BAD, tiêu chí loại subject theo tỉ lệ target giữ lại.}
-
-\subsection{Quality control}
-\fillpara{[R2] Các kiểm tra tự động khi đọc lại file FIF, kiểm tra trực quan cho 35 subject, đối chiếu với events gốc; những gì chưa kiểm tra được (sub-10, sub-13 candidate).}
-
-% ------------------------------------------------------------------
-\section{ERP analysis}
+\subsection{ERP analysis}
 \label{sec:erp-methods}
-\fillpara{[R3] Grand-average ERP tại Pz, CPz, Cz (mean và SEM qua subject); difference wave target trừ standard; topomap 250 đến 600 ms và các lát cắt 300, 400, 500, 600 ms; ghép kênh theo tên điện cực. Quy tắc đo đỉnh P300 theo subject (cửa sổ, kênh, cách xử lý đỉnh ở biên). Nguồn: \src{reports/r3_review_and_handoff.md}.}
+ERPs at Pz, CPz and Cz were averaged within each participant and then across participants (SEM across participants). The P300 peak of each participant was the largest positive voltage at Pz between 300 and 600~ms.
 
-% ------------------------------------------------------------------
-\section{Classification tasks and time windows}
+\subsection{Tasks and time windows}
 \label{sec:tasks}
-\fillpara{[R1] Bài toán chính và hai bài toán đối chứng, vì sao cần chúng; hai cửa sổ thời gian và lý do chọn 450 ms (RT trung bình trừ 1,5 SD). Nguồn: protocol mục 2 và 3.}
+The main task was target versus standard (\code{tgt_std}). Two control tasks separate the P300 from the response: distractor versus standard (\code{dis_std}; rare versus frequent, no response in either class) and target versus distractor (\code{tgt_dis}; both rare, only targets have a response). All models were run on a \code{full} window (0 to 800~ms) and an \code{early} window (0 to 450~ms), which ends before most responses (median RT 536~ms; 25\% of RTs below 461~ms).
 
-\begin{table}[H]
-\centering
-\caption{Classification tasks and time windows. \fillin{chú thích}}
-\label{tab:tasks}
-\begin{tabularx}{\linewidth}{llX}
-\toprule
-\textbf{Name} & \textbf{Definition} & \textbf{Purpose} \\
-\midrule
-\code{tgt_std} & \fillin{} & \fillin{} \\
-\code{dis_std} & \fillin{} & \fillin{} \\
-\code{tgt_dis} & \fillin{} & \fillin{} \\
-\midrule
-\code{full} & \fillin{} & \fillin{} \\
-\code{early} & \fillin{} & \fillin{} \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-% ------------------------------------------------------------------
-\section{Classical models}
+\subsection{Models}
 \label{sec:classical}
-\fillpara{[R4] Nguồn: \src{reports/methods_ml_rq2_draft.md} mục 3.3.}
-
-\subsection{Time-window shrinkage LDA}
-\fillpara{[R4] \code{lda_tw}: trung bình biên độ theo bin 50 ms trên mọi kênh, số đặc trưng cho mỗi cửa sổ, chuẩn hoá, shrinkage LDA với prior bằng nhau.}
-
-\subsection{xDAWN covariances and Riemannian tangent space}
-\fillpara{[R4] \code{xdawn_rg}: số bộ lọc xDAWN, ma trận hiệp phương sai, tangent space, logistic regression có class weight; vấn đề hạng thấp sau ICA và cách xử lý.}
+\label{sec:dl}
+Table~\ref{tab:models} summarises the four models. The classical models used scikit-learn \citep{pedregosa2011} and pyRiemann. The deep networks were written in PyTorch \citep{paszke2019} following the original architectures; they received the epoch resampled to 128~Hz and z-scored per channel with training statistics, and were trained with Adam (learning rate $10^{-3}$, batch 64), class-weighted cross-entropy and early stopping on a validation split taken from the training data (patience 20, at most 200 epochs). No hyperparameters were tuned.
 
 \begin{table}[H]
 \centering
-\caption{Classical model settings. \fillin{chú thích}}
-\label{tab:classical-params}
-\begin{tabularx}{\linewidth}{lXX}
+\small
+\caption{Models. All learned steps were fitted on the training data of each fold only.}
+\label{tab:models}
+\begin{tabularx}{\linewidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
-\textbf{Model} & \textbf{Features} & \textbf{Classifier and hyperparameters} \\
+\textbf{Model} & \textbf{Input and features} & \textbf{Classifier} \\
 \midrule
-\code{lda_tw} & \fillin{} & \fillin{} \\
-\code{xdawn_rg} & \fillin{} & \fillin{} \\
+\code{lda_tw} & Mean amplitude per channel in 50~ms bins (2,032 features for \code{full}) & Shrinkage LDA, equal priors \\
+\code{xdawn_rg} & 4 xDAWN filters per class, covariance matrices, Riemannian tangent space (136 features) & Logistic regression, balanced class weights \\
+\code{eegnet} & EEGNet-8,2 \citep{lawhern2018}, 3,258 parameters & Softmax, trained end to end \\
+\code{shallow} & ShallowConvNet \citep{schirrmeister2017}, 204,402 parameters & Softmax, trained end to end \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-% ------------------------------------------------------------------
-\section{Deep learning models}
-\label{sec:dl}
-\fillpara{[R5] Nguồn: \src{reports/methods_dl_draft.md}.}
-
-\subsection{Architectures}
-\fillpara{[R5] EEGNet-8,2 và ShallowFBCSPNet: các lớp chính, số tham số; viết bằng PyTorch, cùng kiến trúc với braindecode.}
-
-\subsection{Input and normalisation}
-\fillpara{[R5] Resample cả epoch về 128 Hz rồi mới cắt cửa sổ; z-score theo kênh với thống kê chỉ từ phần train.}
-
-\subsection{Training}
-\fillpara{[R5] Optimizer, learning rate, batch size, số epoch tối đa, early stopping trên validation tách từ train, class weight, seed, phần cứng và thời gian chạy.}
-
-\begin{table}[H]
-\centering
-\caption{Deep learning training settings. \fillin{chú thích}}
-\label{tab:dl-params}
-\begin{tabular}{lcc}
-\toprule
-\textbf{Setting} & \textbf{EEGNet} & \textbf{ShallowFBCSPNet} \\
-\midrule
-Number of parameters & \fillin{} & \fillin{} \\
-Optimizer, learning rate & \fillin{} & \fillin{} \\
-Batch size & \fillin{} & \fillin{} \\
-Maximum epochs, patience & \fillin{} & \fillin{} \\
-Validation split & \fillin{} & \fillin{} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-% ------------------------------------------------------------------
-\section{Evaluation}
+\subsection{Evaluation}
 \label{sec:evaluation}
+Within participants, each recording was split in time order into five equal segments (5-fold blocked cross-validation without shuffling). Across participants, the 35 participants were split into five fixed folds (GroupKFold), shared by all models. The metrics were balanced accuracy and AUC (chance 0.5), with the F1 score of the target class as a secondary metric. The unit of statistics was the participant (within: mean over folds). For RQ2, the best classical and the best DL model (highest median balanced accuracy in the \code{full} window) were compared with two-sided Wilcoxon signed-rank tests, Holm-corrected \citep{holm1979} over the four setting and window combinations, with the rank-biserial correlation $r$ as effect size \citep{vallat2018}.
 
-\subsection{Within-subject and cross-subject validation}
-\fillpara{[R4, R5] Within: 5 đoạn liên tiếp đều nhau, không xáo trộn (xem changelog protocol 2026-11-19). Cross: GroupKFold 5 fold theo subject, file fold cố định dùng chung cho mọi mô hình.}
-
-\subsection{Leakage safeguards}
-\fillpara{[R4] Mọi bước học từ dữ liệu chỉ fit trên train; tuning trên validation tách từ train; cân bằng lớp bằng class weight; seed cố định.}
-
-\subsection{Metrics}
-\fillpara{[R4] Balanced accuracy và ROC-AUC là metric chính, F1 lớp target là phụ; mức ngẫu nhiên 0,5; vì sao không dùng accuracy thô.}
-
-\subsection{Statistical comparison}
-\fillpara{[R4] Đơn vị thống kê là subject; chọn classical tốt nhất và DL tốt nhất theo trung vị balanced accuracy cửa sổ full; Wilcoxon signed-rank hai phía, hiệu chỉnh Holm, rank-biserial; công cụ (pingouin). Nguồn: protocol mục 8.}
-
-% ------------------------------------------------------------------
-\section{Model explanation}
+\subsection{Model explanation}
 \label{sec:explain-methods}
-\fillpara{[R1] Nguồn: \src{reports/explain_dl_draft.md} mục 3.6. Chia theo các mục nhỏ dưới đây.}
-
-\subsection{EEGNet spatial patterns}
-\fillpara{[R1] Chuyển trọng số depthwise thành activation pattern, chuẩn hoá về µV, quy ước dấu, tương quan với bản đồ P300; độ quan trọng của filter đo bằng mức giảm AUC khi bỏ filter.}
-
-\subsection{Integrated Gradients}
-\fillpara{[R1] Target của IG (logit difference), baseline, số bước, kiểm tra completeness, trial được giải thích, cách lấy trung bình theo subject.}
-
-\subsection{LDA activation patterns}
-\fillpara{[R1] Fit lại \code{lda_tw} trên cùng 5 fold cross-subject, công thức pattern theo \citet{haufe2014}, kiểm tra kết quả fit lại trùng với R4.}
-
-\subsection{Regional summary and control tasks}
-\fillpara{[R1] Hai vùng ROI (P300 và vận động trái), 4 bin thời gian, chỉ số enrichment, kiểm định Wilcoxon mô tả; huấn luyện EEGNet trên hai task đối chứng với cùng code, fold, hyperparameter.}
-
-% ------------------------------------------------------------------
-\section{Implementation}
-\fillpara{[R1] Ngôn ngữ, thư viện chính và phiên bản (MNE-Python \citep{gramfort2013}, scikit-learn, pyriemann, PyTorch, pingouin), phần cứng, cách chạy lại (lệnh scripts theo thứ tự số).}
+We explained EEGNet, the best DL model, exactly as evaluated (each participant by the models that had it in their test set). Its 16 spatial filters were converted into activation patterns \citep{haufe2014} and compared with the target-minus-standard ERP map (250 to 600~ms) by spatial correlation; a filter's importance was the drop in test AUC when it was removed. Integrated Gradients \citep{sundararajan2017} (64 steps, baseline the training mean) attributed the logit difference of each correctly classified target to channels and time points. To separate the P300 from the right-hand response, we compared a parietal P300 region (Pz, CPz, POz, CP1, CP2, P1, P2) with a left central motor region (C3, C1, C5, FC3, CP3) in four time bins; a region's enrichment is its share of the absolute attribution divided by its share of channels (1 = an average channel). EEGNet was also trained and explained on the two control tasks with the same code and folds. As a linear reference, we computed the activation patterns of \code{lda_tw}.

@@ -279,7 +279,7 @@ def plot_f4_paired(
 
     ylabel = _METRIC_LABELS[metric]
     n_panels = len(stats_df)
-    n_cols = min(4, n_panels)
+    n_cols = min(2, n_panels)  # lưới 2x2 để chữ đọc được khi in ở bề rộng trang
     n_rows = math.ceil(n_panels / n_cols)
     multi_task = stats_df["task"].nunique() > 1
 

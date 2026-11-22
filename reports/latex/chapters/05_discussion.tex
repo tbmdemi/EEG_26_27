@@ -1,18 +1,11 @@
-% Chương 5. Diễn giải kết quả, so sánh tài liệu, hạn chế. Khoảng 2 trang.
-\chapter{Discussion}
+% Mục 5. Diễn giải kết quả và hạn chế. Câu hỏi có thể gặp: reports/qa_backup.md.
+\section{Discussion}
 \label{ch:discussion}
 
-\section{Main findings}
-\fillpara{[R1] Tóm tắt 3 đến 4 phát hiện chính, mỗi phát hiện một đoạn ngắn, gắn với RQ1, RQ2, RQ3. Không nhắc lại toàn bộ số liệu, chỉ số quan trọng nhất.}
+\textbf{Classical versus deep learning.} Within one participant, each training fold had about 430 trials and 60 targets; with so little data the tangent-space pipeline, which estimates few parameters from robust covariance matrices, was as good as EEGNet and ranked trials slightly better. With about 14,500 training trials pooled over 28 people, EEGNet learned features that transfer to a new person better than the tangent space, which is centred on the training participants and does not adapt to the P300 latency of a new person. This agrees with reviews that found no general advantage of deep learning on small EEG datasets \citep{lotte2018,roy2019}: here the advantage appears only with pooled data. The architecture matters too: ShallowConvNet squares and log-pools its features, which discards the polarity of slow ERPs \citep{schirrmeister2017}, and with 60 times more parameters than EEGNet it needed the pooled data to catch up.
 
-\section{Comparison with previous work}
-\fillpara{[R4, R5] So sánh balanced accuracy và AUC với các nghiên cứu P300 single-trial khác (EEGNet, xDAWN); so sánh ERP và hành vi với bài báo gốc \citep{dzianok2022}. Giải thích vì sao DL hơn classical ở cross-subject nhưng không hơn ở within-subject (nếu kết quả cuối vẫn như vậy).}
+\textbf{Motor confound.} Four results argue that the models do not mainly use the button press: distractors without a response were decoded almost as well as targets, the \code{early} window kept most of the performance, the attributions peaked over the parietal midline before the median response, and the LDA patterns, which unlike gradients show where the class difference actually is \citep{haufe2014}, contain almost no left central signal. The control tasks show, however, that motor preparation is used as well. Because it starts before the press, an early window reduces but does not remove it; a task without an overt response would be needed to measure a pure P300 decoder.
 
-\section{Motor confound}
-\fillpara{[R1] Kết quả cửa sổ early, task đối chứng và saliency nói gì về tín hiệu vận động; vì sao cửa sổ early một mình không loại hết chuẩn bị vận động (lateralised readiness potential).}
+\textbf{Limitations.} All results come from one dataset and one task. Keeping only correct trials makes the target class identical to the response class. Hyperparameters were not tuned. ICA was fitted on each complete recording, without labels but including test trials. The regions and time bins of the explanation were fixed a priori and the region tests are descriptive, and only EEGNet was trained on the control tasks.
 
-\section{Limitations}
-\fillpara{[Cả nhóm] Mỗi ý một câu hoặc hai: chỉ một bộ dữ liệu; ngân sách tuning hyperparameter nhỏ; ICA fit trên toàn bộ recording; chỉ giữ trial đúng nên target trùng với bấm nút; ROI và bin thời gian chọn trước, kiểm định mô tả không hiệu chỉnh; attribution dựa trên gradient không phải activation pattern; chỉ EEGNet được huấn luyện trên task đối chứng.}
-
-\section{Future work}
-\fillpara{[Cả nhóm] 2 đến 4 hướng cụ thể, ví dụ: mô hình tuỳ chọn chưa làm (\code{bp_svm}, EEG-Conformer), transfer learning cho cross-subject, kiểm soát vận động bằng thiết kế khác (đếm thầm thay vì bấm nút).}
+\textbf{Future work.} A silent-counting task would remove the motor confound, and per-participant re-centring of covariance matrices or fine-tuning of the networks could improve transfer to new users.

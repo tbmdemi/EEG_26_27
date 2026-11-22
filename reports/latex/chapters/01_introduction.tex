@@ -1,25 +1,14 @@
-% Chương 1. Người phụ trách chính: R1. Khoảng 1,5 đến 2 trang.
-\chapter{Introduction}
+% Mục 1. Người phụ trách chính: R1.
+\section{Introduction}
 \label{ch:intro}
 
-\section{The oddball paradigm and the P300}
-\fillpara{[R1, R3] Mô hình oddball: kích thích hiếm (target) xen giữa kích thích thường gặp (standard). Thành phần P300 (P3b): biên độ dương, vùng đỉnh trung tâm, khoảng 300 đến 600 ms; ý nghĩa chức năng (cập nhật ngữ cảnh, phân bổ chú ý). Phân biệt P3a (distractor) và P3b (target). Trích \citet{polich2007}.}
+In the oddball paradigm, rare task-relevant targets are interspersed among frequent standards. Targets elicit the P300 (P3b), a positive deflection with a centro-parietal maximum about 300 to 600~ms after stimulus onset that reflects context updating and attention allocation; a rare non-target distractor can also elicit a more fronto-central P3a \citep{polich2007}. Detecting the P300 in a single trial, as a brain--computer interface must do \citep{farwell1988}, is hard: the signal-to-noise ratio of one trial is low, the P300 varies between people, and targets are rare. In our data there are about six standards per target, so always answering ``standard'' gives 86\% accuracy; we therefore report balanced accuracy and the area under the ROC curve (AUC).
 
-\section{Single-trial ERP classification}
-\fillpara{[R1] Vì sao phân loại từng trial khó: tỉ số tín hiệu trên nhiễu thấp, khác biệt giữa người, mất cân bằng lớp (khoảng 1 target trên 6 standard). Ứng dụng: BCI, đánh giá chú ý. Vì sao cần balanced accuracy thay cho accuracy.}
+Classical ERP decoders use hand-crafted features with well-regularised linear models, such as time-window amplitudes with shrinkage linear discriminant analysis (LDA; \citealp{blankertz2011}) or xDAWN spatial filters with Riemannian tangent-space features \citep{rivet2009,barachant2012}. Deep learning (DL) learns features from the raw signal, for example the compact EEGNet \citep{lawhern2018} or ShallowConvNet, which was designed for band-power features \citep{schirrmeister2017}. Reviews have not found a clear advantage of deep networks over well-regularised classical methods on small EEG datasets \citep{lotte2018,roy2019}.
 
-\section{Classical machine learning and deep learning approaches}
-\fillpara{[R4, R5] Classical: trung bình theo cửa sổ thời gian và shrinkage LDA; xDAWN cộng hình học Riemann \citep{rivet2009,barachant2012}. DL: EEGNet \citep{lawhern2018}, ShallowConvNet \citep{schirrmeister2017}. Câu hỏi còn mở: DL có hơn classical trên dữ liệu ERP nhỏ không.}
-
-\section{Motor confound and explainability}
-\fillpara{[R1] Sau khi chỉ giữ trial đúng, mọi target đều có bấm nút và không standard nào có, nên mô hình có thể học tín hiệu vận động thay cho P300. Vì sao cần giải thích mô hình (spatial pattern, saliency) và vì sao cần pattern thay cho weight \citep{haufe2014}.}
-
-\section{Research questions}
+Our design also contains a confound: only behaviourally correct trials are analysed, so every target contains a right-hand button press and no standard does. A classifier could use motor activity instead of the P300. To test this, we explain the models with activation patterns \citep{haufe2014} and Integrated Gradients \citep{sundararajan2017}, and add an early time window and two control tasks. We ask:
 \begin{itemize}
-  \item \textbf{RQ1.} \fillin{dịch sang tiếng Anh: Kết quả phân loại single-trial tốt nhất cho frequent vs target?}
-  \item \textbf{RQ2.} \fillin{dịch: Deep Learning có tốt hơn kỹ thuật ML tiêu chuẩn cho single-trial classification?}
-  \item \textbf{RQ3.} \fillin{dịch: Đặc trưng mà mô hình DL khám phá có giải thích được không?}
+  \item \textbf{RQ1.} What is the best single-trial classification performance for frequent (standard) versus target stimuli?
+  \item \textbf{RQ2.} Does deep learning outperform standard machine learning techniques for single-trial classification?
+  \item \textbf{RQ3.} Are the features discovered by the deep learning model interpretable, and do they reflect the P300 rather than the button press?
 \end{itemize}
-
-\section{Report outline}
-\fillpara{[R1] Một đoạn ngắn: Chương \ref{ch:data} mô tả dữ liệu, Chương \ref{ch:methods} phương pháp, Chương \ref{ch:results} kết quả, Chương \ref{ch:discussion} thảo luận, Chương \ref{ch:conclusion} kết luận.}

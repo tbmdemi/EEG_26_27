@@ -16,6 +16,7 @@ Mỗi dòng 1 đến 2 câu: việc đã giao nộp và trạng thái còn chờ
 | 2026-11-20 | Minh | R1 Explainability | Giải thích EEGNet: spatial pattern, độ quan trọng filter, Integrated Gradients, bảng vùng P300 và vùng vận động; hình F5a/F5b; 5 test; nháp RQ3; ghi quyết định vào changelog protocol. | [#8](https://github.com/tbmdemi/EEG_26_27/pull/8) |
 | 2026-11-20 | Minh | R1 Explainability | LDA patterns (fit lại khớp đúng kết quả R4), hình F5c; hình F1 sơ đồ pipeline. | `ac98248` (nhánh `tbm`) |
 | 2026-11-21 | Minh | R1 Explainability | Đối chứng nhiễu vận động: train EEGNet cho `dis_std`, `tgt_dis` (Kaggle T4), IG cho 3 task. Kết luận: P300 là nguồn chính, có thêm phần nhỏ từ chuẩn bị vận động. | `ac98248` (nhánh `tbm`) |
+| 2026-11-22 | Minh | R1 PM | Ghép report LaTeX: viết phần R1 (mở đầu, phương pháp giải thích, RQ3, thảo luận, kết luận, availability), chuyển nháp R2 đến R5 vào các chương, bảng số liệu sinh từ `results/`, kiểm tra DOI tài liệu tham khảo; rút report còn 15 trang, chi tiết chuyển sang `reports/qa_backup.md` cho phần hỏi đáp. Duyệt quy tắc đo P300. Còn chờ: thông tin thành viên, % đóng góp, F3. | nhánh `tbm` |
 
 ## Tổng kết % đóng góp (chốt ở mốc M6)
 
