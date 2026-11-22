@@ -10,15 +10,14 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 ## R1 — Project Manager + Explainability
 **Owner:** Minh
 
-- [ ] Tạo Issues/Project board từ file này; bật branch protection cho `main`
-- [ ] Họp tiến độ hằng tuần (15–20 phút), ghi biên bản vào `reports/meeting_notes.md`
+- [X] Tạo Issues/Project board từ file này; bật branch protection cho `main`
 - [ ] Review PR liên quan đến protocol/config
-- [ ] Explainability: spatial filter EEGNet, Integrated Gradients, LDA patterns (protocol §9)
-- [ ] Phân tích đối chứng nhiễu vận động (`early` vs `full`, task `dis_std`, `tgt_dis`)
-- [ ] Hình F1, F5
+- [x] Explainability: spatial filter EEGNet, Integrated Gradients, LDA patterns (protocol mục 9)
+- [x] Phân tích đối chứng nhiễu vận động (`early` vs `full`, task `dis_std`, `tgt_dis`)
+- [ ] Hình F1, F5: đã có bản nháp, chờ nhóm duyệt
 - [ ] Ghép report, kiểm tra tổng % đóng góp = 100%, gửi email đúng hạn
 
-**Đầu ra:** `src/eegproj/explain/`, `figures/F1*`, `figures/F5*`, report hoàn chỉnh.
+**Đầu ra:** `src/eegproj/explain/`, `scripts/05_explain_dl.py`, `06_explain_lda.py`, `07_plot_pipeline.py`, `figures/F1*`, `figures/F5*`, nháp `reports/explain_dl_draft.md`, report hoàn chỉnh.
 
 ## R2 — Signal Preprocessing
 **Owner:** ______
@@ -29,7 +28,7 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 - [x] Visual summary QC đủ 35 subject dùng được; đã ghi reviewer/scope/findings vào log, cập nhật manual OI1h (sub-10) và AFF1h (sub-13), chạy lại hai candidate từ raw thật. Đây không phải duyệt tương tác toàn bộ raw; candidate chưa thay v2. Xem `reports/r2_qc_and_handoff.md`.
 - [x] Upload `preproc_v2_20261118.zip` lên Drive `EEG_26_27/release/` (**không** qua Git), cập nhật `RELEASE` trong `scripts/00_get_data.py` (2026-11-18)
 - [x] Commit code R2 và log QC: `fbc41f4`; ghi hash vào `reports/meeting_notes.md`. Bản v2 lịch sử tham chiếu `6fccfc2`; không khẳng định đây là revision chính xác của job sinh ZIP.
-- [x] Mở Issue **[Data v2 ready #6](https://github.com/tbmdemi/EEG_26_27/issues/6)**; nội dung lưu tại `reports/data_v2_ready_issue.md`. Commit mới hiện chỉ local, chưa push; hai candidate vẫn chờ quyết định phát hành.
+- [x] Mở Issue **[Data v2 ready #6](https://github.com/tbmdemi/EEG_26_27/issues/6)**; nội dung lưu tại `reports/data_v2_ready_issue.md`. Code R2 is included in this PR; both candidates remain pending a release decision.
 - [x] Viết *Methods – Preprocessing* v2 vào report §3.1; bảng đủ 42 subject và accounting epoch tại `reports/r2_subject_epoch_table.md`. Report vẫn dùng v2 (20.600 epoch), tách khỏi candidate.
 
 **Đầu ra:** v2 hiện hành từ pipeline nhóm; notebook `01_preprocess.ipynb`, code cải tiến `scripts/r2_*.py`, CLI `scripts/02_r2.py`; candidate `.fif`/log/QC riêng. Bản phát hành v2 chưa bị ghi đè.
@@ -50,28 +49,29 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 **Đầu ra đã triển khai:** notebook 02–06, `src/eegproj/evaluation/{erp,topography,p300,behaviour_summary}.py`, hình F2 và bảng hành vi local, bản nháp Results – ERP. `evaluation/aggregate.py` và F3 chưa triển khai. Xem `reports/r3_review_and_handoff.md` để biết kiểm tra đã chạy và các phụ thuộc còn lại.
 
 ## R4 — Classical ML (+ Feature Extraction)
-**Owner:** ______
+**Owner:** Trung (Trần Đức Trung, 24022477, [@TrungDev2431](https://github.com/TrungDev2431))
 
-- [ ] Module chia CV dùng chung (`within` theo khối dùng cột `block`, `cross` GroupKFold 5 fold theo subject, lưu `results/cv_cross_subject_folds.csv`) — **làm trước, DL dùng lại**
-- [ ] Module metric dùng chung + ghi CSV đúng định dạng protocol §7
-- [ ] `lda_tw`, `xdawn_rg` (bắt buộc), `bp_svm` (tùy chọn)
-- [ ] Chạy đủ: 2 setting × 2 window × 3 task
-- [ ] Thống kê RQ2 (Wilcoxon theo subject + Holm, protocol §8) — phối hợp R5; hình F4
-- [ ] Viết mục *Methods – Classical ML* và phần RQ2 trong report
+- [x] Module chia CV dùng chung (`src/eegproj/evaluation/splits.py`: lọc 35 subject v2, tương thích `within_cv_metadata` `equal_segments` và `cross_subject_folds` `results/cv_cross_subject_folds.csv` cùng R5)
+- [x] Module metric dùng chung + ghi CSV đúng định dạng protocol §7 (`src/eegproj/evaluation/metrics.py`)
+- [x] `lda_tw`, `xdawn_rg` (bắt buộc, gồm `_RankSafeXdawnEstimator` và `extract_lda_haufe_patterns` cho R1; căn chỉnh tên điện cực cho `sub-13`/`sub-42`). `bp_svm` (tùy chọn): chưa làm
+- [x] Chạy đủ 24 tổ hợp trên 35 subject v2 (`2 models × 2 settings × 2 windows × 3 tasks` = 2,520 dòng, 0 NaNs; `scripts/02_run_classical_ml.py`)
+- [x] Thống kê RQ2 (Wilcoxon theo subject + Holm + RBC, `scripts/03_stats_rq2.py`) đối chiếu `xdawn_rg` vs `eegnet` trên 35 subject + Hình F4 (`figures/F4_paired_classical_vs_dl.{png,pdf}`)
+- [x] Viết báo cáo kiểm định/bàn giao (`reports/r4_evaluation_review.md`), bản nháp *Methods & Results – Classical ML + RQ2* (`reports/methods_ml_rq2_draft.md`), và 6 unit/integration tests (`tests/test_r4_ml.py`)
 
-**Đầu ra:** `src/eegproj/features/`, `src/eegproj/models/classical.py`, `src/eegproj/evaluation/`, CSV kết quả.
+**Đầu ra:** `src/eegproj/features/`, `src/eegproj/models/{classical,runner}.py`, `src/eegproj/evaluation/{splits,metrics,stats}.py`, `scripts/02_run_classical_ml.py`, `scripts/03_stats_rq2.py`, `tests/test_r4_ml.py`, `reports/r4_evaluation_review.md`, `reports/methods_ml_rq2_draft.md`.
 
 ## R5 — Deep Learning
-**Owner:** ______
+**Owner:** Giang (Trần Bùi Hà Giang, 24022314)
 
-- [ ] Dataloader từ epoch `.fif`, chuẩn hóa theo kênh với thống kê từ train
-- [ ] `eegnet`, `shallow` (bắt buộc), `conformer` (tùy chọn) — dùng **cùng** module chia CV của R4
-- [ ] Early stopping trên validation tách từ train; ghi hyperparameter vào `configs/config.yaml`
-- [ ] Chạy đủ: 2 setting × 2 window × task chính (`tgt_std`); task đối chứng nếu còn thời gian
-- [ ] Lưu checkpoint (gitignored) để R1 làm explainability
-- [ ] Viết mục *Methods – Deep Learning* trong report
+- [x] Dataloader từ epoch `.fif` v2 (`models/dl_runner.load_dl_subject`): resample cả epoch 250 → 128 Hz rồi mới cắt cửa sổ; chuẩn hóa z-score theo kênh với thống kê **chỉ từ phần fit của train** (2026-11-19)
+- [x] `eegnet` (EEGNet-8,2), `shallow` (ShallowFBCSPNet) viết bằng PyTorch thuần, cùng kiến trúc braindecode, các lớp đặt tên rõ để R1 đọc spatial filter / chạy IG — dùng **nguyên** `evaluation/splits.py` + `metrics.py` của R4 (lấy từ nhánh `Trung`, không sửa) và file fold cố định `results/cv_cross_subject_folds.csv` (`evaluation/folds.py`). Within-subject chia 5 đoạn liên tiếp đều nhau (`evaluation.within.split`, xem changelog protocol 2026-11-19) — **R4 cần dùng cùng cách chia**. `conformer` (tùy chọn): chưa làm
+- [x] Early stopping trên validation tách từ train (within: 20% cuối của mỗi đoạn train; cross: 20% subject train), khôi phục trọng số tốt nhất; class weight cân bằng; hyperparameter ghi trong `models.dl` của config
+- [x] Chạy đủ trên 35 subject: 2 setting × 2 window × `tgt_std` cho `eegnet` và `shallow` (2026-11-20, RTX 4060 Laptop, 4.6 giờ). EEGNet tốt nhất: trung vị bal. acc. within/full 0.941, cross/full 0.924, cross/early 0.830 — bảng đầy đủ trong `reports/methods_dl_draft.md`. Task đối chứng DL (`--tasks dis_std tgt_dis`): R1 đã chạy cho `eegnet` (2026-11-21, Kaggle T4, cùng code và fold), kết quả trong `reports/explain_dl_draft.md`; `shallow` chưa chạy
+- [x] Lưu checkpoint (gitignored) cho R1: `results/checkpoints/<model>/<setting>_<window>_<task>/*.pt`, đọc lại bằng `eegproj.models.dl.load_checkpoint`; kèm dự đoán từng trial `results/predictions/*.csv.gz` và log huấn luyện `results/dl_runs/*.json`
+- [x] Chia sẻ outputs qua Drive (`r5_dl_results_20261120_fc0cfaf.zip`), tải bằng `python scripts/04_get_dl_results.py` (2026-11-20)
+- [x] Viết bản nháp *Methods – Deep Learning* + bảng kết quả DL và so sánh EEGNet vs Shallow (`reports/methods_dl_draft.md`)
 
-**Đầu ra:** `src/eegproj/models/dl.py`, `scripts/04_train_dl.py`, CSV kết quả, checkpoints.
+**Đầu ra:** `src/eegproj/models/dl.py`, `src/eegproj/models/dl_runner.py`, `src/eegproj/evaluation/folds.py`, `scripts/04_train_dl.py`, `tests/test_r5_dl.py`, CSV kết quả, checkpoints, `reports/methods_dl_draft.md`.
 
 ---
 
