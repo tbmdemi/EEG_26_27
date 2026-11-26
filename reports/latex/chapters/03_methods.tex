@@ -7,7 +7,7 @@ All decisions were fixed in a written protocol before the models were run (Figur
 \begin{figure}[H]
 \centering
 \reportfig{F1_pipeline.pdf}
-\caption{Analysis pipeline (F1). Labels R1 to R5 give the responsible team role (see the title page).}
+\caption{Analysis pipeline (F1). Labels R1 to R5 give the responsible team role (Section~\ref{ch:contributions}).}
 \label{fig:pipeline}
 \end{figure}
 
@@ -17,7 +17,7 @@ Preprocessing used MNE-Python \citep{gramfort2013}. Bad channels (robust z-score
 
 \subsection{ERP analysis}
 \label{sec:erp-methods}
-ERPs at Pz, CPz and Cz were averaged within each participant and then across participants (SEM across participants). The P300 peak of each participant was the largest positive voltage at Pz between 300 and 600~ms.
+ERPs at Pz, CPz and Cz were averaged within each participant and condition, then across participants with equal weights (SEM across participants). Following the approved descriptive rule, we selected the largest signed recorded voltage at Pz between 300 and 600~ms separately for targets and distractors, taking the first sample in a tie. We applied no rectification, extra smoothing or interpolation; sampling at 250~Hz gives a 4~ms resolution. Nonpositive maxima, maxima at or within 20~ms of a window boundary, ties and maxima failing the local-maximum check were flagged. All candidates, including flagged ones, were retained. Amplitude and latency were summarised as median [Q1, Q3] across the 35 participants per condition, with linearly interpolated quartiles. CPz and Cz were supplementary and were not pooled with Pz. These candidate measurements do not confirm that every maximum is a P300 component.
 
 \subsection{Tasks and time windows}
 \label{sec:tasks}

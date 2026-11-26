@@ -1,27 +1,5 @@
-% Mục 6. Kết luận sơ bộ (trả lời RQ1 đến RQ3) và việc còn lại. Nguồn: docs/04_roles_and_tasks.md, reports/contribution_log.md.
-\section{Preliminary conclusions and remaining work}
+% Mục 6. Một đoạn, trả lời trực tiếp RQ1 đến RQ3.
+\section{Conclusion}
 \label{ch:conclusion}
 
-\textbf{Preliminary answers.} Single-trial classification of targets versus standards is highly accurate (RQ1): median balanced accuracy 0.949 within participants (\code{xdawn_rg}) and 0.924 for unseen participants (EEGNet). Deep learning did not outperform the classical pipeline within participants, but was significantly better across participants (RQ2). The features learned by EEGNet are interpretable (RQ3): they reproduce the centro-parietal P3b, with a smaller contribution from motor preparation before the button press that an early time window alone does not remove.
-
-\textbf{Completed.} Preprocessing of all 42 participants and data release v2; behavioural check against the original study; ERPs, scalp maps and P300 peaks; all four models on the main task in both settings and windows; both classical models and EEGNet on the two control tasks; RQ2 statistics; EEGNet and LDA explanations; this report draft. Table~\ref{tab:remaining} lists what remains.
-
-\begin{table}[H]
-\centering
-\small
-\caption{Remaining work.}
-\label{tab:remaining}
-\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{5.2cm}}
-\toprule
-\textbf{Item} & \textbf{Owner} & \textbf{Status} \\
-\midrule
-Overview figure F3 of all model scores and the script that aggregates the metric files & R3 & Not started; all metrics are available \\
-Quality-control figures: power spectrum before and after filtering, examples of removed ICs & R3 & Not started \\
-Decision on reprocessed sub-10 and sub-13 (manually marked bad channels) & R2, team & Candidates built and checked but not released; all results here use release v2 \\
-Review of the draft figures F1, F2 and F5 & Team & Drafts ready \\
-Optional models: band-power SVM, EEG Conformer; ShallowConvNet on the control tasks & R4, R5 & Optional, not started \\
-Names and student IDs of R2 and R3; contribution percentages for the final report & Team & To be agreed \\
-Final report, code tag and 10-minute presentation & R1, team & Report draft ready (this document) \\
-\bottomrule
-\end{tabularx}
-\end{table}
+Single-trial classification of targets versus standards is highly accurate (RQ1): median balanced accuracy 0.949 within participants (\code{xdawn_rg}) and 0.924 for unseen participants (EEGNet). Deep learning did not outperform the classical pipeline within participants, but was significantly better across participants (RQ2). The features learned by EEGNet are interpretable (RQ3): they reproduce the centro-parietal P3b, with a smaller contribution from motor preparation before the button press that an early time window alone does not remove.

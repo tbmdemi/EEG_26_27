@@ -1,4 +1,2 @@
 # Overleaf và latexmk dùng XeLaTeX cho báo cáo này (cần fontspec).
 $pdf_mode = 5;
-# Chỉ compile hai file chính (preamble.tex không phải tài liệu riêng).
-@default_files = ('main.tex', 'main_vi.tex');

@@ -62,7 +62,51 @@ nbstripout --install          # tự xóa output notebook khi commit
 | Trần Đức Trung | 24022477 | Classical ML (R4) | [@TrungDev2431](https://github.com/TrungDev2431) |
 | Trần Bùi Hà Giang | 24022314 | Deep Learning (R5) | |
 
-## Chạy pipeline
+## Lưu output khi chạy
+
+Theo thông báo cập nhật của nhóm trưởng, dùng code và dữ liệu v2 hiện hành; bước cleaning đã được thực hiện cho cả nhóm. Thành viên R3 tải dữ liệu bằng `python scripts/00_get_data.py`, rồi thực hiện phân tích ERP.
+
+Commit code `.py` và notebook `.ipynb`; chạy `nbstripout --install` một lần trên mỗi máy để tự động loại output nhúng trong notebook khi commit. Các file sinh ra khi chạy lưu trong `figures/`, `results/`, `outputs/`, `notebooks/outputs/` hoặc `scripts/outputs/` và được gitignore. Riêng `results/preproc_log.csv` là log bàn giao dữ liệu được giữ trong Git. Chia sẻ hình và bảng kết quả qua thư mục chung của nhóm.
+
+## R3 — Chạy lại và trạng thái bàn giao
+
+ERP/P300/hành vi và F3 đã triển khai, kiểm chứng trên release v2; F2 còn chờ duyệt hình cuối và gói output mới chuẩn bị local, chưa xác nhận upload Drive. [Bàn giao R3](reports/r3_review_and_handoff.md) tập trung phương pháp, lệnh tái lập, validation, bằng chứng, ZIP/SHA256 và các phụ thuộc; xem riêng [mục F3](reports/r3_review_and_handoff.md#f3) cho tổng hợp ML/DL.
+
+Báo cáo khoa học nằm trong [LaTeX](reports/latex/README.md). [Đường dẫn ERP draft cũ](reports/results_erp_draft.md) được giữ để tương thích; nhật ký chung ở `reports/contribution_log.md`.
+
+## R4 — Classical ML & RQ2: chạy và bàn giao
+
+Cần dữ liệu v2 (`python scripts/00_get_data.py`). Đã triển khai `lda_tw` (50 ms bins + shrinkage LDA, kèm `extract_lda_haufe_patterns` cho R1) và `xdawn_rg` (xDAWN rank-safe + Riemannian Tangent Space + balanced Logistic Regression), căn chỉnh thứ tự 127 kênh theo tên điện cực (`sub-13`, `sub-42`), đồng bộ chia CV `equal_segments` và `results/cv_cross_subject_folds.csv` cùng R5, chạy đủ 24 tổ hợp trên 35 subject và thực hiện kiểm định RQ2 (Wilcoxon + Holm) + Hình F4 đối chiếu với DL:
+
+```bash
+python scripts/02_run_classical_ml.py                # 2 models × 2 settings × 2 windows × 3 tasks (24 CSVs)
+python scripts/03_stats_rq2.py --metric bal_acc      # thống kê RQ2 + hình F4 (sau khi có CSV của R5)
+python scripts/03_stats_rq2.py --metric auc --out-csv results/rq2_wilcoxon_holm_auc.csv --fig-stem figures/F4_paired_classical_vs_dl_auc
+```
+
+- Kiểm tra code R4: `python -m unittest tests.test_r4_ml -v`, `python -m ruff check src/eegproj/evaluation/splits.py src/eegproj/evaluation/stats.py src/eegproj/evaluation/__init__.py src/eegproj/features src/eegproj/models/classical.py src/eegproj/models/runner.py src/eegproj/models/__init__.py scripts/02_run_classical_ml.py scripts/03_stats_rq2.py tests/test_r4_ml.py`.
+
+Báo cáo bàn giao: [`reports/r4_evaluation_review.md`](reports/r4_evaluation_review.md); bản nháp report: [`reports/methods_ml_rq2_draft.md`](reports/methods_ml_rq2_draft.md).
+
+## R5 — Deep Learning: chạy và bàn giao
+
+Cần dữ liệu v2 (`python scripts/00_get_data.py`). Huấn luyện EEGNet và ShallowConvNet trên **đúng** phân chia CV của R4, ghi CSV theo protocol §7:
+
+```bash
+python scripts/04_train_dl.py                                   # eegnet + shallow × within + cross × full + early, task tgt_std
+python scripts/04_train_dl.py --models eegnet --settings cross   # chạy từng phần
+python scripts/04_train_dl.py --tasks dis_std tgt_dis            # task đối chứng (nếu còn thời gian)
+python scripts/04_train_dl.py --subjects 01 03 --settings within # chạy thử nhanh → results/dev/ (không dùng cho report)
+```
+
+- Tự dùng GPU nếu có (`--device cuda|cpu`). Ước tính: CPU 4–8 nhân khoảng 4–9 giờ cho cả lưới chính; GPU (ví dụ Colab T4) dưới 1 giờ. Bị ngắt giữa chừng thì chạy lại đúng lệnh: kết quả đã xong được bỏ qua, phần dở dang chạy tiếp từ fold cuối.
+- Đầu ra (gitignored): `results/metrics/{eegnet,shallow}_*.csv`, `results/cv_cross_subject_folds.csv` (phân chia subject cố định dùng chung với R4), `results/predictions/*.csv.gz` (điểm từng trial), `results/dl_runs/*.json` (hyperparameter, số epoch, thời gian từng fold), `results/checkpoints/` (mô hình cho R1, đọc bằng `eegproj.models.dl.load_checkpoint`).
+- Không cần train lại: `python scripts/04_get_dl_results.py` tải bản outputs đã chạy (285 MB, Google Drive) vào `results/`, kiểm tra sha256, không ghi đè file bạn tự train (trừ khi có `--force`).
+- Kiểm tra code R5: `python -m unittest tests.test_r5_dl -v`, `python -m ruff check src/eegproj/models src/eegproj/evaluation/folds.py scripts/04_train_dl.py tests/test_r5_dl.py`.
+
+Phương pháp: [`reports/methods_dl_draft.md`](reports/methods_dl_draft.md).
+
+## R1: Explainability (RQ3), chạy và bàn giao
 
 | Vai | Lệnh chính |
 |---|---|

@@ -118,7 +118,7 @@ subject, fold, model, family, setting, window, task, bal_acc, auc, f1_target, n_
 
 Triển khai hình ERP của R3: các giá trị hiển thị nằm trong mục `erp` của config. Topomap gồm trung bình thời gian 250–600 ms và các lát cắt minh họa tại 300/400/500/600 ms. Ghép dữ liệu theo **tên điện cực** trước khi trung bình qua subject; dùng vị trí điện cực trung bình trong hệ tọa độ đầu để vẽ hình nhóm và ghi rõ trong caption. Đây là biểu diễn tín hiệu trên da đầu. Khoảng vẽ topomap chưa phải quyết định về cửa sổ đo đỉnh P300 theo subject.
 
-Đo đỉnh P300: dùng cực đại có dấu trong 300-600 ms, với Pz là kênh chính và CPz/Cz bổ sung. Quy tắc mô tả đã được PM duyệt cho report ngày 2026-11-22: báo median [IQR] tại Pz cho target và distractor, giữ ứng viên có cờ và nêu số ca có cờ. Không tự loại thêm subject hoặc khẳng định mọi cực đại là P300. Các thông số nằm trong `erp.p300`; tên file output giữ nguyên.
+Đo đỉnh P300: R3 đã chuẩn bị **đề xuất thăm dò để nhóm review**, chưa chốt phương pháp cho report, ở [bàn giao R3, mục P300](../reports/r3_review_and_handoff.md#p300). Các thông số đề xuất nằm riêng trong `erp.p300`; output mang tên `candidate` và giữ cờ kiểm tra của từng phép đo. Không tự loại thêm subject hoặc xác nhận mọi cực đại là P300. **PM đã duyệt quy tắc này cho report (2026-11-22):** báo median [IQR] tại Pz cho target và distractor, giữ cả ứng viên có cờ và nêu số ca có cờ; mô tả là phép đo mô tả, không khẳng định từng cực đại là P300. Config và tên file output giữ nguyên.
 
 ## 10. Hình bắt buộc cho report
 

@@ -35,18 +35,18 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 **Data v2 đã phát hành (2026-11-18).** Mọi người lấy dữ liệu bằng `python scripts/00_get_data.py` và chỉ làm việc trên v2; dữ liệu v1 đã bỏ.
 
 ## R3 — ERP & Visualization
-**Owner:** Bảo
+**Owner:** Bảo (Nguyễn Xuân Bảo, 24022266, [baohoccode-web](https://github.com/baohoccode-web))
 
-- [x] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian — đã tạo trên 35 subject bằng notebook 03/04 theo release v2; QC tổng hợp R2 đã hoàn thành, còn chờ review hình cuối cho report
-- [x] Đo biên độ và latency đỉnh P300 (target, distractor) theo từng subject: 210 ứng viên từ 35 subject, 2 điều kiện, 3 kênh; PM duyệt cách báo cáo median [IQR] tại Pz ngày 2026-11-22, giữ cờ và không khẳng định mọi cực đại là P300
-- [x] Bảng hành vi (hit rate, false alarm, RT) từ log tiền xử lý v2, so với bài báo — notebook 06 đã xuất riêng nhóm 39 trước loại EEG và nhóm ERP 35; mean ± sample SD qua subject, đối chiếu Table 5 và giữ chênh lệch thực tế
-- [ ] Hình kiểm tra chất lượng: đã tạo lại ví dụ IC bị loại từ ICA v2; còn thiếu PSD raw/trước-sau vì raw không có trong checkout
-- [x] Script tổng hợp metric task chính → bảng kết quả và F3: `scripts/08_aggregate_results.py`
-- [x] Hình F2 bản nháp (ERP + topomap, PNG 300 dpi/PDF) trên release v2; QC tổng hợp R2 đã hoàn thành, còn chờ review hình cuối
-- [x] Hình F3 theo quy ước hình — đã tổng hợp metrics R4/R5 cùng cohort 35 subject
-- [x] Viết bản nháp *Results – ERP* tại `reports/results_erp_draft.md`; QC tổng hợp R2 đã hoàn thành, còn chờ phục hồi hình PSD/IC và review hình cuối trước khi chốt report
+- [x] ERP Pz/CPz/Cz mean ± SEM qua subject, difference wave và topomap: đã kiểm chứng trên 35 subject v2.
+- [x] Ứng viên P300 theo subject, bảng và phân bố: quy tắc mô tả PM duyệt 2026-11-22; thống kê Pz và xử lý cờ đã đưa vào LaTeX.
+- [x] Bảng hành vi nhóm 39/35 và đối chiếu Table 5 theo subject.
+- [ ] Hình PSD trước/sau lọc và ví dụ IC loại: còn phụ thuộc R2 cung cấp file, không tạo thay thế.
+- [x] Module/CLI tổng hợp F3 và tests: đã audit 32 CSV thật, đối chiếu cross folds với GroupKFold và số liệu hình/bảng.
+- [x] F2 bản nháp PNG 300 dpi/PDF và caption: đã chuẩn bị gói local; chưa được duyệt hình cuối.
+- [x] F3 `tgt_std` PNG 300 dpi/PDF, bảng và SHA256 nguồn: đã kiểm chứng, cập nhật LaTeX.
+- [x] Results ERP/P300 và tài liệu bàn giao đã đồng bộ; đường dẫn ERP draft cũ được giữ tương thích.
 
-**Đầu ra đã triển khai:** notebook 02–06, `src/eegproj/evaluation/{erp,topography,p300,behaviour_summary,aggregate}.py`, `scripts/08_aggregate_results.py`, hình F2/F3 và bảng ERP/P300/hành vi. Hình PSD raw/trước-sau vẫn cần raw R2 để hoàn thiện QC. Xem `reports/r3_review_and_handoff.md` để biết kiểm tra và giới hạn bàn giao.
+**Bàn giao duy nhất:** [R3](../reports/r3_review_and_handoff.md), gồm [P300](../reports/r3_review_and_handoff.md#p300), [F3](../reports/r3_review_and_handoff.md#f3), hướng dẫn chạy, kiểm chứng, ZIP/hash và các phụ thuộc. Gói mới chuẩn bị local, chưa xác nhận nhận trên Drive; output notebook trong HEAD được giữ nguyên chờ nhóm thống nhất.
 
 ## R4 — Classical ML (+ Feature Extraction)
 **Owner:** Trung (Trần Đức Trung, 24022477, [@TrungDev2431](https://github.com/TrungDev2431))
