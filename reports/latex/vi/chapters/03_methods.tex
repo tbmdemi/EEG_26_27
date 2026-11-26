@@ -1,0 +1,54 @@
+% Mục 3 (bản tiếng Việt). Quyết định đã chốt: docs/03_analysis_protocol.md.
+\section{Phương pháp}
+\label{ch:methods}
+
+Mọi quyết định được chốt trong một protocol viết sẵn trước khi chạy mô hình (Hình~\ref{fig:pipeline}). Mọi bước dùng chung một bản phát hành dữ liệu đã tiền xử lý, và mọi mô hình dùng chung cách chia dữ liệu, chỉ số đánh giá và định dạng đầu ra.
+
+\begin{figure}[H]
+\centering
+\reportfig{F1_pipeline.pdf}
+\caption{Pipeline phân tích (F1). Nhãn R1 đến R5 là vai trò phụ trách trong nhóm (xem trang bìa).}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Tiền xử lý}
+\label{sec:preprocessing}
+Tiền xử lý dùng MNE-Python \citep{gramfort2013}. Kênh hỏng (z-score bền vững của độ lệch chuẩn kênh lớn hơn 5, hoặc tín hiệu phẳng) được nội suy, dữ liệu được lọc thông dải 0.1 đến 40~Hz (FIR pha không) và tham chiếu lại về trung bình. ICA Infomax mở rộng được fit trên một bản sao đã lọc thông cao 1~Hz, và các thành phần được ICLabel \citep{piontonachini2019} gán nhãn chớp mắt hoặc cơ với xác suất ít nhất 0.8 bị loại (trung bình 7.5 thành phần mỗi người). Dữ liệu được hạ tần số lấy mẫu xuống 250~Hz và cắt thành epoch từ $-200$ đến 800~ms, hiệu chỉnh baseline $-200$ đến 0~ms; epoch có biên độ đỉnh-đỉnh trên 150~µV bị loại.
+
+\subsection{Phân tích ERP}
+\label{sec:erp-methods}
+ERP tại Pz, CPz và Cz được lấy trung bình trong từng người rồi trung bình qua các người (SEM tính qua người tham gia). Đỉnh P300 của mỗi người là điện thế dương lớn nhất tại Pz trong khoảng 300 đến 600~ms.
+
+\subsection{Tác vụ và cửa sổ thời gian}
+\label{sec:tasks}
+Tác vụ chính là phân biệt target với standard (\code{tgt_std}). Hai tác vụ đối chứng tách P300 khỏi phản hồi vận động: distractor với standard (\code{dis_std}; hiếm so với thường gặp, cả hai lớp đều không có phản hồi) và target với distractor (\code{tgt_dis}; cả hai đều hiếm, chỉ target có phản hồi). Mọi mô hình được chạy trên cửa sổ \code{full} (0 đến 800~ms) và cửa sổ \code{early} (0 đến 450~ms), kết thúc trước phần lớn các phản hồi (trung vị RT 536~ms; 25\% RT dưới 461~ms).
+
+\subsection{Mô hình}
+\label{sec:classical}
+\label{sec:dl}
+Bảng~\ref{tab:models} tóm tắt bốn mô hình. Mô hình cổ điển dùng scikit-learn \citep{pedregosa2011} và pyRiemann. Mạng sâu được viết bằng PyTorch \citep{paszke2019} theo đúng kiến trúc gốc; đầu vào là epoch đã hạ xuống 128~Hz và chuẩn hoá z-score theo kênh bằng thống kê của tập huấn luyện, huấn luyện bằng Adam (learning rate $10^{-3}$, batch 64), cross-entropy có trọng số lớp và early stopping trên tập validation tách từ dữ liệu huấn luyện (patience 20, tối đa 200 epoch). Không tinh chỉnh siêu tham số.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Các mô hình. Mọi bước có học đều chỉ được fit trên dữ liệu huấn luyện của từng fold.}
+\label{tab:models}
+\begin{tabularx}{\linewidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Mô hình} & \textbf{Đầu vào và đặc trưng} & \textbf{Bộ phân loại} \\
+\midrule
+\code{lda_tw} & Biên độ trung bình mỗi kênh theo các bin 50~ms (2\,032 đặc trưng với \code{full}) & LDA shrinkage, prior bằng nhau \\
+\code{xdawn_rg} & 4 bộ lọc xDAWN mỗi lớp, ma trận hiệp phương sai, không gian tiếp tuyến Riemann (136 đặc trưng) & Hồi quy logistic, trọng số lớp cân bằng \\
+\code{eegnet} & EEGNet-8,2 \citep{lawhern2018}, 3\,258 tham số & Softmax, huấn luyện đầu cuối (end to end) \\
+\code{shallow} & ShallowConvNet \citep{schirrmeister2017}, 204\,402 tham số & Softmax, huấn luyện đầu cuối (end to end) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Đánh giá}
+\label{sec:evaluation}
+Trong từng người, mỗi bản ghi được chia theo thứ tự thời gian thành năm đoạn bằng nhau (cross-validation khối 5 fold, không xáo trộn). Giữa người, 35 người được chia thành năm fold cố định (GroupKFold), dùng chung cho mọi mô hình. Chỉ số đánh giá là độ chính xác cân bằng và AUC (mức ngẫu nhiên 0.5), cùng F1 của lớp target làm chỉ số phụ. Đơn vị thống kê là người tham gia (trong từng người: trung bình qua các fold). Với RQ2, mô hình cổ điển tốt nhất và mô hình DL tốt nhất (trung vị độ chính xác cân bằng cao nhất ở cửa sổ \code{full}) được so sánh bằng kiểm định Wilcoxon dấu-hạng hai phía, hiệu chỉnh Holm \citep{holm1979} qua bốn tổ hợp thiết lập và cửa sổ, với hệ số tương quan rank-biserial $r$ làm cỡ hiệu ứng \citep{vallat2018}.
+
+\subsection{Giải thích mô hình}
+\label{sec:explain-methods}
+Chúng tôi giải thích EEGNet, mô hình DL tốt nhất, đúng như khi được đánh giá (mỗi người được giải thích bằng các mô hình có người đó trong tập kiểm tra). 16 bộ lọc không gian của EEGNet được chuyển thành activation pattern \citep{haufe2014} và so với bản đồ ERP target trừ standard (250 đến 600~ms) bằng tương quan không gian; độ quan trọng của một bộ lọc là mức giảm AUC kiểm tra khi bỏ bộ lọc đó. Integrated Gradients \citep{sundararajan2017} (64 bước, baseline là trung bình tập huấn luyện) phân bổ hiệu logit của mỗi target được phân loại đúng cho từng kênh và thời điểm. Để tách P300 khỏi phản hồi tay phải, chúng tôi so sánh vùng P300 ở đỉnh đầu (Pz, CPz, POz, CP1, CP2, P1, P2) với vùng vận động trung tâm trái (C3, C1, C5, FC3, CP3) trong bốn bin thời gian; độ tập trung (enrichment) của một vùng là tỉ lệ attribution tuyệt đối của vùng chia cho tỉ lệ số kênh của vùng (1 = một kênh trung bình). EEGNet cũng được huấn luyện và giải thích trên hai tác vụ đối chứng với cùng code và fold. Làm tham chiếu tuyến tính, chúng tôi tính activation pattern của \code{lda_tw}.

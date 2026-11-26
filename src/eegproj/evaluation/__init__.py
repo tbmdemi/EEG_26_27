@@ -1,5 +1,6 @@
 """Shared evaluation framework (CV splits, fixed folds, metrics, and RQ2 statistics)."""
 
+from .aggregate import aggregate_f3_subject_scores, plot_f3_balanced_accuracy, summarise_f3_scores
 from .folds import (
     FOLDS_FILENAME,
     WITHIN_SPLITS,
@@ -46,6 +47,7 @@ __all__ = [
     "VALID_TASKS",
     "VALID_WINDOWS",
     "WITHIN_SPLITS",
+    "aggregate_f3_subject_scores",
     "aggregate_subject_scores",
     "compute_binary_metrics",
     "compute_rq2_wilcoxon_holm",
@@ -62,8 +64,10 @@ __all__ = [
     "make_metric_row",
     "metrics_csv_path",
     "normalize_subject_id",
+    "plot_f3_balanced_accuracy",
     "plot_f4_paired",
     "save_metrics_csv",
+    "summarise_f3_scores",
     "validate_metrics_df",
     "within_cv_metadata",
 ]

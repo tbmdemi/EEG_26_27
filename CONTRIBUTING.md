@@ -1,11 +1,11 @@
-# Contributing — quy trình làm việc chung
+# Contributing - quy trình làm việc chung
 
 ## 1. Nguyên tắc vàng
 
 1. **Không commit thẳng lên `main`.** Mọi thay đổi đi qua Pull Request (PR).
 2. **Không commit dữ liệu, checkpoint, file lớn** (> 5 MB) **hoặc output sinh ra khi chạy notebook/script**, theo thông báo cập nhật của nhóm trưởng. Giữ code trong Git; chia sẻ output qua thư mục chung. Riêng `results/preproc_log.csv` là log bàn giao dữ liệu được giữ trong Git.
 3. **Không hard-code tham số.** Đọc từ `configs/config.yaml`.
-4. **Làm đúng protocol** (`docs/03_analysis_protocol.md`). Muốn thay đổi → mở Issue trước.
+4. **Làm đúng protocol** (`docs/03_analysis_protocol.md`). Muốn thay đổi thì mở Issue trước.
 5. **Ghi đóng góp** vào `reports/contribution_log.md` mỗi khi xong một việc.
 
 ## 2. Vòng làm việc
@@ -20,7 +20,7 @@ git commit -m "feat(preproc): add ICLabel-based component rejection"
 git push -u origin feat/preproc-ica
 ```
 
-Sau đó lên GitHub → **Compare & pull request** → điền template → gán **1 reviewer** → reviewer approve → **Squash and merge** → xóa branch.
+Sau đó lên GitHub, chọn **Compare & pull request**, điền template, gán **1 reviewer**, chờ reviewer approve rồi **Squash and merge** và xóa branch.
 
 Nếu `main` đã thay đổi trong lúc bạn làm:
 
@@ -44,42 +44,20 @@ git push --force-with-lease
 
 Vai: `preproc`, `erp`, `ml`, `dl`, `explain`, `pm`.
 
-## 4. Commit message (Conventional Commits)
 
-```
-<loại>(<phạm vi>): <mô tả ngắn, tiếng Anh, động từ nguyên mẫu>
-```
+## 4. Quy ước code
 
-Ví dụ: `feat(dl): add EEGNet training loop with early stopping`, `fix(ml): fit xDAWN on train fold only`, `docs(report): draft preprocessing methods`.
-
-Commit nhỏ, mỗi commit một ý. Commit **dưới tên GitHub của chính mình** — đây là bằng chứng đóng góp khi chấm điểm. Kiểm tra: `git config user.email` phải trùng email trong tài khoản GitHub.
-
-## 5. Review PR
-
-Reviewer kiểm tra:
-- [ ] Đúng protocol (đặc biệt: không rò rỉ dữ liệu, fit chỉ trên train)
-- [ ] Tham số lấy từ config
-- [ ] Chạy được theo hướng dẫn trong PR
-- [ ] Kết quả ghi đúng định dạng CSV (protocol §7)
-- [ ] Không có file dữ liệu / output notebook hoặc script / file lớn
-
-## 6. Quy ước code
-
-- Python ≥ 3.11; định dạng bằng `ruff format`, kiểm tra bằng `ruff check`.
-- Code dùng lại được → `src/eegproj/`; script chạy end-to-end → `scripts/NN_<tên>.py`; khám phá → `notebooks/`.
+- Python >= 3.10 (team reference: 3.11); định dạng bằng `ruff format`, kiểm tra bằng `ruff check`.
+- Code dùng lại được đặt trong `src/eegproj/`; script chạy end-to-end đặt trong `scripts/NN_<tên>.py`; notebook khám phá đặt trong `notebooks/`.
 - Notebook: đặt tên `NN_<vai>_<mô-tả>.ipynb`; output được `nbstripout` tự xóa khi commit. Logic quan trọng phải chuyển sang `src/`.
 - Sau khi cài thư viện, chạy `nbstripout --install` một lần trên mỗi máy để bật xóa output nhúng trong notebook khi commit; `.gitignore` không xóa được output nằm bên trong `.ipynb`. Vẫn commit file notebook chứa code.
 - Hình và bảng sinh ra khi chạy lưu vào `figures/`, `results/` hoặc các thư mục `outputs/`, `notebooks/outputs/`, `scripts/outputs/` đã được gitignore. Giữ đúng tên/định dạng đầu ra theo protocol để các role đọc kết quả local hoặc từ thư mục chia sẻ.
-- Hàm công khai có docstring ngắn (đầu vào, đầu ra, đơn vị — ví dụ µV, giây).
+- Hàm công khai có docstring ngắn (đầu vào, đầu ra, đơn vị; ví dụ µV, giây).
 - Đặt seed từ config cho numpy / torch / sklearn.
 - Đường dẫn: dùng `pathlib` và đường dẫn tương đối từ gốc repo, lấy từ config.
 
-## 7. Chia sẻ file lớn
+## 5. Chia sẻ file lớn
 
 Dữ liệu đã tiền xử lý, checkpoint, hình và bảng kết quả sinh ra khi chạy: để trên thư mục chia sẻ chung của nhóm (Drive/OneDrive). Link và sha256 ghi trong `RELEASE` ở đầu script tải tương ứng (`scripts/00_get_data.py` cho dữ liệu, `scripts/04_get_dl_results.py` cho outputs DL). Khi cập nhật, ghi ngày + commit hash của code tạo ra file đó vào tên file zip.
 
-Dữ liệu tiền xử lý hiện hành: **pipeline v2** (`PIPELINE_VERSION = 2`, trial đúng hành vi, toàn bộ subject dùng được). Nếu `epochs.metadata` của bạn **không có cột `rt`**, đó là file v1 cũ → xóa và tải lại. Không trộn dữ liệu từ nguồn tiền xử lý khác vào kết quả.
-
-## 8. Ghi nhận đóng góp
-
-Sau mỗi việc hoàn thành, thêm một dòng vào `reports/contribution_log.md` (ngày, người, việc, link PR/Issue). Cuối dự án, nhóm dựa vào log này + lịch sử commit để thống nhất % đóng góp.
+Dữ liệu tiền xử lý hiện hành: **pipeline v2** (`PIPELINE_VERSION = 2`, trial đúng hành vi, toàn bộ subject dùng được). Nếu `epochs.metadata` của bạn **không có cột `rt`**, đó là file v1 cũ; xóa file đó và tải lại. Không trộn dữ liệu từ nguồn tiền xử lý khác vào kết quả.

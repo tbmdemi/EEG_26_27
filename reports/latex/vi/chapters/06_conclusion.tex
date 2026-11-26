@@ -1,0 +1,27 @@
+% Mục 6 (bản tiếng Việt). Kết luận sơ bộ (trả lời RQ1 đến RQ3) và việc còn lại. Nguồn: docs/04_roles_and_tasks.md, reports/contribution_log.md.
+\section{Kết luận sơ bộ và việc còn lại}
+\label{ch:conclusion}
+
+\textbf{Câu trả lời sơ bộ.} Phân loại single-trial target với standard đạt độ chính xác cao (RQ1): trung vị độ chính xác cân bằng 0.949 trong từng người (\code{xdawn_rg}) và 0.924 với người chưa gặp (EEGNet). Học sâu không vượt pipeline cổ điển trong từng người, nhưng tốt hơn có ý nghĩa thống kê giữa người (RQ2). Các đặc trưng EEGNet học được có thể giải thích (RQ3): chúng tái hiện P3b vùng trung tâm-đỉnh, kèm một phần nhỏ hơn từ chuẩn bị vận động trước khi nhấn phím mà riêng cửa sổ thời gian sớm không loại bỏ được.
+
+\textbf{Đã hoàn thành.} Tiền xử lý toàn bộ 42 người và phát hành dữ liệu v2; đối chiếu hành vi với nghiên cứu gốc; ERP, bản đồ da đầu và đỉnh P300; cả bốn mô hình trên tác vụ chính ở cả hai thiết lập và hai cửa sổ; hai mô hình cổ điển và EEGNet trên hai tác vụ đối chứng; thống kê RQ2; giải thích EEGNet và LDA; bản nháp báo cáo này. Bảng~\ref{tab:remaining} liệt kê việc còn lại.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Việc còn lại.}
+\label{tab:remaining}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+\textbf{Việc} & \textbf{Phụ trách} & \textbf{Trạng thái} \\
+\midrule
+Hình tổng quan F3 về điểm của mọi mô hình và script tổng hợp các file metric & R3 & Chưa bắt đầu; đã có đủ metric \\
+Hình kiểm tra chất lượng: phổ công suất trước và sau lọc, ví dụ IC bị loại & R3 & Chưa bắt đầu \\
+Quyết định về sub-10 và sub-13 đã xử lý lại (kênh hỏng đánh dấu thủ công) & R2, cả nhóm & Đã tạo và kiểm tra bản candidate nhưng chưa phát hành; mọi kết quả ở đây dùng bản v2 \\
+Duyệt các hình nháp F1, F2 và F5 & Cả nhóm & Đã có bản nháp \\
+Mô hình tuỳ chọn: SVM trên công suất dải tần, EEG Conformer; ShallowConvNet trên tác vụ đối chứng & R4, R5 & Tuỳ chọn, chưa bắt đầu \\
+Họ tên và MSSV của R2, R3; \% đóng góp cho báo cáo cuối & Cả nhóm & Chờ chốt \\
+Báo cáo cuối, tag code và bài thuyết trình 10 phút & R1, cả nhóm & Đã có bản nháp báo cáo (tài liệu này) \\
+\bottomrule
+\end{tabularx}
+\end{table}

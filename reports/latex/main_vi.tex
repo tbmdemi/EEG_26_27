@@ -1,0 +1,33 @@
+% !TeX program = xelatex
+% Bản tiếng Việt của báo cáo (dịch từ main.tex, số liệu giữ nguyên). Compile bằng XeLaTeX (hoặc tectonic).
+\documentclass[a4paper,11pt]{article}
+
+% ---- Font và ngôn ngữ (fontspec để hiển thị tên tiếng Việt, µV) ----
+\usepackage{fontspec}
+\usepackage[vietnamese]{babel}
+
+\input{preamble}
+\addto\captionsvietnamese{\renewcommand{\refname}{Tài liệu tham khảo}}
+\fancyhead[L]{\small Báo cáo tiến độ: phân loại single-trial kích thích target và standard}
+
+\begin{document}
+
+% Tắt anchor trang ở bìa để hyperref không báo trùng số trang.
+\hypersetup{pageanchor=false}
+\input{vi/frontmatter/titlepage}
+\hypersetup{pageanchor=true}
+
+\input{vi/frontmatter/abstract}
+{\small\tableofcontents}
+\clearpage
+\input{vi/chapters/01_introduction}
+\input{vi/chapters/02_data}
+\input{vi/chapters/03_methods}
+\input{vi/chapters/04_results}
+\input{vi/chapters/05_discussion}
+\input{vi/chapters/06_conclusion}
+\input{vi/chapters/08_availability}
+
+\bibliography{references}
+
+\end{document}

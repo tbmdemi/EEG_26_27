@@ -37,16 +37,16 @@ Theo dõi tiến độ bằng **GitHub Issues** (mỗi checkbox bên dưới = 1
 ## R3 — ERP & Visualization
 **Owner:** Bảo
 
-- [x] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian — đã tạo bản nháp trên 35 subject bằng notebook 03/04; QC tổng hợp R2 đã hoàn thành, chờ nhóm chốt phiên bản dữ liệu và duyệt hình cuối cho report
-- [ ] Đo biên độ và latency đỉnh P300 (target, distractor) theo từng subject, ra bảng và phân bố: đã có bản thăm dò notebook 05 (210 ứng viên = 35 subject, 2 điều kiện, 3 kênh); PM đã duyệt quy tắc đo cho report (2026-11-22, changelog protocol), bảng đã đưa vào report mục 4.2.1
+- [x] Grand-average ERP 3 loại kích thích tại Pz/CPz/Cz (toàn bộ subject dùng được, mean ± SEM qua subject); difference wave; topomap theo thời gian — đã tạo trên 35 subject bằng notebook 03/04 theo release v2; QC tổng hợp R2 đã hoàn thành, còn chờ review hình cuối cho report
+- [x] Đo biên độ và latency đỉnh P300 (target, distractor) theo từng subject: 210 ứng viên từ 35 subject, 2 điều kiện, 3 kênh; PM duyệt cách báo cáo median [IQR] tại Pz ngày 2026-11-22, giữ cờ và không khẳng định mọi cực đại là P300
 - [x] Bảng hành vi (hit rate, false alarm, RT) từ log tiền xử lý v2, so với bài báo — notebook 06 đã xuất riêng nhóm 39 trước loại EEG và nhóm ERP 35; mean ± sample SD qua subject, đối chiếu Table 5 và giữ chênh lệch thực tế
-- [ ] Hình kiểm tra chất lượng: phổ công suất trước/sau lọc, ví dụ IC bị loại
-- [ ] Script tổng hợp `results/metrics/*.csv` → bảng kết quả + hình F3
-- [x] Hình F2 bản nháp (ERP + topomap, PNG 300 dpi/PDF); QC tổng hợp R2 đã hoàn thành, chờ nhóm chốt phiên bản dữ liệu và duyệt hình cuối
-- [ ] Hình F3 theo quy ước hình — chờ metrics R4/R5; chưa có kết quả F3
-- [x] Viết bản nháp *Results – ERP* tại `reports/results_erp_draft.md`; QC tổng hợp R2 đã hoàn thành, chờ nhóm chốt phiên bản dữ liệu, duyệt quy tắc P300 và hình cuối trước khi chốt report
+- [ ] Hình kiểm tra chất lượng: đã tạo lại ví dụ IC bị loại từ ICA v2; còn thiếu PSD raw/trước-sau vì raw không có trong checkout
+- [x] Script tổng hợp metric task chính → bảng kết quả và F3: `scripts/08_aggregate_results.py`
+- [x] Hình F2 bản nháp (ERP + topomap, PNG 300 dpi/PDF) trên release v2; QC tổng hợp R2 đã hoàn thành, còn chờ review hình cuối
+- [x] Hình F3 theo quy ước hình — đã tổng hợp metrics R4/R5 cùng cohort 35 subject
+- [x] Viết bản nháp *Results – ERP* tại `reports/results_erp_draft.md`; QC tổng hợp R2 đã hoàn thành, còn chờ phục hồi hình PSD/IC và review hình cuối trước khi chốt report
 
-**Đầu ra đã triển khai:** notebook 02–06, `src/eegproj/evaluation/{erp,topography,p300,behaviour_summary}.py`, hình F2 và bảng hành vi local, bản nháp Results – ERP. `evaluation/aggregate.py` và F3 chưa triển khai. Xem `reports/r3_review_and_handoff.md` để biết kiểm tra đã chạy và các phụ thuộc còn lại.
+**Đầu ra đã triển khai:** notebook 02–06, `src/eegproj/evaluation/{erp,topography,p300,behaviour_summary,aggregate}.py`, `scripts/08_aggregate_results.py`, hình F2/F3 và bảng ERP/P300/hành vi. Hình PSD raw/trước-sau vẫn cần raw R2 để hoàn thiện QC. Xem `reports/r3_review_and_handoff.md` để biết kiểm tra và giới hạn bàn giao.
 
 ## R4 — Classical ML (+ Feature Extraction)
 **Owner:** Trung (Trần Đức Trung, 24022477, [@TrungDev2431](https://github.com/TrungDev2431))
