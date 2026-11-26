@@ -1,0 +1,135 @@
+% Mục 4 (bản tiếng Việt, bảng giữ nguyên số của bản tiếng Anh). Chỉ báo kết quả. Số liệu lấy từ results/ (metrics, rq2_wilcoxon_holm*.csv, erp, explain), không gõ tay.
+\section{Kết quả}
+\label{ch:results}
+
+Mọi kết quả dưới đây dùng bản phát hành dữ liệu v2 và các lần chạy đầy đủ của mọi mô hình. Kết quả vẫn là sơ bộ cho đến khi xong các kiểm tra còn lại ở Mục~\ref{ch:conclusion}.
+
+\subsection{ERP}
+\label{sec:res-erp}
+\label{sec:res-preproc}
+Trong 22\,751 trial đúng của nhóm cuối cùng, 90.5\% còn lại sau khi loại artefact. Target gây ra một sóng dương lớn ở vùng trung tâm-đỉnh, không có ở standard (Hình~\ref{fig:erp}). Tại Pz, ERP trung bình nhóm của target đạt đỉnh ở 484~ms (9.46~µV, SEM 0.50); tại 500~ms hiệu target trừ standard là 8.61 (SEM 0.48)~µV. Distractor gây ra sóng dương nhỏ hơn, đạt đỉnh muộn hơn (504~ms). Theo từng người, trung vị đỉnh P300 tại Pz là 10.34~µV ở 484~ms (IQR 448 đến 562~ms) với target và 7.91~µV ở 504~ms với distractor.
+
+\begin{figure}[H]
+\centering
+\reportfig[width=0.9\linewidth]{F2_erp_topomap.pdf}
+\caption{ERP (F2). Trên: trung bình nhóm tại Pz, trung bình (vùng tô: SEM) qua 35 người. Dưới: bản đồ da đầu trung bình trong 250 đến 600~ms (khoảng màu xám) theo từng lớp và cho hiệu target trừ standard.}
+\label{fig:erp}
+\end{figure}
+
+\subsection{Hiệu năng phân loại (RQ1)}
+\label{sec:res-rq1}
+Mọi mô hình đều vượt xa mức ngẫu nhiên ở mọi thiết lập và cửa sổ (Bảng~\ref{tab:rq1}). Trong từng người, \code{xdawn_rg} tốt nhất (trung vị độ chính xác cân bằng 0.949, AUC 0.995), theo sát là EEGNet (0.941) và \code{lda_tw} (0.939). Giữa người, EEGNet tốt nhất (0.924, AUC 0.979). Cửa sổ \code{early}, kết thúc trước phần lớn phản hồi, làm độ chính xác cân bằng tốt nhất giảm 0.074 trong từng người và 0.094 giữa người. Người khó nhất ở thiết lập trong từng người là sub-07, chỉ còn 31 target.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Phân loại target với standard, N = 35 người. Độ chính xác cân bằng (Bal. acc.) và AUC: trung vị [IQR]; F1 của lớp target: trung bình (SD). In đậm: tốt nhất theo từng thiết lập và cửa sổ ở mỗi cột.}
+\label{tab:rq1}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lllccc}
+\toprule
+\textbf{Mô hình} & \textbf{Thiết lập} & \textbf{Cửa sổ} & \textbf{Bal. acc.} & \textbf{AUC} & \textbf{F1 target} \\
+\midrule
+\code{lda_tw} & within & full & 0.939 [0.887, 0.964] & 0.984 [0.966, 0.996] & 0.843 (0.125) \\
+\code{xdawn_rg} & within & full & \textbf{0.949 [0.893, 0.966]} & \textbf{0.995 [0.981, 0.998]} & \textbf{0.862 (0.156)} \\
+\code{eegnet} & within & full & 0.941 [0.898, 0.965] & 0.981 [0.965, 0.993] & 0.795 (0.147) \\
+\code{shallow} & within & full & 0.901 [0.824, 0.933] & 0.964 [0.915, 0.984] & 0.717 (0.178) \\
+\midrule
+\code{lda_tw} & within & early & 0.849 [0.808, 0.930] & 0.946 [0.915, 0.984] & 0.723 (0.170) \\
+\code{xdawn_rg} & within & early & 0.873 [0.809, 0.927] & \textbf{0.970 [0.920, 0.991]} & \textbf{0.747 (0.192)} \\
+\code{eegnet} & within & early & \textbf{0.875 [0.777, 0.923]} & 0.945 [0.865, 0.980] & 0.662 (0.166) \\
+\code{shallow} & within & early & 0.773 [0.587, 0.875] & 0.864 [0.648, 0.954] & 0.525 (0.231) \\
+\midrule
+\code{lda_tw} & cross & full & 0.855 [0.817, 0.913] & 0.944 [0.929, 0.975] & 0.694 (0.106) \\
+\code{xdawn_rg} & cross & full & 0.872 [0.848, 0.931] & 0.961 [0.944, 0.981] & 0.697 (0.136) \\
+\code{eegnet} & cross & full & \textbf{0.924 [0.866, 0.948]} & \textbf{0.979 [0.960, 0.991]} & 0.745 (0.126) \\
+\code{shallow} & cross & full & 0.905 [0.871, 0.942] & 0.978 [0.963, 0.991] & \textbf{0.749 (0.139)} \\
+\midrule
+\code{lda_tw} & cross & early & 0.796 [0.750, 0.848] & 0.891 [0.855, 0.938] & 0.551 (0.121) \\
+\code{xdawn_rg} & cross & early & 0.813 [0.749, 0.868] & \textbf{0.922 [0.883, 0.961]} & 0.547 (0.133) \\
+\code{eegnet} & cross & early & \textbf{0.830 [0.780, 0.876]} & 0.919 [0.859, 0.966] & \textbf{0.594 (0.138)} \\
+\code{shallow} & cross & early & 0.792 [0.715, 0.865] & 0.899 [0.808, 0.953] & 0.543 (0.146) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\reportfig{F3_balanced_accuracy.pdf}
+\caption{Độ chính xác cân bằng theo mô hình, thiết lập và cửa sổ (F3). Hình đang được chuẩn bị (R3); số liệu nằm ở Bảng~\ref{tab:rq1}.}
+\label{fig:rq1}
+\end{figure}
+
+\subsection{Học máy cổ điển và học sâu (RQ2)}
+\label{sec:res-rq2}
+Mô hình cổ điển tốt nhất là \code{xdawn_rg} và mô hình DL tốt nhất là EEGNet ở cả hai thiết lập. Trong từng người, hai mô hình không khác nhau về độ chính xác cân bằng ($p$ hiệu chỉnh Holm = 0.74), nhưng \code{xdawn_rg} có AUC cao hơn ($p = 1.0 \times 10^{-5}$). Giữa người, EEGNet tốt hơn ở cửa sổ \code{full} trên cả hai chỉ số (độ chính xác cân bằng $+0.020$, $p = 1.7 \times 10^{-4}$, $r = 0.75$, tốt hơn ở 28 trên 35 người; AUC $p = 2.4 \times 10^{-5}$); ở cửa sổ \code{early} khác biệt không có ý nghĩa (Bảng~\ref{tab:rq2}, Hình~\ref{fig:rq2}). EEGNet cũng tốt hơn rõ rệt so với ShallowConvNet trong từng người (tốt hơn ở 34 trên 35 người, $p < 10^{-7}$).
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{EEGNet so với \code{xdawn_rg}, kiểm định Wilcoxon ghép cặp trên 35 người. Cổ điển, DL: trung vị; Hiệu: trung vị hiệu ghép cặp (DL trừ cổ điển); $r$: tương quan rank-biserial. In đậm: có ý nghĩa sau hiệu chỉnh Holm.}
+\label{tab:rq2}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lllccccccc}
+\toprule
+\textbf{Chỉ số} & \textbf{Thiết lập} & \textbf{Cửa sổ} & \textbf{Cổ điển} & \textbf{DL} & \textbf{Hiệu} & \textbf{W} & \textbf{p} & \textbf{p (Holm)} & \textbf{r} \\
+\midrule
+Bal. acc. & within & full & 0.949 & 0.941 & $-0.004$ & 294 & 0.740 & 0.740 & $-0.07$ \\
+Bal. acc. & within & early & 0.873 & 0.875 & $-0.011$ & 233 & 0.184 & 0.369 & $-0.26$ \\
+Bal. acc. & cross & full & 0.872 & 0.924 & $+0.020$ & 80 & $4.2 \times 10^{-5}$ & {\boldmath$1.7 \times 10^{-4}$} & $+0.75$ \\
+Bal. acc. & cross & early & 0.813 & 0.830 & $+0.016$ & 182 & 0.029 & 0.086 & $+0.42$ \\
+\midrule
+AUC & within & full & 0.995 & 0.981 & $-0.006$ & 53 & $2.6 \times 10^{-6}$ & {\boldmath$1.0 \times 10^{-5}$} & $-0.83$ \\
+AUC & within & early & 0.970 & 0.945 & $-0.016$ & 78 & $3.5 \times 10^{-5}$ & {\boldmath$6.9 \times 10^{-5}$} & $-0.75$ \\
+AUC & cross & full & 0.961 & 0.979 & $+0.011$ & 63 & $7.8 \times 10^{-6}$ & {\boldmath$2.4 \times 10^{-5}$} & $+0.80$ \\
+AUC & cross & early & 0.922 & 0.919 & $+0.006$ & 245 & 0.259 & 0.259 & $+0.22$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\reportfig[width=0.75\linewidth]{F4_paired_classical_vs_dl.pdf}
+\caption{Độ chính xác cân bằng của \code{xdawn_rg} và EEGNet theo từng người (F4). Đường xám nối hai điểm của cùng một người; hình thoi đen: trung vị; nét đứt: mức ngẫu nhiên.}
+\label{fig:rq2}
+\end{figure}
+
+\subsection{Mô hình đã học được gì? (RQ3)}
+\label{sec:res-rq3}
+\textbf{Spatial pattern.} Trong các mô hình giữa người với cửa sổ \code{full}, bộ lọc không gian quan trọng nhất của mọi fold đều có pattern vùng trung tâm-đỉnh giống bản đồ P300 ($|r|$ = 0.61 đến 0.91; Hình~\ref{fig:rq3-patterns}). Bỏ bất kỳ một bộ lọc nào chỉ làm giảm tối đa 0.018 AUC, nên thông tin được trải trên nhiều bộ lọc dư thừa, phần lớn giống P300.
+
+\textbf{Attribution theo thời gian.} Attribution tăng từ khoảng 250~ms và đạt đỉnh ở 495~ms, trước trung vị thời điểm phản hồi (Hình~\ref{fig:rq3-ig}). Sau 450~ms, vùng P300 có độ tập trung cao hơn vùng vận động (1.20 so với 1.05, $p$ = 0.002), và sau phần lớn phản hồi (600 đến 800~ms) vùng vận động không nhận nhiều hơn một kênh trung bình (0.99). LDA cổ điển cho cùng bức tranh: activation pattern của nó khớp với bản đồ P300 sau 450~ms (tương quan không gian 0.99) và nhỏ tại C3 (0.14~µV so với 0.55~µV tại Pz).
+
+\textbf{Tác vụ đối chứng.} Distractor, vốn không cần phản hồi, được phân biệt với standard gần tốt như target (trung vị EEGNet 0.84 đến 0.87 ở cửa sổ \code{full}), trong khi target với distractor là khó nhất (0.68 đến 0.72) và giảm nhiều nhất ở cửa sổ \code{early}. Khi không có phản hồi (\code{dis_std}), vùng vận động chỉ nhận attribution bằng một kênh trung bình sau 250~ms (Bảng~\ref{tab:rq3-enrichment}). Khi có phản hồi, nó vượt mức nền này trong khoảng 250 đến 600~ms, và trong \code{tgt_dis} nó trở thành vùng nhận attribution nhiều nhất (đỉnh ở 456~ms, trước trung vị thời điểm phản hồi).
+
+\begin{table}[H]
+\centering
+\small
+\caption{Độ tập trung attribution, vùng P300 / vùng vận động (EEGNet, giữa người, \code{full}, trung vị qua 35 người; 1 = một kênh trung bình).}
+\label{tab:rq3-enrichment}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Tác vụ} & \textbf{0-250 ms} & \textbf{250-450 ms} & \textbf{450-600 ms} & \textbf{600-800 ms} \\
+\midrule
+\code{tgt_std} & 1.07 / 1.25 & 1.38 / 1.30 & 1.27 / 1.15 & 1.26 / 0.99 \\
+\code{dis_std} & 1.10 / 0.76 & 1.16 / 1.01 & 1.30 / 0.96 & 1.15 / 1.01 \\
+\code{tgt_dis} & 0.87 / 1.62 & 1.08 / 1.27 & 1.27 / 1.15 & 1.09 / 1.14 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Trả lời RQ3.} Các đặc trưng EEGNet học được có thể giải thích: quyết định của mô hình chủ yếu dựa vào P3b vùng trung tâm-đỉnh, cũng là tín hiệu LDA cổ điển dùng. Một phần nhỏ hơn đến từ hoạt động trung tâm trái bắt đầu trước khi nhấn phím, nhiều khả năng là chuẩn bị vận động, và một phần của nó nằm trong cửa sổ \code{early}.
+
+\begin{figure}[H]
+\centering
+\reportfig[width=0.95\linewidth]{F5a_eegnet_spatial_patterns.pdf}
+\caption{Spatial pattern của EEGNet, giữa người (F5a): hai bộ lọc quan trọng nhất của mỗi fold với cửa sổ \code{full} (trên) và \code{early} (dưới), cạnh bản đồ ERP target trừ standard. Tiêu đề: mức giảm AUC khi bỏ bộ lọc và $|r|$ với bản đồ ERP.}
+\label{fig:rq3-patterns}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\reportfig[width=0.95\linewidth]{F5b_eegnet_saliency_cross.pdf}
+\caption{Integrated Gradients của EEGNet, giữa người (F5b): attribution tuyệt đối theo kênh và thời gian, diễn biến theo thời gian của vùng P300 và vùng vận động (nét đứt: cuối cửa sổ \code{early}; nét chấm: trung vị RT) và bản đồ da đầu theo từng bin thời gian.}
+\label{fig:rq3-ig}
+\end{figure}

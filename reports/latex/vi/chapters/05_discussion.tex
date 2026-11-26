@@ -1,0 +1,11 @@
+% Mục 5 (bản tiếng Việt). Diễn giải kết quả và hạn chế. Câu hỏi có thể gặp: reports/qa_backup.md.
+\section{Thảo luận}
+\label{ch:discussion}
+
+\textbf{Học máy cổ điển và học sâu.} Trong một người, mỗi fold huấn luyện có khoảng 430 trial và 60 target; với ít dữ liệu như vậy, pipeline không gian tiếp tuyến, vốn ước lượng ít tham số từ các ma trận hiệp phương sai bền vững, tốt ngang EEGNet và xếp hạng trial tốt hơn một chút. Với khoảng 14\,500 trial huấn luyện gộp từ 28 người, EEGNet học được đặc trưng chuyển giao sang người mới tốt hơn không gian tiếp tuyến, vốn được căn tâm theo các người trong tập huấn luyện và không thích nghi với latency P300 của người mới. Điều này khớp với các bài tổng quan không thấy ưu thế chung của học sâu trên dữ liệu EEG nhỏ \citep{lotte2018,roy2019}: ở đây ưu thế chỉ xuất hiện khi gộp dữ liệu. Kiến trúc cũng quan trọng: ShallowConvNet bình phương rồi log-pooling đặc trưng, làm mất cực tính của các ERP chậm \citep{schirrmeister2017}, và với số tham số gấp 60 lần EEGNet, mạng này cần dữ liệu gộp mới bắt kịp.
+
+\textbf{Nhiễu vận động.} Bốn kết quả cho thấy mô hình không chủ yếu dùng việc nhấn phím: distractor không có phản hồi được phân loại gần tốt như target, cửa sổ \code{early} giữ được phần lớn hiệu năng, attribution đạt đỉnh trên đường giữa vùng đỉnh trước trung vị thời điểm phản hồi, và LDA pattern, khác với gradient ở chỗ cho biết khác biệt giữa các lớp thực sự nằm ở đâu \citep{haufe2014}, gần như không có tín hiệu trung tâm trái. Tuy nhiên, các tác vụ đối chứng cho thấy chuẩn bị vận động cũng được dùng. Vì nó bắt đầu trước khi nhấn phím, cửa sổ sớm làm giảm nhưng không loại bỏ được nó; cần một tác vụ không có phản hồi bằng hành động để đo một bộ giải mã P300 thuần.
+
+\textbf{Hạn chế.} Mọi kết quả đến từ một bộ dữ liệu và một tác vụ. Chỉ giữ trial đúng khiến lớp target trùng với lớp có phản hồi. Không tinh chỉnh siêu tham số. ICA được fit trên toàn bộ mỗi bản ghi, không dùng nhãn nhưng có cả trial kiểm tra. Các vùng và bin thời gian của phần giải thích được cố định từ trước, các kiểm định theo vùng chỉ mang tính mô tả, và trong hai mạng sâu chỉ EEGNet được huấn luyện trên tác vụ đối chứng.
+
+\textbf{Hướng tiếp theo.} Một tác vụ đếm thầm sẽ loại bỏ nhiễu vận động, còn việc căn tâm lại ma trận hiệp phương sai theo từng người hoặc fine-tune mạng có thể cải thiện khả năng chuyển giao sang người dùng mới.

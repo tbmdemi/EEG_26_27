@@ -9,8 +9,10 @@ import numpy as np
 import pandas as pd
 
 from eegproj.config import find_root, load_config
+from eegproj.evaluation.aggregate import aggregate_f3_subject_scores, summarise_f3_scores
 from eegproj.evaluation.behaviour_summary import summarise_behaviour
 from eegproj.evaluation.erp import _usable_release_log, collect_subject_erps, summarise_erps
+from eegproj.evaluation.metrics import REQUIRED_COLUMNS
 from eegproj.evaluation.p300 import measure_candidate_peaks
 from eegproj.evaluation.topography import summarise_scalp_maps
 
@@ -169,6 +171,102 @@ class NumericalTests(unittest.TestCase):
         rows = summary.loc[summary.cohort.eq("before_eeg_qc")].set_index("metric")
         self.assertAlmostEqual(rows.loc["hit_rate_pct", "mean"], 75.0)
         self.assertAlmostEqual(rows.loc["rt_mean_ms", "sd"], np.sqrt(20000.0))
+
+
+class AggregationTests(unittest.TestCase):
+    def setUp(self):
+        self.subjects = ["sub-01", "sub-03", "sub-04"]
+        self.models = {"lda_tw": "classical", "eegnet": "dl"}
+        rows = []
+        for model, family in self.models.items():
+            for setting in ("within", "cross"):
+                for window in ("full", "early"):
+                    for subject_index, subject in enumerate(self.subjects):
+                        folds = range(5) if setting == "within" else [subject_index % 5]
+                        for fold in folds:
+                            score = 0.6 + fold * 0.01 if setting == "within" else 0.7 + subject_index * 0.01
+                            rows.append(
+                                {
+                                    "subject": subject,
+                                    "fold": fold,
+                                    "model": model,
+                                    "family": family,
+                                    "setting": setting,
+                                    "window": window,
+                                    "task": "tgt_std",
+                                    "bal_acc": score,
+                                    "auc": score,
+                                    "f1_target": score,
+                                    "n_train": 20,
+                                    "n_test": 5,
+                                    "seed": 42,
+                                }
+                            )
+        self.metrics = pd.DataFrame(rows, columns=REQUIRED_COLUMNS)
+
+    def aggregate(self, metrics=None):
+        return aggregate_f3_subject_scores(
+            self.metrics if metrics is None else metrics,
+            expected_subjects=["01", "03", "04"],
+            expected_models=self.models,
+            within_splits=5,
+        )
+
+    def test_within_folds_reduce_to_one_subject_score_and_summarise(self):
+        scores = self.aggregate()
+        within = scores.loc[
+            scores.model.eq("lda_tw")
+            & scores.setting.eq("within")
+            & scores.window.eq("full")
+            & scores.subject.eq("sub-01")
+        ].iloc[0]
+        self.assertAlmostEqual(within.bal_acc, 0.62)
+        self.assertEqual(len(scores), 2 * 2 * 2 * len(self.subjects))
+        summary = summarise_f3_scores(scores)
+        row = summary.loc[
+            summary.model.eq("lda_tw")
+            & summary.setting.eq("within")
+            & summary.window.eq("full")
+            & summary.metric.eq("bal_acc")
+        ].iloc[0]
+        self.assertEqual(row.n_subjects, 3)
+        self.assertAlmostEqual(row["mean"], 0.62)
+
+    def test_incomplete_within_folds_and_cross_cohort_are_rejected(self):
+        incomplete = self.metrics.drop(
+            self.metrics.index[
+                self.metrics.model.eq("lda_tw")
+                & self.metrics.setting.eq("within")
+                & self.metrics.window.eq("full")
+                & self.metrics.subject.eq("sub-01")
+                & self.metrics.fold.eq(4)
+            ]
+        )
+        with self.assertRaisesRegex(ValueError, "expected each within fold once"):
+            self.aggregate(incomplete)
+
+        missing_subject = self.metrics.loc[
+            ~(
+                self.metrics.model.eq("eegnet")
+                & self.metrics.setting.eq("cross")
+                & self.metrics.window.eq("early")
+                & self.metrics.subject.eq("sub-04")
+            )
+        ]
+        with self.assertRaisesRegex(ValueError, "subject cohort"):
+            self.aggregate(missing_subject)
+
+    def test_inconsistent_cross_subject_folds_are_rejected(self):
+        mismatched_fold = self.metrics.copy()
+        mask = (
+            mismatched_fold.model.eq("eegnet")
+            & mismatched_fold.setting.eq("cross")
+            & mismatched_fold.window.eq("early")
+            & mismatched_fold.subject.eq("sub-01")
+        )
+        mismatched_fold.loc[mask, "fold"] = 1
+        with self.assertRaisesRegex(ValueError, "cross-subject fold differs"):
+            self.aggregate(mismatched_fold)
 
 
 if __name__ == "__main__":

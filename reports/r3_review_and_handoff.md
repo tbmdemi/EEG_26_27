@@ -47,6 +47,10 @@ Số trên tính lại từ `p300_candidate_peaks.csv`, khớp summary gốc; ou
 
 Manifest P300 gốc còn tham chiếu `reports/p300_measurement_notes.md`, hiện không có trong cả repo/backup. Không sửa manifest lịch sử để che khoảng trống đó; quy tắc hiện hành được ghi tại protocol §9, tài liệu này và LaTeX Methods.
 
+## F3
+
+Đã thêm `src/eegproj/evaluation/aggregate.py` và `scripts/08_aggregate_results.py`. Lệnh tổng hợp đọc 16 CSV task `tgt_std` từ các mô hình R4/R5, xác minh đủ 35 subject, đủ 5 fold trong-subject, một điểm test/subject cross-subject và nhất quán fold cross-subject giữa các điều kiện. Trong-subject giảm bằng trung bình fold; cross-subject giữ điểm test subject. Đầu ra là 560 subject-score rows, 48 summary rows và F3 PNG/PDF. Manifest ghi SHA-256 các file metric đầu vào.
+
 ## Hành vi
 
 Hành vi dùng số đếm trước loại epoch của 39 người sau loại trước sub-02/14/17; nhóm ERP có 35 người, hai nhóm chồng lấp. Hit rate = target đúng/tổng target; false alarm = 1 − correct/total, riêng standard/distractor. Mean/SD nhóm tính qua subject (`ddof=1`), SD của RT từ các `rt_mean_ms`, không trung bình SD trong người. Đã đối chiếu summary với bảng subject và giữ chênh lệch thực tế so với Table 5.

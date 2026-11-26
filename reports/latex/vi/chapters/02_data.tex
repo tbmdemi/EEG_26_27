@@ -1,0 +1,7 @@
+% Mục 2 (bản tiếng Việt). Nguồn: docs/02_dataset.md, reports/r2_subject_epoch_table.md, results/erp/behaviour_vs_paper.csv.
+\section{Dữ liệu}
+\label{ch:data}
+
+Chúng tôi dùng tác vụ oddball thị giác của bộ dữ liệu Nencki-Symfonia \citep{dzianok2022}, OpenNeuro ds004621 \citep{dzianok2022data}: 42 người trưởng thành khoẻ mạnh, thuận tay phải (20 đến 34 tuổi), 127 kênh EEG (actiCHamp, 1000~Hz, tham chiếu online FCz) có toạ độ điện cực số hoá. Mỗi người xem 660 kích thích: standard (75\%), target (12\%) và distractor (12\%), mỗi kích thích hiện 200~ms, cách nhau 1.4 đến 1.8~s, và chỉ nhấn phím bằng tay phải khi gặp target.
+
+Một target được tính là đúng nếu có phản hồi trong khoảng 100 đến 1400~ms sau kích thích (thời gian phản ứng, RT, là phản hồi đầu tiên); standard hoặc distractor đúng nếu không có phản hồi. Chỉ trial đúng được phân tích. Với quy tắc này, kết quả hành vi của 39 người còn lại sau các loại trừ định trước khớp với Bảng 5 của nghiên cứu gốc trong phạm vi 0.03 điểm phần trăm (tỉ lệ trúng 94.4\%, RT trung bình 542~ms). Ba người bị loại từ trước vì hiểu sai nhiệm vụ (sub-02, sub-14, sub-17), và bốn người bị loại vì còn dưới 50\% số target đúng sau khi loại artefact (sub-08, sub-23, sub-35, sub-41). Nhóm cuối cùng có 35 người và 20\,600 epoch (15\,744 standard, 2\,477 target, 2\,379 distractor).

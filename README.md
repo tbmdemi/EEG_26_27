@@ -1,6 +1,6 @@
 # Single-trial EEG Classification: Frequent vs Target (Visual Oddball)
 
-Mini project môn học — Neuroimaging: EEG (Guy Nagels).
+Mini project môn học: Neuroimaging EEG (Guy Nagels).
 Dữ liệu: **Nencki-Symfonia EEG/ERP dataset** (GigaDB 10.5524/100990, OpenNeuro `ds004621`), task **3-stimulus visual oddball**, **chỉ các trial có phản hồi hành vi đúng**. Bản v2 hiện hành có **35 subject ERP hợp lệ từ 42 người**: loại trước sub-02/14/17, rồi loại thêm sub-08/23/35/41 theo tiêu chí pipeline; danh sách nằm trong `results/preproc_log.csv`.
 
 ## Câu hỏi nghiên cứu
@@ -13,12 +13,12 @@ Dữ liệu: **Nencki-Symfonia EEG/ERP dataset** (GigaDB 10.5524/100990, OpenNeu
 
 ## Đọc theo thứ tự
 
-1. [`docs/01_project_brief.md`](docs/01_project_brief.md) — đề bài, deliverables, cách chấm điểm
-2. [`docs/02_dataset.md`](docs/02_dataset.md) — mô tả dữ liệu và cách tải
-3. [`docs/03_analysis_protocol.md`](docs/03_analysis_protocol.md) — **các quyết định phân tích đã chốt, mọi người PHẢI theo**
-4. [`docs/04_roles_and_tasks.md`](docs/04_roles_and_tasks.md) — phân vai, checklist, đầu vào/đầu ra mỗi giai đoạn
-5. [`docs/05_timeline.md`](docs/05_timeline.md) — mốc thời gian
-6. [`CONTRIBUTING.md`](CONTRIBUTING.md) — quy trình Git, quy ước code, cách ghi nhận đóng góp
+1. [`docs/01_project_brief.md`](docs/01_project_brief.md): đề bài, deliverables, cách chấm điểm
+2. [`docs/02_dataset.md`](docs/02_dataset.md): mô tả dữ liệu và cách tải
+3. [`docs/03_analysis_protocol.md`](docs/03_analysis_protocol.md): **các quyết định phân tích đã chốt, mọi người PHẢI theo**
+4. [`docs/04_roles_and_tasks.md`](docs/04_roles_and_tasks.md): phân vai, checklist, đầu vào/đầu ra mỗi giai đoạn
+5. [`docs/05_timeline.md`](docs/05_timeline.md): mốc thời gian
+6. [`CONTRIBUTING.md`](CONTRIBUTING.md): quy trình Git, quy ước code, cách ghi nhận đóng góp
 
 ## Cài đặt nhanh
 
@@ -34,40 +34,29 @@ nbstripout --install          # tự xóa output notebook khi commit
 
 ### Dữ liệu
 
-- **Thành viên:** không cần dữ liệu thô. Chạy `python scripts/00_get_data.py`: script tải bản v2 đã tiền xử lý (`preproc_v2_20261118.zip`, 2.6 GB) từ Drive, kiểm tra rồi giải nén vào `data/derivatives/preproc/`; chỉ dùng subject có `excluded_subject = False` và `pipeline_version = 2` trong `results/preproc_log.csv` (hoặc `eegproj.preprocessing.usable_subjects`).
-- **PM / R2:** v2 đang dùng là bản phát hành sẵn có. Quy trình R2 hiện tại dùng `python scripts/02_r2.py --process --download` để tạo candidate riêng; xem bàn giao trước khi thay phiên bản dữ liệu chung. `scripts/01_preprocess.py` là entry point của triển khai v2 lịch sử, chưa nhận các sửa đổi candidate mới.
+- Thành viên tải đúng release `preproc_v2_20261118.zip` (35 subject, 20.600 epoch) bằng `python scripts/00_get_data.py`; không cần tải raw. Dùng subject v2 được đánh dấu hợp lệ trong `results/preproc_log.csv` hoặc `eegproj.preprocessing.usable_subjects`.
+- R2 mặc định audit release; `--process --download` chỉ tạo candidate riêng, không thay release v2. Xem [R2 handoff](reports/r2_qc_and_handoff.md) trước khi xử lý candidate.
+- Chi tiết dữ liệu ở [dataset guide](docs/02_dataset.md). Colab preprocessing là [tài liệu lịch sử](https://colab.research.google.com/drive/1nqyGmEw7IiSgC1svfK4Oud3w8JP8NLi3?usp=sharing), không thuộc luồng phân tích hiện tại.
 
-Notebook Colab tiền xử lý dữ liệu: [`preprocess_oddball_colab.ipynb`](https://colab.research.google.com/drive/1nqyGmEw7IiSgC1svfK4Oud3w8JP8NLi3?usp=sharing).
+## Cấu trúc
 
-R2 review/candidate workflow: [`reports/r2_qc_and_handoff.md`](reports/r2_qc_and_handoff.md). Notebook 01 dùng script R2 mới; `python scripts/02_r2.py` mặc định chỉ audit, `--process --download` tạo candidate riêng.
-
-Chi tiết: [`docs/02_dataset.md`](docs/02_dataset.md). **Không bao giờ commit dữ liệu lên repo.**
-
-## Cấu trúc thư mục
-
-```
-.
-├── configs/config.yaml        # MỌI tham số dùng chung (filter, epoch, CV...) — nguồn sự thật duy nhất
-├── data/                      # (gitignored) raw/ds004621/ và derivatives/preproc/*_epo.fif
-├── docs/                      # tài liệu dự án
-├── notebooks/                 # khám phá, trực quan hóa (đặt tên NN_<tên>_<mô-tả>.ipynb)
-├── src/eegproj/
-│   ├── preprocessing/         # lọc hành vi, lọc tín hiệu, ICA, epoching, QC
-│   ├── features/              # trích xuất đặc trưng cho ML truyền thống
-│   ├── models/                # ML truyền thống + Deep Learning
-│   ├── evaluation/            # chia CV, metric, thống kê
-│   └── explain/               # giải thích mô hình: dl.py (IG, spatial pattern, bảng ROI), plots.py (hình F5)
-├── results/                   # preproc_log.csv được giữ trong Git; kết quả chạy được gitignore
-├── figures/                   # hình sinh ra cho report/slide (PNG/PDF, gitignored)
-├── reports/                   # report_template.md, contribution_log.md, slide
-└── scripts/                   # script chạy end-to-end từng bước
-```
+| Thư mục | Vai trò |
+|---|---|
+| `configs/` | Tham số dùng chung |
+| `data/` | Dữ liệu cục bộ, không commit |
+| `docs/` | Dataset, protocol, timeline và phân vai |
+| `notebooks/` | Khám phá dữ liệu và phân tích ERP |
+| `src/eegproj/` | Code tái sử dụng: preprocessing, features, models, evaluation, explain |
+| `scripts/` | Lệnh chạy pipeline theo bước |
+| `results/`, `figures/`, `outputs/` | Kết quả sinh ra, không commit |
+| `reports/` | Bản nháp, bàn giao và report LaTeX |
+| `tests/` | Test theo từng vai |
 
 ## Thành viên
 
 | Họ tên | MSSV | Vai trò chính | GitHub |
 |---|---|---|---|
-| Trịnh Bình Minh | 24022413 | Project Manager + Explainability | [@tbmdemi](https://github.com/tbmdemi)|
+| Trịnh Bình Minh | 24022413 | Project Manager + Explainability | [@tbmdemi](https://github.com/tbmdemi) |
 | | | Signal Preprocessing | |
 | Bảo | | ERP & Visualization (R3) | |
 | Trần Đức Trung | 24022477 | Classical ML (R4) | [@TrungDev2431](https://github.com/TrungDev2431) |
@@ -119,22 +108,22 @@ Phương pháp: [`reports/methods_dl_draft.md`](reports/methods_dl_draft.md).
 
 ## R1: Explainability (RQ3), chạy và bàn giao
 
-Cần dữ liệu v2 và checkpoint/predictions của R5 trong `results/`. Giải thích EEGNet theo protocol mục 9.2-9.3: spatial pattern (Haufe 2014) của từng spatial filter cùng mức quan trọng (AUC giảm bao nhiêu khi tắt filter), và Integrated Gradients (theo kênh và thời gian) trên các trial target được đoán đúng ở fold test:
+| Vai | Lệnh chính |
+|---|---|
+| Tải dữ liệu v2 | `python scripts/00_get_data.py` |
+| R2, audit release | `python scripts/02_r2.py` |
+| R3, ERP | Chạy notebook `02` đến `06` theo thứ tự |
+| R3, tổng hợp F3 | `python scripts/08_aggregate_results.py` |
+| R4, classical ML | `python scripts/02_run_classical_ml.py` |
+| R4, thống kê RQ2 | `python scripts/03_stats_rq2.py --metric bal_acc` |
+| R5, deep learning | `python scripts/04_train_dl.py` hoặc `python scripts/04_get_dl_results.py` |
+| R1, giải thích | `python scripts/05_explain_dl.py` và `python scripts/06_explain_lda.py` |
+| Hình pipeline F1 | `python scripts/07_plot_pipeline.py` |
 
-```bash
-python scripts/05_explain_dl.py                    # cross + within, full + early, tgt_std (~5 phút trên GPU)
-python scripts/05_explain_dl.py --settings cross   # chỉ mô hình cross-subject
-```
+Xem [phân vai và checklist](docs/04_roles_and_tasks.md) để biết đầu vào, đầu ra và tình trạng từng vai. Tham số phân tích chỉ lấy từ [config.yaml](configs/config.yaml); quy tắc đã chốt nằm trong [analysis protocol](docs/03_analysis_protocol.md).
 
-- Trước khi giải thích, script tính lại quyết định của từng checkpoint trên đúng trial test và so với `results/predictions/`; lệch quá 0.01 thì dừng (sai dữ liệu/thứ tự kênh). Sai số completeness của IG được ghi vào `results/explain/manifest.json`.
-- Đầu ra (gitignored): `results/explain/` (`*_saliency.npz`, `*_patterns.csv`, `saliency_roi_tgt_std.csv`, `saliency_summary_tgt_std.csv`), hình `figures/F5a_eegnet_spatial_patterns`, `figures/F5b_eegnet_saliency_{cross,within}` (PNG 300 dpi + PDF).
-- LDA patterns (mục 9.4): `python scripts/06_explain_lda.py` fit lại `lda_tw` của R4 trên đúng 5 fold cross-subject, đổi trọng số thành pattern (Haufe 2014). Script in bal_acc/AUC trung bình để so với CSV của R4 (phải khớp). Đầu ra: `results/explain/lda_*`, hình `figures/F5c_lda_patterns`. Chỉ cần CPU, khoảng 5 phút.
-- Hình F1 (sơ đồ pipeline): `python scripts/07_plot_pipeline.py`. Chữ trong hình lấy từ protocol, đổi protocol thì sửa script.
-- Kiểm tra code R1: `python -m unittest tests.test_r1_explain -v`, `python -m ruff check src/eegproj/explain scripts/05_explain_dl.py scripts/06_explain_lda.py scripts/07_plot_pipeline.py tests/test_r1_explain.py`.
-- Task đối chứng (nhiễu vận động): train `python scripts/04_train_dl.py --models eegnet --tasks dis_std tgt_dis` (khoảng 80 phút trên GPU T4), rồi `python scripts/05_explain_dl.py --task dis_std` và `--task tgt_dis`. Hình và manifest của task đối chứng có hậu tố `_<task>`, không ghi đè hình của task chính.
+## Output
 
-Phương pháp và kết quả: [`reports/explain_dl_draft.md`](reports/explain_dl_draft.md).
+Không commit dữ liệu, checkpoint hay output sinh ra. Kết quả và hình được chia sẻ qua thư mục chung; ngoại lệ tracked là `results/preproc_log.csv`. Notebook source được commit sau khi `nbstripout` loại output nhúng.
 
-## Liên hệ nộp bài
-
-Report (tiếng Anh) gửi **ít nhất 1 tuần trước buổi thuyết trình** tới: guy.nagels@vub.be, thầy Trần Quốc Sang, thầy Nguyễn Tiến Dũng.
+R3 chi tiết: [bàn giao](reports/r3_review_and_handoff.md) và [report template](reports/report_template.md).

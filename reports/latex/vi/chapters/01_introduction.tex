@@ -1,0 +1,16 @@
+% Mục 1 (bản tiếng Việt). Người phụ trách chính: R1.
+\section{Giới thiệu}
+\label{ch:intro}
+
+Trong mô hình oddball, các kích thích đích (target) hiếm và liên quan đến nhiệm vụ xen giữa các kích thích chuẩn (standard) thường gặp. Target gây ra sóng P300 (P3b), một sóng dương có cực đại ở vùng trung tâm-đỉnh khoảng 300 đến 600~ms sau kích thích, phản ánh việc cập nhật ngữ cảnh và phân bổ chú ý; một kích thích gây nhiễu (distractor) hiếm nhưng không phải đích cũng có thể gây ra P3a lệch về vùng trán-trung tâm \citep{polich2007}. Phát hiện P300 trong một trial đơn lẻ, như một giao diện não-máy tính phải làm \citep{farwell1988}, là việc khó: tỉ số tín hiệu trên nhiễu của một trial thấp, P300 khác nhau giữa người, và target hiếm. Trong dữ liệu của nhóm, cứ một target có khoảng sáu standard, nên luôn đoán ``standard'' đã đạt độ chính xác 86\%; vì vậy chúng tôi báo cáo độ chính xác cân bằng (balanced accuracy) và diện tích dưới đường ROC (AUC).
+
+Các bộ giải mã ERP cổ điển dùng đặc trưng thiết kế thủ công kèm mô hình tuyến tính được chính quy hoá tốt, ví dụ biên độ theo cửa sổ thời gian với phân tích phân biệt tuyến tính shrinkage (LDA; \citealp{blankertz2011}) hoặc bộ lọc không gian xDAWN với đặc trưng trên không gian tiếp tuyến Riemann \citep{rivet2009,barachant2012}. Học sâu (DL) học đặc trưng trực tiếp từ tín hiệu thô, ví dụ mạng gọn EEGNet \citep{lawhern2018} hoặc ShallowConvNet, vốn được thiết kế cho đặc trưng công suất dải tần \citep{schirrmeister2017}. Các bài tổng quan chưa thấy mạng sâu vượt trội rõ ràng so với phương pháp cổ điển được chính quy hoá tốt trên các bộ dữ liệu EEG nhỏ \citep{lotte2018,roy2019}.
+
+Thiết kế của nhóm còn có một yếu tố gây nhiễu: chỉ trial đúng hành vi được phân tích, nên mọi target đều kèm một lần nhấn phím bằng tay phải, còn không standard nào có. Bộ phân loại có thể dùng hoạt động vận động thay cho P300. Để kiểm tra điều này, chúng tôi giải thích mô hình bằng activation pattern \citep{haufe2014} và Integrated Gradients \citep{sundararajan2017}, đồng thời thêm một cửa sổ thời gian sớm và hai tác vụ đối chứng. Các câu hỏi nghiên cứu:
+\begin{itemize}
+  \item \textbf{RQ1.} Hiệu năng phân loại single-trial tốt nhất giữa kích thích thường gặp (standard) và kích thích đích (target) là bao nhiêu?
+  \item \textbf{RQ2.} Học sâu có vượt trội các kỹ thuật học máy tiêu chuẩn trong phân loại single-trial không?
+  \item \textbf{RQ3.} Các đặc trưng mà mô hình học sâu tìm ra có giải thích được không, và chúng phản ánh P300 hay việc nhấn phím?
+\end{itemize}
+
+Đây là báo cáo tiến độ. Chuẩn bị dữ liệu, mọi mô hình đã lên kế hoạch và các phân tích giải thích đã xong, nên Mục~\ref{ch:data} đến \ref{ch:discussion} trình bày kết quả đầy đủ nhưng vẫn là sơ bộ. Mục~\ref{ch:conclusion} liệt kê các việc còn lại trước bản báo cáo cuối.
